@@ -1,0 +1,1827 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GeoSource — 세계 공식 데이터 허브</title>
+<meta name="description" content="World Bank, KOSIS, WMO, FAO, IEA, IMF 등 공식 통계기관의 지리·통계 데이터를 단일 표준으로 모아 제공합니다.">
+
+<!-- 폰트 -->
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+<style>
+:root {
+  /* 화이트 + 네이비 팔레트 */
+  --paper:        #ffffff;     /* 메인 배경 (화이트) */
+  --paper-dim:    #f3f5f9;     /* 서브 배경 */
+  --ink:          #0b1f3a;     /* 네이비 (강조용 짙은 잉크) */
+  --ink-soft:     #3a4a64;
+  --ink-faint:    #8892a6;
+  --line:         #d8dee8;
+  --line-soft:    #ebeef4;
+  --ocean:        #0b3a7a;     /* 네이비 포인트 */
+  --ocean-bright: #1f5fbf;
+  --forest:       #0b3a7a;
+  --terra:        #0b3a7a;     /* 통일된 네이비 액센트 */
+  --gold:         #1f5fbf;
+  --crimson:      #0b1f3a;
+  --highlight:    #ffffff;
+
+  /* 차트 시리즈 컬러 (네이비 톤 그라데이션) */
+  --c1: #0b1f3a;
+  --c2: #0b3a7a;
+  --c3: #1f5fbf;
+  --c4: #4a86d6;
+  --c5: #7aa8e3;
+  --c6: #2a4a7a;
+  --c7: #5470a8;
+  --c8: #94b3df;
+
+  --font-display: 'Pretendard', sans-serif;
+  --font-body:    'Pretendard', sans-serif;
+  --font-mono:    'Pretendard', 'JetBrains Mono', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--paper); color: var(--ink); font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
+
+/* 좌표선 그리드 배경 (옅은 네이비) */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(var(--line-soft) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
+  background-size: 80px 80px;
+  opacity: 0.5;
+  pointer-events: none; z-index: 0;
+}
+
+.app { position: relative; z-index: 1; min-height: 100vh; }
+
+/* ── 헤더 ─────────────────────────────────────────── */
+header.masthead {
+  border-bottom: 1px solid var(--line);
+  background: var(--paper);
+  padding: 28px 40px 24px;
+}
+.masthead-row {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 32px; flex-wrap: wrap;
+  max-width: 1500px; margin: 0 auto;
+}
+.brand {
+  display: flex; align-items: center; gap: 18px;
+}
+.brand-mark {
+  width: 56px; height: 56px;
+  border: 1.5px solid var(--ink);
+  border-radius: 50%;
+  position: relative; flex-shrink: 0;
+}
+.brand-mark::before, .brand-mark::after {
+  content: ''; position: absolute; background: var(--ink);
+}
+.brand-mark::before { /* 적도 */
+  left: -2px; right: -2px; top: 50%;
+  height: 1px; transform: translateY(-50%);
+}
+.brand-mark::after { /* 본초자오선 */
+  top: -2px; bottom: -2px; left: 50%;
+  width: 1px; transform: translateX(-50%);
+}
+.brand-mark .meridian {
+  position: absolute; inset: 0;
+  border-radius: 50%; border: 1px solid var(--ink);
+  border-top-color: transparent; border-bottom-color: transparent;
+  transform: scaleX(0.55);
+}
+.brand-mark .meridian-2 {
+  position: absolute; inset: 0;
+  border-radius: 50%; border: 1px solid var(--ink-faint);
+  border-left-color: transparent; border-right-color: transparent;
+  transform: scaleY(0.55);
+}
+.brand-text h1 {
+  font-family: var(--font-display);
+  font-size: 36px; font-weight: 700;
+  letter-spacing: -0.5px; line-height: 1;
+  color: var(--ink);
+}
+.brand-text h1 em {
+  font-style: normal; color: var(--ocean);
+  font-weight: 700;
+}
+.brand-text .tagline {
+  font-size: 12px; color: var(--ink-soft);
+  margin-top: 6px;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  font-family: var(--font-mono);
+}
+.brand-text .tagline .dot { color: var(--terra); margin: 0 6px; }
+
+.coords {
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--ink-faint); letter-spacing: 1px;
+  text-align: right;
+}
+.coords .label { color: var(--terra); }
+
+/* 출처 뱃지 */
+.sources-bar {
+  margin-top: 22px;
+  display: flex; gap: 8px; flex-wrap: wrap;
+  max-width: 1500px; margin-left: auto; margin-right: auto;
+}
+.source-badge {
+  font-family: var(--font-mono); font-size: 10.5px;
+  letter-spacing: 0.8px;
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  background: var(--highlight);
+  color: var(--ink-soft);
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.source-badge.active {
+  border-color: var(--ocean);
+  color: var(--ocean);
+  background: var(--paper);
+}
+.source-badge .stat {
+  color: var(--terra); font-weight: 500;
+}
+
+/* ── 메인 레이아웃 ───────────────────────────────── */
+main.workspace {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  max-width: 1500px; margin: 0 auto;
+  min-height: calc(100vh - 180px);
+}
+
+/* ── 사이드바 (지표 카탈로그) ─────────────────────── */
+aside.catalog {
+  border-right: 1px solid var(--line);
+  padding: 28px 24px;
+  background: rgba(243, 245, 249, 0.7);
+}
+.catalog-title {
+  font-family: var(--font-mono); font-size: 11px;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 14px;
+  display: flex; align-items: baseline; justify-content: space-between;
+}
+.catalog-title .count { color: var(--terra); }
+
+.search-box {
+  position: relative; margin-bottom: 18px;
+}
+.search-box input {
+  width: 100%; padding: 10px 14px 10px 34px;
+  background: var(--highlight);
+  border: 1px solid var(--line);
+  font-family: var(--font-body); font-size: 13px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.search-box input:focus { border-color: var(--ocean); }
+.search-box::before {
+  content: '⌕'; position: absolute;
+  left: 12px; top: 50%; transform: translateY(-50%);
+  color: var(--ink-faint); font-size: 14px;
+}
+
+.category-chips {
+  display: flex; flex-wrap: wrap; gap: 4px;
+  margin-bottom: 18px;
+}
+.chip {
+  font-family: var(--font-mono); font-size: 10.5px;
+  letter-spacing: 0.5px;
+  padding: 4px 9px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.chip:hover { border-color: var(--ink); color: var(--ink); }
+.chip.active {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+.indicator-list { display: flex; flex-direction: column; gap: 2px; }
+.indicator-item {
+  padding: 11px 12px 11px 14px;
+  border-left: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+}
+.indicator-item:hover {
+  background: var(--paper-dim);
+  border-left-color: var(--ocean-bright);
+}
+.indicator-item.active {
+  background: var(--ocean);
+  border-left-color: var(--ocean);
+  box-shadow: 0 1px 0 var(--ocean), -3px 0 0 var(--ocean);
+}
+.indicator-item.active::after {
+  content: '▸';
+  position: absolute; right: 12px; top: 50%;
+  transform: translateY(-50%);
+  color: #fff; font-size: 14px;
+}
+.indicator-item .name {
+  font-size: 13.5px; font-weight: 500; color: var(--ink);
+  line-height: 1.35;
+}
+.indicator-item.active .name { color: #fff; font-weight: 600; }
+.indicator-item .meta {
+  font-family: var(--font-mono); font-size: 10px;
+  color: var(--ink-faint); margin-top: 3px;
+  letter-spacing: 0.5px;
+}
+.indicator-item .meta .source { color: var(--ocean); font-weight: 500; }
+.indicator-item .meta .unit { color: var(--terra); }
+.indicator-item.active .meta { color: rgba(255,255,255,0.75); }
+.indicator-item.active .meta .source,
+.indicator-item.active .meta .unit { color: #ffd87a; }
+
+/* ── 메인 viewer ─────────────────────────────────── */
+section.viewer {
+  padding: 28px 36px 60px;
+  min-width: 0;
+}
+
+.viewer-empty {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  height: 60vh; text-align: center;
+  color: var(--ink-faint);
+}
+.viewer-empty .compass {
+  width: 90px; height: 90px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  position: relative; margin-bottom: 24px;
+}
+.viewer-empty .compass::before {
+  content: 'N'; position: absolute; top: -22px; left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-body); font-size: 13px;
+  font-weight: 700; color: var(--ink);
+}
+.viewer-empty .compass-needle {
+  position: absolute; left: 50%; top: 8px; bottom: 8px;
+  width: 2px; transform: translateX(-50%);
+  background: linear-gradient(to bottom,
+    var(--terra) 0%, var(--terra) 50%,
+    var(--ink) 50%, var(--ink) 100%);
+}
+.viewer-empty p {
+  font-family: var(--font-body);
+  font-size: 20px; font-weight: 600;
+  color: var(--ink-soft);
+  letter-spacing: -0.3px;
+}
+.viewer-empty .hint {
+  margin-top: 8px; font-family: var(--font-mono);
+  font-size: 11px; letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* 지표 헤더 */
+.indicator-header {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 18px; margin-bottom: 20px;
+}
+.indicator-header .breadcrumb {
+  font-family: var(--font-mono); font-size: 10.5px;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--ink-faint); margin-bottom: 8px;
+}
+.indicator-header .breadcrumb .sep { color: var(--line); margin: 0 8px; }
+.indicator-header h2 {
+  font-family: var(--font-display);
+  font-size: 30px; font-weight: 700;
+  line-height: 1.2; margin-bottom: 4px;
+  letter-spacing: -0.5px;
+  color: var(--ink);
+}
+.indicator-header .name-en {
+  font-family: var(--font-body); font-style: normal;
+  font-size: 14px; font-weight: 500;
+  color: var(--ink-soft);
+  margin-bottom: 12px;
+  letter-spacing: 0;
+}
+.indicator-header .description {
+  font-size: 14px; color: var(--ink-soft);
+  line-height: 1.55; max-width: 720px;
+}
+.indicator-header .meta-row {
+  display: flex; gap: 24px; flex-wrap: wrap;
+  margin-top: 14px;
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--ink-faint); letter-spacing: 0.5px;
+}
+.indicator-header .meta-row span strong {
+  color: var(--ink); font-weight: 500;
+}
+
+/* 컨트롤 영역 */
+.controls {
+  display: flex; flex-direction: column;
+  gap: 16px; margin-bottom: 24px;
+  padding: 20px;
+  background: var(--highlight);
+  border: 1px solid var(--line-soft);
+}
+.controls-row {
+  display: grid; grid-template-columns: 1fr auto;
+  gap: 24px;
+}
+.op-row {
+  display: grid; grid-template-columns: auto 1fr;
+  gap: 18px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--line-soft);
+  align-items: start;
+}
+.op-buttons {
+  display: flex; flex-wrap: wrap; gap: 4px;
+}
+.op-btn {
+  font-family: var(--font-mono); font-size: 10.5px;
+  letter-spacing: 0.5px;
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.op-btn:hover { border-color: var(--ink); color: var(--ink); }
+.op-btn.active {
+  background: var(--ocean);
+  color: #fff;
+  border-color: var(--ocean);
+}
+.b-select {
+  width: 100%; max-width: 360px;
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  font-family: var(--font-body); font-size: 12px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.b-select:focus { border-color: var(--ocean); }
+.b-select:disabled { color: var(--ink-faint); background: var(--paper-dim); cursor: not-allowed; }
+.op-status {
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--ink-faint); padding: 6px 0;
+  letter-spacing: 0.5px;
+}
+.op-status strong { color: var(--ink); font-weight: 500; }
+.control-group label {
+  display: block;
+  font-family: var(--font-mono); font-size: 10.5px;
+  letter-spacing: 1.2px; text-transform: uppercase;
+  color: var(--ink-faint); margin-bottom: 10px;
+}
+.country-chips {
+  display: flex; flex-wrap: wrap; gap: 5px;
+  max-height: 110px; overflow-y: auto;
+  padding: 2px;
+}
+.country-chip {
+  font-size: 12px;
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--ink-soft);
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: all 0.12s;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.country-chip:hover { border-color: var(--ink); }
+.country-chip.active {
+  color: #fff;
+  border-color: var(--ink);
+  font-weight: 500;
+}
+.chip-swatch {
+  display: inline-block;
+  width: 12px; height: 12px;
+  border-radius: 3px;
+  border: 1.5px solid rgba(255,255,255,0.85);
+  position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.15);
+}
+.chip-swatch:hover { transform: scale(1.15); }
+.chip-color-input {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  opacity: 0; cursor: pointer; padding: 0; border: 0;
+}
+
+/* 국가 자동완성 검색 */
+.country-search-wrap {
+  position: relative;
+  margin-top: 10px;
+}
+.country-search {
+  width: 100%; padding: 8px 12px 8px 30px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  font-family: var(--font-body); font-size: 12.5px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.country-search:focus { border-color: var(--ocean); }
+.country-search-wrap::before {
+  content: '+'; position: absolute;
+  left: 12px; top: 50%; transform: translateY(-50%);
+  color: var(--ocean); font-size: 16px; font-weight: 600;
+  line-height: 1; pointer-events: none;
+}
+.country-results {
+  position: absolute; top: calc(100% + 2px); left: 0; right: 0;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  max-height: 260px;
+  overflow-y: auto;
+  z-index: 10;
+  display: none;
+  box-shadow: 0 6px 20px rgba(11, 31, 58, 0.08);
+}
+.country-results.open { display: block; }
+.country-result-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 12.5px;
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.country-result-item:last-child { border-bottom: none; }
+.country-result-item:hover { background: var(--paper-dim); }
+.country-result-item .ko { color: var(--ink); }
+.country-result-item .en { color: var(--ink-faint); font-size: 11.5px; margin-left: 6px; }
+.country-result-item .meta-right {
+  font-family: var(--font-mono); font-size: 10.5px;
+  color: var(--ink-faint); letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+.country-result-item .iso { color: var(--ocean); font-weight: 500; }
+.country-result-empty,
+.country-result-loading {
+  padding: 14px; font-size: 12px; color: var(--ink-faint);
+  text-align: center;
+  font-family: var(--font-mono); letter-spacing: 0.5px;
+}
+
+.right-controls {
+  display: flex; flex-direction: column; gap: 14px;
+  min-width: 180px;
+}
+.year-range {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono); font-size: 12px;
+}
+.year-range input[type="number"] {
+  width: 64px; padding: 5px 8px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  font-family: var(--font-mono); font-size: 12px;
+  text-align: center;
+  outline: none;
+}
+.year-range input:focus { border-color: var(--ocean); }
+.year-range .sep { color: var(--ink-faint); }
+
+.chart-types {
+  display: flex; gap: 0;
+  border: 1px solid var(--line);
+}
+.chart-types button {
+  flex: 1;
+  padding: 8px 12px;
+  background: var(--paper);
+  border: none;
+  border-right: 1px solid var(--line);
+  font-family: var(--font-mono); font-size: 10.5px;
+  letter-spacing: 1px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.chart-types button:last-child { border-right: none; }
+.chart-types button:hover { background: var(--paper-dim); }
+.chart-types button.active {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+/* 차트 캔버스 */
+.chart-card {
+  background: var(--paper);
+  border: 1px solid var(--line-soft);
+  padding: 24px;
+  margin-bottom: 24px;
+  position: relative;
+  min-height: 420px;
+}
+.chart-card .loading {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255, 255, 255, 0.85);
+  font-family: var(--font-mono); font-size: 12px;
+  letter-spacing: 1px; color: var(--ink-faint);
+}
+.chart-card.loaded .loading { display: none; }
+.chart-card .pie-note {
+  font-family: var(--font-mono); font-size: 10.5px;
+  color: var(--ink-faint); letter-spacing: 0.5px;
+  margin-top: 8px; text-align: center;
+}
+
+/* 데이터 테이블 */
+.table-wrap {
+  border: 1px solid var(--line-soft);
+  margin-bottom: 16px;
+  max-height: 400px;
+  overflow: auto;
+  background: var(--paper);
+}
+table.data-table {
+  width: 100%; border-collapse: collapse;
+  font-family: var(--font-mono); font-size: 11.5px;
+}
+table.data-table thead {
+  position: sticky; top: 0;
+  background: var(--paper-dim);
+}
+table.data-table th, table.data-table td {
+  padding: 7px 12px;
+  border-bottom: 1px solid var(--line-soft);
+  text-align: left;
+}
+table.data-table th {
+  font-weight: 500; color: var(--ink);
+  letter-spacing: 0.5px; text-transform: uppercase;
+  font-size: 10px;
+}
+table.data-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+table.data-table td.country { font-family: var(--font-body); font-size: 12.5px; }
+table.data-table tbody tr:hover { background: var(--paper-dim); }
+
+/* 다운로드 / 푸터 */
+.action-row {
+  display: flex; gap: 10px; align-items: center;
+  flex-wrap: wrap;
+}
+.action-row .meta {
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--ink-faint); margin-right: auto;
+  letter-spacing: 0.5px;
+}
+.btn {
+  font-family: var(--font-mono); font-size: 11px;
+  letter-spacing: 1px; text-transform: uppercase;
+  padding: 9px 16px;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn:hover { background: var(--ink); color: var(--paper); }
+.btn.primary { background: var(--ink); color: var(--paper); }
+.btn.primary:hover { background: var(--ocean); border-color: var(--ocean); }
+
+footer.colophon {
+  margin-top: 60px;
+  padding: 24px 40px;
+  border-top: 1px solid var(--line);
+  font-family: var(--font-mono); font-size: 10.5px;
+  color: var(--ink-faint);
+  letter-spacing: 0.5px;
+  display: flex; justify-content: space-between;
+  flex-wrap: wrap; gap: 16px;
+}
+footer.colophon a { color: var(--ocean); text-decoration: none; }
+footer.colophon a:hover { text-decoration: underline; }
+
+/* 반응형 */
+@media (max-width: 960px) {
+  main.workspace { grid-template-columns: 1fr; }
+  aside.catalog {
+    border-right: none; border-bottom: 1px solid var(--line);
+  }
+  .controls-row { grid-template-columns: 1fr; }
+  .op-row { grid-template-columns: 1fr; }
+  .indicator-header h2 { font-size: 24px; }
+}
+
+/* 스크롤바 */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--paper); }
+::-webkit-scrollbar-thumb { background: var(--line); }
+::-webkit-scrollbar-thumb:hover { background: var(--ink-faint); }
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<!-- ── 헤더 ── -->
+<header class="masthead">
+  <div class="masthead-row">
+    <div class="brand">
+      <div class="brand-mark">
+        <div class="meridian"></div>
+        <div class="meridian-2"></div>
+      </div>
+      <div class="brand-text">
+        <h1>Geo<em>Source</em></h1>
+        <div class="tagline">세계 공식 데이터 허브 <span class="dot">·</span> bgnl.kr</div>
+      </div>
+    </div>
+    <div class="coords">
+      <div><span class="label">LAT</span> 37°35′N · <span class="label">LON</span> 126°59′E</div>
+      <div id="now-utc">UTC ----</div>
+    </div>
+  </div>
+  <div class="sources-bar" id="sources-bar"></div>
+</header>
+
+<!-- ── 메인 ── -->
+<main class="workspace">
+
+  <aside class="catalog">
+    <div class="catalog-title">
+      <span>지표 카탈로그</span>
+      <span class="count" id="ind-count">— 종</span>
+    </div>
+    <div class="search-box">
+      <input id="search" type="text" placeholder="지표 검색…">
+    </div>
+    <div class="category-chips" id="category-chips"></div>
+    <div class="indicator-list" id="indicator-list"></div>
+  </aside>
+
+  <section class="viewer" id="viewer">
+    <div class="viewer-empty" id="empty">
+      <div class="compass"><div class="compass-needle"></div></div>
+      <p>지표를 선택해주세요.</p>
+      <div class="hint">Select an indicator to begin</div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="colophon">
+  <div>
+    GeoSource · 비그늘 EdTech · 데이터는 각 출처의 라이선스를 따릅니다.
+    <span id="build-info" style="margin-left:12px;color:var(--terra)"></span>
+  </div>
+  <div>
+    World Bank Open Data <a href="https://datacatalog.worldbank.org/public-licenses#cc-by" target="_blank">CC BY 4.0</a>
+    · KOSIS <a href="https://www.kogl.or.kr/info/license.do" target="_blank">KOGL</a>
+    · <a href="admin.html">관리</a>
+  </div>
+</footer>
+
+</div>
+
+<script>
+/* ─────────────────────────────────────────────────────────
+ * GeoSource 지표 카탈로그 (Python 어댑터의 INDICATORS와 동기)
+ * ───────────────────────────────────────────────────────── */
+const INDICATORS = [
+  { dataset_id: "wb_NY.GDP.MKTP.CD", source: "World Bank", code: "NY.GDP.MKTP.CD",
+    name_ko: "국내총생산(GDP, 명목)", name_en: "GDP (current US$)",
+    category: "economy", unit: "USD",
+    description_ko: "현재 미국 달러 기준 명목 국내총생산.",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_NY.GDP.PCAP.CD", source: "World Bank", code: "NY.GDP.PCAP.CD",
+    name_ko: "1인당 GDP(명목)", name_en: "GDP per capita (current US$)",
+    category: "economy", unit: "USD",
+    description_ko: "명목 GDP를 인구로 나눈 값.",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_SP.POP.TOTL", source: "World Bank", code: "SP.POP.TOTL",
+    name_ko: "총인구", name_en: "Population, total",
+    category: "population", unit: "명",
+    description_ko: "해당 국가의 연앙 총인구.",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_SP.URB.TOTL.IN.ZS", source: "World Bank", code: "SP.URB.TOTL.IN.ZS",
+    name_ko: "도시화율", name_en: "Urban population (% of total)",
+    category: "population", unit: "%",
+    description_ko: "총인구 대비 도시 거주 인구 비율.",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_EN.GHG.CO2.PC.CE.AR5", source: "World Bank", code: "EN.GHG.CO2.PC.CE.AR5",
+    name_ko: "1인당 이산화탄소 배출량", name_en: "CO2 emissions per capita",
+    category: "environment", unit: "tCO2/명",
+    description_ko: "1인당 연간 이산화탄소 배출량(톤).",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_AG.LND.FRST.ZS", source: "World Bank", code: "AG.LND.FRST.ZS",
+    name_ko: "산림 면적 비율", name_en: "Forest area (% of land area)",
+    category: "environment", unit: "%",
+    description_ko: "국토 면적 중 산림이 차지하는 비율.",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_EG.USE.PCAP.KG.OE", source: "World Bank", code: "EG.USE.PCAP.KG.OE",
+    name_ko: "1인당 에너지 사용량", name_en: "Energy use per capita",
+    category: "energy", unit: "kgoe/명",
+    description_ko: "1인당 연간 에너지 소비(석유환산 kg).",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_SP.DYN.LE00.IN", source: "World Bank", code: "SP.DYN.LE00.IN",
+    name_ko: "기대수명", name_en: "Life expectancy at birth",
+    category: "population", unit: "년",
+    description_ko: "출생 시 기대수명(전체).",
+    license: "CC BY 4.0" },
+
+  // ── World Bank 추가 ─────────────────────────────────────
+  { dataset_id: "wb_IT.NET.USER.ZS", source: "World Bank", code: "IT.NET.USER.ZS",
+    name_ko: "인터넷 사용률", name_en: "Individuals using the Internet (% of population)",
+    category: "development", unit: "%",
+    description_ko: "전체 인구 중 인터넷을 사용하는 인구의 비율.",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_NE.TRD.GNFS.ZS", source: "World Bank", code: "NE.TRD.GNFS.ZS",
+    name_ko: "무역의존도", name_en: "Trade (% of GDP)",
+    category: "trade", unit: "%",
+    description_ko: "재화·서비스의 수출입 합계가 GDP에서 차지하는 비율.",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_BX.KLT.DINV.WD.GD.ZS", source: "World Bank", code: "BX.KLT.DINV.WD.GD.ZS",
+    name_ko: "외국인직접투자(FDI) 유입", name_en: "Foreign direct investment, net inflows (% of GDP)",
+    category: "economy", unit: "%",
+    description_ko: "GDP 대비 외국인직접투자 순유입 비율.",
+    license: "CC BY 4.0" },
+
+  // ── IMF World Economic Outlook ───────────────────────────
+  { dataset_id: "imf_NGDP_RPCH", source: "IMF", code: "NGDP_RPCH",
+    name_ko: "실질 GDP 성장률", name_en: "Real GDP growth (annual %)",
+    category: "economy", unit: "%",
+    description_ko: "전년 대비 실질 GDP 증가율 (IMF WEO).",
+    license: "IMF Open Data" },
+  { dataset_id: "imf_PCPIPCH", source: "IMF", code: "PCPIPCH",
+    name_ko: "소비자물가 상승률", name_en: "Inflation, average consumer prices (%)",
+    category: "economy", unit: "%",
+    description_ko: "연평균 소비자물가지수 변동률 (IMF WEO).",
+    license: "IMF Open Data" },
+  { dataset_id: "imf_LUR", source: "IMF", code: "LUR",
+    name_ko: "실업률", name_en: "Unemployment rate (%)",
+    category: "economy", unit: "%",
+    description_ko: "노동가능인구 대비 실업자 비율 (IMF WEO).",
+    license: "IMF Open Data" },
+  { dataset_id: "imf_GGXWDG_NGDP", source: "IMF", code: "GGXWDG_NGDP",
+    name_ko: "정부부채 (GDP비)", name_en: "General government gross debt (% of GDP)",
+    category: "economy", unit: "%",
+    description_ko: "일반정부 총부채가 GDP에서 차지하는 비율 (IMF WEO).",
+    license: "IMF Open Data" },
+  { dataset_id: "imf_GGXCNL_NGDP", source: "IMF", code: "GGXCNL_NGDP",
+    name_ko: "정부 재정수지 (GDP비)", name_en: "General government net lending/borrowing (% of GDP)",
+    category: "economy", unit: "%",
+    description_ko: "일반정부 순대여(+) / 순차입(−) 규모, GDP 대비 비율 (IMF WEO).",
+    license: "IMF Open Data" },
+  { dataset_id: "imf_BCA_NGDPD", source: "IMF", code: "BCA_NGDPD",
+    name_ko: "경상수지 (GDP비)", name_en: "Current account balance (% of GDP)",
+    category: "trade", unit: "%",
+    description_ko: "경상수지가 GDP에서 차지하는 비율 (IMF WEO).",
+    license: "IMF Open Data" },
+];
+
+const CATEGORIES = [
+  { key: "all",         label: "전체" },
+  { key: "economy",     label: "경제" },
+  { key: "population",  label: "인구" },
+  { key: "environment", label: "환경" },
+  { key: "energy",      label: "에너지" },
+  { key: "agriculture", label: "농업" },
+  { key: "climate",     label: "기후" },
+];
+
+/* 자주 쓰이는 국가 (ISO3 + 한국어명 + 차트 컬러 인덱스) */
+const COUNTRIES = [
+  { iso: "KOR", ko: "대한민국" }, { iso: "JPN", ko: "일본" },
+  { iso: "CHN", ko: "중국" },     { iso: "USA", ko: "미국" },
+  { iso: "GBR", ko: "영국" },     { iso: "FRA", ko: "프랑스" },
+  { iso: "DEU", ko: "독일" },     { iso: "ITA", ko: "이탈리아" },
+  { iso: "ESP", ko: "스페인" },   { iso: "RUS", ko: "러시아" },
+  { iso: "IND", ko: "인도" },     { iso: "IDN", ko: "인도네시아" },
+  { iso: "VNM", ko: "베트남" },   { iso: "THA", ko: "태국" },
+  { iso: "PHL", ko: "필리핀" },   { iso: "MYS", ko: "말레이시아" },
+  { iso: "SGP", ko: "싱가포르" }, { iso: "AUS", ko: "호주" },
+  { iso: "NZL", ko: "뉴질랜드" }, { iso: "BRA", ko: "브라질" },
+  { iso: "ARG", ko: "아르헨티나" }, { iso: "MEX", ko: "멕시코" },
+  { iso: "CAN", ko: "캐나다" },   { iso: "ZAF", ko: "남아공" },
+  { iso: "EGY", ko: "이집트" },   { iso: "NGA", ko: "나이지리아" },
+  { iso: "SAU", ko: "사우디" },   { iso: "TUR", ko: "튀르키예" },
+  { iso: "IRN", ko: "이란" },     { iso: "ARE", ko: "UAE" },
+];
+
+/* 기본 시리즈 컬러 — 다양한 색상으로 구성 (화이트 배경 친화) */
+const DEFAULT_SERIES_COLORS = [
+  '#0b3a7a', // 네이비
+  '#d64545', // 코랄 레드
+  '#1f9e6e', // 포레스트 그린
+  '#e8a838', // 앬버/골드
+  '#7c3aed', // 바이올렛
+  '#0891b2', // 촤크 틸
+  '#db2777', // 핏크
+  '#65a30d', // 라임
+  '#ea580c', // 오렌지
+  '#475569'  // 슬레이트
+];
+const SERIES_COLORS = [...DEFAULT_SERIES_COLORS];
+
+/* World Bank API에서 받아오는 전체 국가 목록 (page load 시 1회 fetch).
+   COUNTRIES는 칩으로 항상 노출하는 큐레이션 30개,
+   ALL_COUNTRIES는 자동완성 검색용 200+개. */
+let ALL_COUNTRIES = [];
+let COUNTRIES_LOADING = true;
+
+async function fetchAllCountries() {
+  try {
+    const r = await fetch('https://api.worldbank.org/v2/country?format=json&per_page=400');
+    const data = await r.json();
+    if (!Array.isArray(data) || data.length < 2) return;
+    const KO = {};
+    COUNTRIES.forEach(c => { KO[c.iso] = c.ko; });
+
+    // 브라우저 내장 ISO 지역명 한국어 번역 (큐레이션 사전에 없는 200+개국 자동 처리)
+    const dn = (typeof Intl !== 'undefined' && Intl.DisplayNames)
+      ? new Intl.DisplayNames(['ko'], { type: 'region' })
+      : null;
+
+    ALL_COUNTRIES = (data[1] || [])
+      .filter(c => c && c.region && c.region.id !== "NA")  // 집계(World, OECD 등) 제외
+      .map(c => {
+        let ko = KO[c.id];
+        if (!ko && dn && c.iso2Code) {
+          try {
+            const t = dn.of(c.iso2Code);
+            if (t && t !== c.iso2Code) ko = t;
+          } catch { /* 미지원 코드는 영문명으로 폴백 */ }
+        }
+        return {
+          iso: c.id,
+          ko: ko || c.name,
+          en: c.name,
+          region: c.region.value,
+        };
+      })
+      .sort((a, b) => a.ko.localeCompare(b.ko, 'ko'));
+  } catch (e) {
+    console.error('failed to load country list', e);
+  } finally {
+    COUNTRIES_LOADING = false;
+  }
+}
+
+function getCountryByIso(iso) {
+  return ALL_COUNTRIES.find(c => c.iso === iso)
+      || COUNTRIES.find(c => c.iso === iso)
+      || { iso, ko: iso, en: iso, region: '' };
+}
+
+/* 칩 영역에 보여줄 국가: 큐레이션 30개 + 그 외 선택된 국가 (뒤에 부착). */
+function getDisplayCountries() {
+  const seen = new Set();
+  const result = [];
+  COUNTRIES.forEach(c => { result.push(c); seen.add(c.iso); });
+  state.selectedCountries.forEach(iso => {
+    if (!seen.has(iso)) {
+      result.push(getCountryByIso(iso));
+      seen.add(iso);
+    }
+  });
+  return result;
+}
+
+/* 검색어로 ALL_COUNTRIES 필터 (ko·en·iso 모두 매칭, 이미 선택된 국가 제외). */
+function filterCountries(q) {
+  if (!q) return [];
+  const ql = q.toLowerCase();
+  return ALL_COUNTRIES
+    .filter(c => !state.selectedCountries.includes(c.iso))
+    .filter(c =>
+      c.ko.toLowerCase().includes(ql)
+      || c.en.toLowerCase().includes(ql)
+      || c.iso.toLowerCase().includes(ql))
+    .slice(0, 12);
+}
+
+/* 사용자 컴툕 오버라이드: ISO → hex */
+const CUSTOM_COLORS = JSON.parse(localStorage.getItem('geosource_colors') || '{}');
+function colorFor(iso, idx) {
+  return CUSTOM_COLORS[iso] || SERIES_COLORS[idx % SERIES_COLORS.length];
+}
+function setColor(iso, hex) {
+  CUSTOM_COLORS[iso] = hex;
+  localStorage.setItem('geosource_colors', JSON.stringify(CUSTOM_COLORS));
+}
+function resetColor(iso) {
+  delete CUSTOM_COLORS[iso];
+  localStorage.setItem('geosource_colors', JSON.stringify(CUSTOM_COLORS));
+}
+
+/* ─────────────────────────────────────────────────────────
+ * 상태
+ * ───────────────────────────────────────────────────────── */
+const state = {
+  selectedIndicator: null,
+  selectedCountries: ["KOR", "JPN", "CHN", "USA"],
+  yearStart: 2000,
+  yearEnd: 2023,
+  chartType: "line",
+  category: "all",
+  search: "",
+  records: [],          // 지표 A 레코드
+  recordsB: [],         // 지표 B 레코드 (이항 연산용)
+  indicatorB: null,     // 지표 B의 dataset_id
+  operation: "none",    // none|divide|subtract|multiply|add|yoy_pct|index
+  chart: null,
+};
+
+/* 지표 연산자 정의 */
+const OPERATIONS = [
+  { key: "none",     label: "원본",        binary: false, unary: null,    symbol: ""  },
+  { key: "divide",   label: "A ÷ B",      binary: true,  unary: null,    symbol: "÷" },
+  { key: "subtract", label: "A − B",      binary: true,  unary: null,    symbol: "−" },
+  { key: "multiply", label: "A × B",      binary: true,  unary: null,    symbol: "×" },
+  { key: "add",      label: "A + B",      binary: true,  unary: null,    symbol: "+" },
+  { key: "yoy_pct",  label: "전년대비 %",  binary: false, unary: "yoy",   symbol: ""  },
+  { key: "index",    label: "지수(=100)",  binary: false, unary: "index", symbol: ""  },
+];
+
+/* ─────────────────────────────────────────────────────────
+ * 연산 유틸 (지표 A · B → 파생 시리즈)
+ * ───────────────────────────────────────────────────────── */
+function activeOp() {
+  return OPERATIONS.find(o => o.key === state.operation) || OPERATIONS[0];
+}
+function indicatorBObj() {
+  return INDICATORS.find(i => i.dataset_id === state.indicatorB) || null;
+}
+function isDerived() {
+  return state.operation && state.operation !== "none";
+}
+
+function deriveUnit(unitA, unitB, opKey) {
+  if (opKey === "divide") {
+    if (unitA === unitB) return "배";          // 동일 단위 비율은 무차원
+    return `${unitA}/${unitB}`;
+  }
+  if (opKey === "multiply") return `${unitA}·${unitB}`;
+  if (opKey === "subtract" || opKey === "add") {
+    return unitA === unitB ? unitA : `${unitA} ${opKey === 'add' ? '+' : '−'} ${unitB}`;
+  }
+  return unitA;
+}
+
+function getActiveUnit() {
+  const ind = state.selectedIndicator;
+  if (!ind) return "";
+  const op = activeOp();
+  if (!isDerived()) return ind.unit;
+  if (op.binary) {
+    const indB = indicatorBObj();
+    if (!indB) return ind.unit;
+    return deriveUnit(ind.unit, indB.unit, op.key);
+  }
+  if (op.unary === "yoy") return "%";
+  if (op.unary === "index") return "지수";
+  return ind.unit;
+}
+
+function getActiveTitle() {
+  const ind = state.selectedIndicator;
+  if (!ind) return "";
+  const op = activeOp();
+  const indB = indicatorBObj();
+  if (!isDerived()) return ind.name_ko;
+  if (op.binary) return indB ? `${ind.name_ko} ${op.symbol} ${indB.name_ko}` : `${ind.name_ko} ${op.symbol} ?`;
+  if (op.unary === "yoy") return `${ind.name_ko} · 전년대비 증감률`;
+  if (op.unary === "index") return `${ind.name_ko} · 지수(첫 해=100)`;
+  return ind.name_ko;
+}
+
+/* 파생 레코드 산출. 항상 records (A) + recordsB (B) 기준으로 새로 계산. */
+function getActiveRecords() {
+  const op = activeOp();
+  const A = state.records;
+  if (!isDerived()) return A;
+
+  if (op.binary) {
+    const ind = state.selectedIndicator;
+    const indB = indicatorBObj();
+    const B = state.recordsB;
+    if (!ind || !indB || !B.length) return [];
+    const bMap = {};
+    B.forEach(r => { bMap[`${r.country_iso3}_${r.year}`] = r; });
+    const unit = deriveUnit(ind.unit, indB.unit, op.key);
+    const out = [];
+    A.forEach(a => {
+      const b = bMap[`${a.country_iso3}_${a.year}`];
+      if (!b || a.value == null || b.value == null) return;
+      let v;
+      if (op.key === "divide") {
+        if (b.value === 0) return;
+        v = a.value / b.value;
+      } else if (op.key === "subtract") v = a.value - b.value;
+      else if (op.key === "multiply") v = a.value * b.value;
+      else if (op.key === "add")      v = a.value + b.value;
+      out.push({ ...a, value: v, unit, value_a: a.value, value_b: b.value });
+    });
+    return out;
+  }
+
+  if (op.unary === "yoy") {
+    const byCountry = {};
+    A.forEach(r => { (byCountry[r.country_iso3] ||= []).push(r); });
+    const out = [];
+    Object.keys(byCountry).forEach(iso => {
+      const arr = byCountry[iso].slice().sort((x,y) => x.year - y.year);
+      for (let i = 1; i < arr.length; i++) {
+        const prev = arr[i-1], curr = arr[i];
+        if (prev.year !== curr.year - 1) continue;
+        if (prev.value == null || prev.value === 0 || curr.value == null) continue;
+        const v = (curr.value - prev.value) / prev.value * 100;
+        out.push({ ...curr, value: v, unit: "%", value_a: curr.value });
+      }
+    });
+    return out;
+  }
+
+  if (op.unary === "index") {
+    const byCountry = {};
+    A.forEach(r => { (byCountry[r.country_iso3] ||= []).push(r); });
+    const out = [];
+    Object.keys(byCountry).forEach(iso => {
+      const arr = byCountry[iso].slice().sort((x,y) => x.year - y.year);
+      const base = arr.find(r => r.value != null && r.value !== 0);
+      if (!base) return;
+      arr.forEach(r => {
+        if (r.value == null) return;
+        const v = r.value / base.value * 100;
+        out.push({ ...r, value: v, unit: `=100(${base.year})`, value_a: r.value, base_year: base.year });
+      });
+    });
+    return out;
+  }
+
+  return A;
+}
+
+/* ─────────────────────────────────────────────────────────
+ * 헤더 / 사이드바 렌더
+ * ───────────────────────────────────────────────────────── */
+function renderSourcesBar() {
+  const counts = {};
+  INDICATORS.forEach(i => counts[i.source] = (counts[i.source] || 0) + 1);
+  const sources = ["World Bank", "KOSIS", "WMO", "FAO", "IEA", "IMF"];
+  const html = sources.map(s => {
+    const n = counts[s] || 0;
+    const cls = n > 0 ? "active" : "";
+    return `<div class="source-badge ${cls}">${s}
+      <span class="stat">${n > 0 ? `${n} 종` : "준비중"}</span></div>`;
+  }).join("");
+  document.getElementById("sources-bar").innerHTML = html;
+}
+
+function renderCategoryChips() {
+  const html = CATEGORIES.map(c =>
+    `<button class="chip ${c.key === state.category ? 'active' : ''}"
+             data-cat="${c.key}">${c.label}</button>`
+  ).join("");
+  const el = document.getElementById("category-chips");
+  el.innerHTML = html;
+  el.querySelectorAll(".chip").forEach(btn =>
+    btn.onclick = () => { state.category = btn.dataset.cat; renderIndicatorList(); renderCategoryChips(); }
+  );
+}
+
+function renderIndicatorList() {
+  const filtered = INDICATORS.filter(ind => {
+    if (state.category !== "all" && ind.category !== state.category) return false;
+    if (state.search) {
+      const q = state.search.toLowerCase();
+      return ind.name_ko.toLowerCase().includes(q)
+          || ind.name_en.toLowerCase().includes(q)
+          || ind.code.toLowerCase().includes(q);
+    }
+    return true;
+  });
+  document.getElementById("ind-count").textContent = `${filtered.length}종`;
+
+  const html = filtered.map(ind => {
+    const active = state.selectedIndicator?.dataset_id === ind.dataset_id;
+    return `<div class="indicator-item ${active ? 'active' : ''}" data-id="${ind.dataset_id}">
+      <div class="name">${ind.name_ko}</div>
+      <div class="meta">
+        <span class="source">${ind.source}</span> ·
+        <span class="unit">${ind.unit}</span> ·
+        <span>${ind.code}</span>
+      </div>
+    </div>`;
+  }).join("");
+  const el = document.getElementById("indicator-list");
+  el.innerHTML = html || `<div style="color:var(--ink-faint);font-size:13px;padding:20px;text-align:center;">검색 결과 없음</div>`;
+  el.querySelectorAll(".indicator-item").forEach(item =>
+    item.onclick = () => selectIndicator(item.dataset.id)
+  );
+}
+
+/* ─────────────────────────────────────────────────────────
+ * 지표 선택 → 데이터 fetch → 렌더
+ * ───────────────────────────────────────────────────────── */
+async function selectIndicator(datasetId) {
+  const ind = INDICATORS.find(i => i.dataset_id === datasetId);
+  if (!ind) return;
+  state.selectedIndicator = ind;
+  if (state.indicatorB === datasetId) state.indicatorB = null;  // A=B 방지
+  renderIndicatorList();
+  renderViewer();          // 뼈대 먼저
+  await fetchData();       // 그다음 데이터
+  renderChart();
+  renderTable();
+}
+
+async function fetchData() {
+  const ind = state.selectedIndicator;
+  if (!ind) return;
+  setLoading(true);
+  state.records = await fetchIndicatorData(ind);
+
+  const op = activeOp();
+  if (op.binary && state.indicatorB) {
+    const indB = indicatorBObj();
+    state.recordsB = indB ? await fetchIndicatorData(indB) : [];
+  } else {
+    state.recordsB = [];
+  }
+  setLoading(false);
+}
+
+async function fetchIndicatorData(ind) {
+  if (ind.source === "World Bank") return await fetchWorldBank(ind);
+  if (ind.source === "IMF")        return await fetchIMF(ind);
+  try {
+    const r = await fetch(`data/${ind.dataset_id}.json`);
+    const json = await r.json();
+    return json.records || [];
+  } catch (e) { return []; }
+}
+
+/* IMF DataMapper API (CORS 허용, ISO3 호환). 응답 예:
+   { "values": { "PCPIPCH": { "USA": { "2000": 3.376, ... }, "POL": {...} } } }
+   periods 파라미터 없이 전 기간 받아 클라이언트에서 yearStart/yearEnd로 잘라낸다. */
+async function fetchIMF(ind) {
+  const isos = state.selectedCountries.length ? state.selectedCountries.join("/") : "";
+  if (!isos) return [];
+  const url = `https://www.imf.org/external/datamapper/api/v1/${ind.code}/${isos}`;
+  try {
+    const resp = await fetch(url);
+    const data = await resp.json();
+    const block = data?.values?.[ind.code] || {};
+    const out = [];
+    Object.keys(block).forEach(iso => {
+      const yearMap = block[iso] || {};
+      Object.keys(yearMap).forEach(yr => {
+        const year = parseInt(yr);
+        if (year < state.yearStart || year > state.yearEnd) return;
+        const raw = yearMap[yr];
+        const v = parseFloat(raw);
+        if (raw == null || isNaN(v)) return;
+        out.push({
+          dataset_id: ind.dataset_id,
+          source: "IMF",
+          indicator_code: ind.code,
+          indicator_name_ko: ind.name_ko,
+          country_iso3: iso,
+          country_name_ko: getCountryByIso(iso).ko,
+          year,
+          value: v,
+          unit: ind.unit,
+          license: ind.license,
+        });
+      });
+    });
+    return out;
+  } catch (e) {
+    console.error('IMF fetch error', e);
+    return [];
+  }
+}
+
+async function fetchWorldBank(ind) {
+  const countries = state.selectedCountries.join(";") || "KOR";
+  const url = `https://api.worldbank.org/v2/country/${countries}/indicator/${ind.code}`
+            + `?format=json&date=${state.yearStart}:${state.yearEnd}&per_page=20000`;
+  try {
+    const resp = await fetch(url);
+    const data = await resp.json();
+    if (!Array.isArray(data) || data.length < 2) return [];
+    return (data[1] || [])
+      .filter(r => r && r.value !== null)
+      .map(r => ({
+        dataset_id: ind.dataset_id,
+        source: "World Bank",
+        indicator_code: ind.code,
+        indicator_name_ko: ind.name_ko,
+        country_iso3: (r.countryiso3code || "").toUpperCase(),
+        country_name_ko: (COUNTRIES.find(c => c.iso === r.countryiso3code)?.ko) || r.country?.value,
+        year: parseInt(r.date),
+        value: parseFloat(r.value),
+        unit: ind.unit,
+        license: ind.license,
+      }));
+  } catch (e) {
+    console.error(e);
+    return [];
+  }
+}
+
+/* ─────────────────────────────────────────────────────────
+ * 뷰어 렌더 (지표 선택 후 메인 패널)
+ * ───────────────────────────────────────────────────────── */
+function renderViewer() {
+  const ind = state.selectedIndicator;
+  if (!ind) return;
+  const catLabel = CATEGORIES.find(c => c.key === ind.category)?.label || ind.category;
+  const op = activeOp();
+  const indB = indicatorBObj();
+  const derived = isDerived();
+  const activeUnit = getActiveUnit();
+  const activeTitle = getActiveTitle();
+
+  const opButtonsHtml = OPERATIONS.map(o =>
+    `<button class="op-btn ${o.key === state.operation ? 'active' : ''}" data-op="${o.key}">${o.label}</button>`
+  ).join("");
+
+  const bOptionsHtml = INDICATORS
+    .filter(i => i.dataset_id !== ind.dataset_id)
+    .map(i => `<option value="${i.dataset_id}" ${state.indicatorB === i.dataset_id ? 'selected' : ''}>${i.name_ko} (${i.unit})</option>`)
+    .join("");
+
+  const countryHtml = getDisplayCountries().map((c) => {
+    const active = state.selectedCountries.includes(c.iso);
+    const colorIdx = state.selectedCountries.indexOf(c.iso);
+    const color = active ? colorFor(c.iso, colorIdx) : null;
+    const bgStyle = active ? `background:${color};border-color:${color};color:#fff;` : "";
+    const swatch = active
+      ? `<span class="chip-swatch" data-iso="${c.iso}" title="색상 변경" style="background:${color}"><input type="color" class="chip-color-input" data-iso="${c.iso}" value="${color}"></span>`
+      : '';
+    return `<button class="country-chip ${active ? 'active' : ''}"
+              data-iso="${c.iso}" style="${bgStyle}">${swatch}${c.ko}</button>`;
+  }).join("");
+
+  document.getElementById("viewer").innerHTML = `
+    <div class="indicator-header">
+      <div class="breadcrumb">
+        ${ind.source}<span class="sep">/</span>
+        ${catLabel}<span class="sep">/</span>
+        ${ind.code}
+      </div>
+      <h2>${activeTitle}</h2>
+      <div class="name-en">${ind.name_en}${derived ? ` · ${op.label}` : ''}</div>
+      <p class="description">${ind.description_ko}</p>
+      <div class="meta-row">
+        <span>단위: <strong>${activeUnit}</strong></span>
+        <span>라이선스: <strong>${ind.license}</strong></span>
+        <span>출처 코드: <strong>${ind.code}</strong></span>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="controls-row">
+        <div class="control-group">
+          <label>국가 선택 (복수 선택 가능, 최대 8개)</label>
+          <div class="country-chips" id="country-chips">${countryHtml}</div>
+          <div class="country-search-wrap">
+            <input id="country-search" class="country-search" type="text"
+                   placeholder="국가 추가… (예: 폴란드, KEN, korea)" autocomplete="off">
+            <div class="country-results" id="country-results"></div>
+          </div>
+        </div>
+        <div class="right-controls">
+          <div class="control-group">
+            <label>연도 범위</label>
+            <div class="year-range">
+              <input id="year-start" type="number" min="1960" max="2024" value="${state.yearStart}">
+              <span class="sep">—</span>
+              <input id="year-end" type="number" min="1960" max="2024" value="${state.yearEnd}">
+            </div>
+          </div>
+          <div class="control-group">
+            <label>차트 유형</label>
+            <div class="chart-types" id="chart-types">
+              <button data-type="line"  class="${state.chartType==='line'?'active':''}">꺾은선</button>
+              <button data-type="bar"   class="${state.chartType==='bar'?'active':''}">막대</button>
+              <button data-type="pie"   class="${state.chartType==='pie'?'active':''}">파이</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="op-row">
+        <div class="control-group">
+          <label>지표 연산</label>
+          <div class="op-buttons" id="op-buttons">${opButtonsHtml}</div>
+        </div>
+        <div class="control-group">
+          <label>${op.binary ? 'B 지표 선택' : '상태'}</label>
+          ${op.binary ? `
+            <select class="b-select" id="b-select">
+              <option value="">— B 지표 선택 —</option>
+              ${bOptionsHtml}
+            </select>` : `
+            <div class="op-status">${derived ? `현재 변환: <strong>${op.label}</strong>` : '— 원본 데이터'}</div>`}
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-card" id="chart-card">
+      <canvas id="chart"></canvas>
+      <div class="loading">데이터 불러오는 중…</div>
+    </div>
+
+    <div class="table-wrap">
+      <table class="data-table" id="data-table">
+        <thead><tr><th>국가</th><th>연도</th><th>값</th><th>단위</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="action-row">
+      <span class="meta" id="record-meta">— 레코드</span>
+      <button class="btn" id="btn-csv">CSV 다운로드</button>
+      <button class="btn primary" id="btn-json">JSON 다운로드</button>
+    </div>
+  `;
+
+  // 컨트롤 이벤트 바인딩
+  document.querySelectorAll("#country-chips .country-chip").forEach(btn =>
+    btn.onclick = async (e) => {
+      // 컬러 스워치/픽커 클릭은 칩 토글을 차단
+      if (e.target.closest('.chip-swatch') || e.target.closest('.chip-color-input')) return;
+      const iso = btn.dataset.iso;
+      if (state.selectedCountries.includes(iso)) {
+        state.selectedCountries = state.selectedCountries.filter(c => c !== iso);
+      } else {
+        if (state.selectedCountries.length >= 8) { alert("최대 8개국까지 선택"); return; }
+        state.selectedCountries.push(iso);
+      }
+      renderViewer();
+      await fetchData(); renderChart(); renderTable();
+    }
+  );
+
+  // 컴툕 외뛰 (추가) 동작 없이 색 선택 다이얼만 엽니다
+  document.querySelectorAll("#country-chips .chip-swatch").forEach(sw => {
+    sw.onclick = (e) => {
+      e.stopPropagation();
+      sw.querySelector('.chip-color-input')?.click();
+    };
+  });
+  document.querySelectorAll("#country-chips .chip-color-input").forEach(inp => {
+    inp.oninput = (e) => {
+      e.stopPropagation();
+      const iso = inp.dataset.iso;
+      const hex = e.target.value;
+      setColor(iso, hex);
+      // 칩 + 그와 연결된 스워치 즉시 업데이트 (재렌더 없이)
+      const chip = inp.closest('.country-chip');
+      if (chip) { chip.style.background = hex; chip.style.borderColor = hex; }
+      const sw = inp.closest('.chip-swatch');
+      if (sw) sw.style.background = hex;
+    };
+    inp.onchange = () => { renderChart(); };
+    inp.onclick = (e) => e.stopPropagation();
+  });
+
+  document.getElementById("year-start").onchange = async (e) => {
+    state.yearStart = parseInt(e.target.value);
+    await fetchData(); renderChart(); renderTable();
+  };
+  document.getElementById("year-end").onchange = async (e) => {
+    state.yearEnd = parseInt(e.target.value);
+    await fetchData(); renderChart(); renderTable();
+  };
+  document.querySelectorAll("#chart-types button").forEach(btn =>
+    btn.onclick = () => {
+      state.chartType = btn.dataset.type;
+      renderViewer();
+      renderChart(); renderTable();
+    }
+  );
+  document.getElementById("btn-csv").onclick = downloadCSV;
+  document.getElementById("btn-json").onclick = downloadJSON;
+
+  // 지표 연산 버튼 / B 셀렉터
+  document.querySelectorAll("#op-buttons .op-btn").forEach(btn =>
+    btn.onclick = async () => {
+      state.operation = btn.dataset.op;
+      const newOp = activeOp();
+      // binary 진입 시 B가 비어 있으면 차트는 빈 상태로 둠 (UI에서 선택 유도)
+      renderViewer();
+      await fetchData(); renderChart(); renderTable();
+    }
+  );
+  const bSelectEl = document.getElementById("b-select");
+  if (bSelectEl) {
+    bSelectEl.onchange = async (e) => {
+      state.indicatorB = e.target.value || null;
+      await fetchData(); renderChart(); renderTable();
+    };
+  }
+
+  // 국가 자동완성 검색
+  bindCountrySearch();
+}
+
+function bindCountrySearch() {
+  const input = document.getElementById("country-search");
+  const results = document.getElementById("country-results");
+  if (!input || !results) return;
+
+  function renderResults(q) {
+    if (!q) { results.classList.remove("open"); results.innerHTML = ""; return; }
+    if (COUNTRIES_LOADING && !ALL_COUNTRIES.length) {
+      results.innerHTML = '<div class="country-result-loading">국가 목록 불러오는 중…</div>';
+      results.classList.add("open");
+      return;
+    }
+    const matches = filterCountries(q);
+    if (!matches.length) {
+      results.innerHTML = '<div class="country-result-empty">검색 결과 없음</div>';
+    } else {
+      results.innerHTML = matches.map(c => {
+        const koDiff = c.ko !== c.en;
+        return `<div class="country-result-item" data-iso="${c.iso}">
+          <span><span class="ko">${c.ko}</span>${koDiff ? `<span class="en">${c.en}</span>` : ''}</span>
+          <span class="meta-right"><span class="iso">${c.iso}</span>${c.region ? ` · ${c.region}` : ''}</span>
+        </div>`;
+      }).join('');
+    }
+    results.classList.add("open");
+
+    results.querySelectorAll(".country-result-item").forEach(item =>
+      item.onclick = async () => {
+        const iso = item.dataset.iso;
+        if (state.selectedCountries.length >= 8) {
+          alert("최대 8개국까지 선택");
+          return;
+        }
+        if (!state.selectedCountries.includes(iso)) state.selectedCountries.push(iso);
+        renderViewer();
+        await fetchData(); renderChart(); renderTable();
+      }
+    );
+  }
+
+  input.oninput = () => renderResults(input.value.trim());
+  input.onfocus  = () => { if (input.value.trim()) renderResults(input.value.trim()); };
+  // blur 직후 결과를 닫되, 클릭 이벤트가 먼저 처리되도록 200ms 지연
+  input.onblur   = () => { setTimeout(() => results.classList.remove("open"), 200); };
+  input.onkeydown = (e) => {
+    if (e.key === "Escape") { input.value = ""; results.classList.remove("open"); }
+    else if (e.key === "Enter") {
+      const first = results.querySelector(".country-result-item");
+      if (first) first.click();
+    }
+  };
+}
+
+function setLoading(on) {
+  const card = document.getElementById("chart-card");
+  if (!card) return;
+  if (on) card.classList.remove("loaded");
+  else card.classList.add("loaded");
+}
+
+/* ─────────────────────────────────────────────────────────
+ * 차트 렌더 (Chart.js)
+ * ───────────────────────────────────────────────────────── */
+function renderChart() {
+  const ind = state.selectedIndicator;
+  if (!ind) return;
+  const canvas = document.getElementById("chart");
+  if (!canvas) return;
+  if (state.chart) { state.chart.destroy(); state.chart = null; }
+
+  const records = getActiveRecords();
+  const unit = getActiveUnit();
+
+  // 파이 차트는 단일 연도(가장 최근) 기준으로 자동 전환
+  if (state.chartType === "pie") {
+    renderPieChart(canvas, records, unit);
+    return;
+  }
+
+  // 막대/꺾은선: 연도 축 × 국가 시리즈
+  const years = [];
+  for (let y = state.yearStart; y <= state.yearEnd; y++) years.push(y);
+
+  const datasets = state.selectedCountries.map((iso, idx) => {
+    const country = COUNTRIES.find(c => c.iso === iso);
+    const color = colorFor(iso, idx);
+    const data = years.map(y => {
+      const rec = records.find(r => r.country_iso3 === iso && r.year === y);
+      return rec ? rec.value : null;
+    });
+    return {
+      label: country?.ko || iso,
+      data, borderColor: color, backgroundColor: color + (state.chartType==='bar' ? 'cc' : '22'),
+      borderWidth: state.chartType === 'line' ? 2 : 1,
+      pointRadius: state.chartType === 'line' ? 2.5 : 0,
+      pointHoverRadius: 5,
+      tension: 0.15, spanGaps: true,
+    };
+  });
+
+  state.chart = new Chart(canvas.getContext("2d"), {
+    type: state.chartType,
+    data: { labels: years, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { position: 'bottom',
+          labels: { font: { family: 'Pretendard', size: 12 }, color: '#0b1f3a',
+                    padding: 14, usePointStyle: true, pointStyle: 'rect' } },
+        tooltip: {
+          backgroundColor: '#0b1f3a', titleFont: { family: 'Pretendard', size: 11 },
+          bodyFont: { family: 'Pretendard', size: 12 },
+          callbacks: { label: ctx => `${ctx.dataset.label}: ${formatValue(ctx.parsed.y, unit)}` }
+        }
+      },
+      scales: {
+        x: { grid: { color: '#ebeef4' }, ticks: { font: { family: 'Pretendard', size: 10 }, color: '#3a4a64' } },
+        y: { grid: { color: '#ebeef4' },
+             ticks: { font: { family: 'Pretendard', size: 10 }, color: '#3a4a64',
+                      callback: v => formatValue(v, unit) } }
+      }
+    }
+  });
+  document.getElementById("chart-card").style.height = "440px";
+}
+
+function renderPieChart(canvas, records, unit) {
+  // 가장 최근 데이터 기준으로 국가 비교
+  const latest = {};
+  state.selectedCountries.forEach(iso => {
+    const recs = records
+      .filter(r => r.country_iso3 === iso && r.value !== null)
+      .sort((a,b) => b.year - a.year);
+    if (recs.length) latest[iso] = recs[0];
+  });
+  const labels = [], values = [], colors = [], year = [];
+  state.selectedCountries.forEach((iso, idx) => {
+    if (latest[iso]) {
+      const country = COUNTRIES.find(c => c.iso === iso);
+      labels.push(country?.ko || iso);
+      values.push(latest[iso].value);
+      colors.push(colorFor(iso, idx));
+      year.push(latest[iso].year);
+    }
+  });
+
+  state.chart = new Chart(canvas.getContext("2d"), {
+    type: 'pie',
+    data: { labels, datasets: [{ data: values, backgroundColor: colors,
+                                 borderColor: '#ffffff', borderWidth: 2 }] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'right',
+          labels: { font: { family: 'Pretendard', size: 12 }, color: '#0b1f3a',
+                    padding: 12, usePointStyle: true } },
+        tooltip: {
+          backgroundColor: '#0b1f3a',
+          callbacks: {
+            label: ctx => {
+              const total = values.reduce((a,b) => a+b, 0);
+              const pct = total ? (ctx.parsed / total * 100).toFixed(1) : '—';
+              return `${ctx.label}: ${formatValue(ctx.parsed, unit)} (${pct}%)`;
+            }
+          }
+        }
+      }
+    }
+  });
+  document.getElementById("chart-card").style.height = "440px";
+
+  // 비교 연도 안내
+  const yearStr = year.length ? `최신 가용 연도 기준 (${Math.min(...year)}–${Math.max(...year)})` : "";
+  const note = document.querySelector(".pie-note");
+  if (!note) {
+    const div = document.createElement("div");
+    div.className = "pie-note";
+    div.textContent = yearStr;
+    document.getElementById("chart-card").appendChild(div);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────
+ * 데이터 테이블
+ * ───────────────────────────────────────────────────────── */
+function renderTable() {
+  const tbody = document.querySelector("#data-table tbody");
+  if (!tbody) return;
+
+  const records = getActiveRecords();
+  const sorted = [...records].sort((a,b) =>
+    a.country_iso3.localeCompare(b.country_iso3) || a.year - b.year);
+
+  const op = activeOp();
+  const ind = state.selectedIndicator;
+  const indB = indicatorBObj();
+  const showAB = op.binary && indB;
+  const showA  = !!op.unary;
+
+  const thead = document.querySelector("#data-table thead tr");
+  if (showAB) {
+    thead.innerHTML = `<th>국가</th><th>연도</th><th>A (${ind?.unit||''})</th><th>B (${indB?.unit||''})</th><th>값</th><th>단위</th>`;
+  } else if (showA) {
+    thead.innerHTML = `<th>국가</th><th>연도</th><th>원값(A)</th><th>변환값</th><th>단위</th>`;
+  } else {
+    thead.innerHTML = `<th>국가</th><th>연도</th><th>값</th><th>단위</th>`;
+  }
+
+  tbody.innerHTML = sorted.map(r => {
+    if (showAB) {
+      return `<tr>
+        <td class="country">${r.country_name_ko || r.country_iso3}</td>
+        <td>${r.year}</td>
+        <td class="num">${formatValue(r.value_a, ind?.unit)}</td>
+        <td class="num">${formatValue(r.value_b, indB?.unit)}</td>
+        <td class="num">${formatValue(r.value, r.unit)}</td>
+        <td>${r.unit}</td>
+      </tr>`;
+    }
+    if (showA) {
+      return `<tr>
+        <td class="country">${r.country_name_ko || r.country_iso3}</td>
+        <td>${r.year}</td>
+        <td class="num">${formatValue(r.value_a, ind?.unit)}</td>
+        <td class="num">${formatValue(r.value, r.unit)}</td>
+        <td>${r.unit}</td>
+      </tr>`;
+    }
+    return `<tr>
+      <td class="country">${r.country_name_ko || r.country_iso3}</td>
+      <td>${r.year}</td>
+      <td class="num">${formatValue(r.value, r.unit)}</td>
+      <td>${r.unit}</td>
+    </tr>`;
+  }).join("");
+
+  document.getElementById("record-meta").textContent =
+    `${records.length.toLocaleString()} 레코드 · ${state.selectedCountries.length}개국${isDerived() ? ` · ${op.label}` : ''}`;
+}
+
+/* ─────────────────────────────────────────────────────────
+ * 다운로드
+ * ───────────────────────────────────────────────────────── */
+function downloadCSV() {
+  const ind = state.selectedIndicator;
+  const op = activeOp();
+  const indB = indicatorBObj();
+  const records = getActiveRecords();
+
+  let headers;
+  if (op.binary && indB) {
+    headers = ["country_iso3","country_name_ko","year","value_a","value_b","value","unit","operation","indicator_a","indicator_b"];
+  } else if (op.unary) {
+    headers = ["country_iso3","country_name_ko","year","value_a","value","unit","operation","indicator_a"];
+  } else {
+    headers = ["dataset_id","source","indicator_code","indicator_name_ko",
+               "country_iso3","country_name_ko","year","value","unit","license"];
+  }
+
+  const rows = records.map(r => headers.map(h => {
+    let v;
+    if (h === "operation") v = op.key;
+    else if (h === "indicator_a") v = ind.dataset_id;
+    else if (h === "indicator_b") v = indB?.dataset_id || "";
+    else v = r[h];
+    if (v === null || v === undefined) return "";
+    if (typeof v === "string" && (v.includes(",") || v.includes('"')))
+      return `"${v.replace(/"/g,'""')}"`;
+    return v;
+  }).join(","));
+
+  const csv = "\uFEFF" + headers.join(",") + "\n" + rows.join("\n"); // BOM for Excel
+  saveBlob(csv, derivedFilename(ind, op, indB, "csv"), "text/csv;charset=utf-8");
+}
+
+function downloadJSON() {
+  const ind = state.selectedIndicator;
+  const op = activeOp();
+  const indB = indicatorBObj();
+  const payload = {
+    indicator: ind,
+    operation: isDerived()
+      ? { key: op.key, label: op.label, indicator_b: indB || null }
+      : null,
+    records: getActiveRecords(),
+    built_at: new Date().toISOString(),
+    note: "GeoSource standard schema (bgnl.kr)"
+  };
+  saveBlob(JSON.stringify(payload, null, 2), derivedFilename(ind, op, indB, "json"), "application/json");
+}
+
+function derivedFilename(ind, op, indB, ext) {
+  if (!isDerived()) return `${ind.dataset_id}.${ext}`;
+  if (op.binary && indB) return `${ind.dataset_id}__${op.key}__${indB.dataset_id}.${ext}`;
+  return `${ind.dataset_id}__${op.key}.${ext}`;
+}
+
+function saveBlob(content, filename, mime) {
+  const blob = new Blob([content], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+/* ─────────────────────────────────────────────────────────
+ * 유틸
+ * ───────────────────────────────────────────────────────── */
+function formatValue(v, unit) {
+  if (v === null || v === undefined || isNaN(v)) return "—";
+  const abs = Math.abs(v);
+  if (unit === "USD") {
+    if (abs >= 1e12) return (v/1e12).toFixed(2) + "조";
+    if (abs >= 1e9)  return (v/1e9).toFixed(2)  + "B";
+    if (abs >= 1e6)  return (v/1e6).toFixed(2)  + "M";
+    return v.toLocaleString(undefined, {maximumFractionDigits: 0});
+  }
+  if (unit === "명") {
+    if (abs >= 1e8) return (v/1e8).toFixed(2) + "억";
+    if (abs >= 1e4) return (v/1e4).toFixed(1) + "만";
+    return v.toLocaleString();
+  }
+  if (unit === "%") return v.toFixed(2);
+  if (abs >= 1000) return v.toLocaleString(undefined, {maximumFractionDigits: 1});
+  return v.toFixed(2);
+}
+
+function updateClock() {
+  const d = new Date();
+  const utc = d.toISOString().slice(0, 19).replace("T", " ");
+  document.getElementById("now-utc").textContent = `UTC ${utc}`;
+}
+
+/* ─────────────────────────────────────────────────────────
+ * 부트스트랩
+ * ───────────────────────────────────────────────────────── */
+async function loadBuildInfo() {
+  try {
+    const r = await fetch('data/build-info.json', { cache: 'no-store' });
+    if (!r.ok) return;
+    const info = await r.json();
+    const date = new Date(info.last_built_at);
+    const ymd = date.toISOString().slice(0, 10);
+    const sources = (info.sources_built || []).join(', ');
+    document.getElementById('build-info').textContent =
+      `· 마지막 갱신: ${ymd} (${sources})`;
+  } catch (e) { /* build-info.json 없으면 조용히 무시 */ }
+}
+
+function init() {
+  renderSourcesBar();
+  renderCategoryChips();
+  renderIndicatorList();
+  document.getElementById("search").oninput = (e) => {
+    state.search = e.target.value;
+    renderIndicatorList();
+  };
+  updateClock();
+  setInterval(updateClock, 1000);
+  loadBuildInfo();
+  fetchAllCountries();   // 비동기 — 검색창에서 결과로 사용
+}
+document.addEventListener("DOMContentLoaded", init);
+</script>
+
+</body>
+</html>

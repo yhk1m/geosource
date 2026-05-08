@@ -1,0 +1,86 @@
+name: Build GeoSource Data
+
+on:
+  # 1. admin.html에서 호출 (repository_dispatch API)
+  repository_dispatch:
+    types: [build-data]
+
+  # 2. GitHub Actions 탭에서 수동 실행
+  workflow_dispatch:
+    inputs:
+      source:
+        description: '갱신할 출처'
+        type: choice
+        options:
+          - all
+          - worldbank
+          - kosis
+        default: all
+
+  # 3. 매월 1일 03:00 KST 백업 빌드 (관리자가 깜빡해도 안전망)
+  schedule:
+    - cron: '0 18 1 * *'
+
+permissions:
+  contents: write   # data/ 커밋 푸시용
+
+concurrency:
+  group: geosource-build
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Determine source & trigger
+        id: ctx
+        run: |
+          case "${{ github.event_name }}" in
+            repository_dispatch)
+              src="${{ github.event.client_payload.source }}"
+              trg="admin (${{ github.event.client_payload.user }})"
+              ;;
+            workflow_dispatch)
+              src="${{ inputs.source }}"
+              trg="manual (${{ github.actor }})"
+              ;;
+            schedule)
+              src="all"
+              trg="scheduled"
+              ;;
+            *)
+              src="all"
+              trg="${{ github.event_name }}"
+              ;;
+          esac
+          [ -z "$src" ] && src="all"
+          echo "source=$src" >> $GITHUB_OUTPUT
+          echo "triggered_by=$trg" >> $GITHUB_OUTPUT
+          echo "▶ source=$src · triggered_by=$trg"
+
+      - name: Run build
+        env:
+          KOSIS_API_KEY: ${{ secrets.KOSIS_API_KEY }}
+          GEOSOURCE_TRIGGER: ${{ steps.ctx.outputs.triggered_by }}
+        run: |
+          python build.py --source ${{ steps.ctx.outputs.source }}
+
+      - name: Commit & push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/
+          if git diff --staged --quiet; then
+            echo "변경 사항 없음 — 커밋 생략"
+          else
+            git commit -m "chore(data): refresh ${{ steps.ctx.outputs.source }} ($(date -u +%F))"
+            git push
+          fi
