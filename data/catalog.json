@@ -1,79 +1,43 @@
 {
   "sources": [
     {
-      "source": "IMF",
+      "source": "OWID",
       "indicators": [
         {
-          "dataset_id": "imf_NGDP_RPCH",
-          "source": "IMF",
-          "name_ko": "실질 GDP 성장률",
-          "name_en": "Real GDP growth (annual %)",
-          "category": "economy",
-          "subcategory": "growth",
+          "dataset_id": "owid_religious_composition",
+          "source": "OWID (Pew Research)",
+          "name_ko": "종교 인구 비율",
+          "name_en": "Share of population who are religious",
+          "category": "development",
+          "subcategory": "religion",
           "unit": "%",
-          "license": "IMF Open Data",
-          "file": "data/imf_NGDP_RPCH.json",
-          "record_count": 10914
+          "license": "CC BY 4.0",
+          "file": "data/owid_religious_composition.json",
+          "record_count": 398
         },
         {
-          "dataset_id": "imf_PCPIPCH",
-          "source": "IMF",
-          "name_ko": "소비자물가 상승률",
-          "name_en": "Inflation, average consumer prices (%)",
-          "category": "economy",
-          "subcategory": "prices",
-          "unit": "%",
-          "license": "IMF Open Data",
-          "file": "data/imf_PCPIPCH.json",
-          "record_count": 10789
+          "dataset_id": "owid_religiosity_change",
+          "source": "OWID (Pew Research)",
+          "name_ko": "종교성 변화 (2010-2020)",
+          "name_en": "Percentage point change in share religious",
+          "category": "development",
+          "subcategory": "religion",
+          "unit": "%p",
+          "license": "CC BY 4.0",
+          "file": "data/owid_religiosity_change.json",
+          "record_count": 199
         },
         {
-          "dataset_id": "imf_LUR",
-          "source": "IMF",
-          "name_ko": "실업률",
-          "name_en": "Unemployment rate (%)",
-          "category": "economy",
-          "subcategory": "unemployment",
+          "dataset_id": "owid_attend_religious_services",
+          "source": "OWID (Pew/WVS)",
+          "name_ko": "종교의식 참석 비율",
+          "name_en": "Share attending religious services frequently",
+          "category": "development",
+          "subcategory": "religion",
           "unit": "%",
-          "license": "IMF Open Data",
-          "file": "data/imf_LUR.json",
-          "record_count": 5165
-        },
-        {
-          "dataset_id": "imf_GGXWDG_NGDP",
-          "source": "IMF",
-          "name_ko": "정부부채 (GDP비)",
-          "name_en": "General government gross debt (% of GDP)",
-          "category": "economy",
-          "subcategory": "public_debt",
-          "unit": "%",
-          "license": "IMF Open Data",
-          "file": "data/imf_GGXWDG_NGDP.json",
-          "record_count": 8113
-        },
-        {
-          "dataset_id": "imf_GGXCNL_NGDP",
-          "source": "IMF",
-          "name_ko": "정부 재정수지 (GDP비)",
-          "name_en": "General government net lending/borrowing (% of GDP)",
-          "category": "economy",
-          "subcategory": "fiscal_balance",
-          "unit": "%",
-          "license": "IMF Open Data",
-          "file": "data/imf_GGXCNL_NGDP.json",
-          "record_count": 8848
-        },
-        {
-          "dataset_id": "imf_BCA_NGDPD",
-          "source": "IMF",
-          "name_ko": "경상수지 (GDP비)",
-          "name_en": "Current account balance (% of GDP)",
-          "category": "trade",
-          "subcategory": "current_account",
-          "unit": "%",
-          "license": "IMF Open Data",
-          "file": "data/imf_BCA_NGDPD.json",
-          "record_count": 10556
+          "license": "CC BY 4.0",
+          "file": "data/owid_attend_religious_services.json",
+          "record_count": 409
         }
       ]
     }

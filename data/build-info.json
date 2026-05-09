@@ -1,16 +1,16 @@
 {
-  "last_built_at": "2026-05-09T15:19:30.405126Z",
+  "last_built_at": "2026-05-09T15:56:07.926121Z",
   "triggered_by": "manual (yhk1m)",
-  "requested_source": "imf",
+  "requested_source": "owid",
   "sources_built": [
-    "IMF"
+    "OWID"
   ],
-  "indicator_count": 6,
-  "record_count_total": 54385,
+  "indicator_count": 3,
+  "record_count_total": 1006,
   "per_source": {
-    "IMF": {
-      "indicator_count": 6,
-      "record_count": 54385
+    "OWID": {
+      "indicator_count": 3,
+      "record_count": 1006
     }
   }
 }
