@@ -69,6 +69,62 @@ INDICATORS: list[IndicatorMeta] = [
         update_frequency="annual",
         coverage_years=(2000, 2024),
     ),
+    IndicatorMeta(
+        dataset_id="kosis_101_DT_1DA7001S_T20",
+        source="KOSIS",
+        indicator_code="101/DT_1DA7001S/T20",   # T20 = 경제활동인구
+        name_ko="시도별 경제활동인구",
+        name_en="Economically Active Population by Province",
+        category="economy",
+        subcategory="labor_force",
+        unit="천명",
+        description_ko="15세 이상 경제활동인구 (취업자+실업자). 경제활동인구조사.",
+        license="KOGL Type 1",
+        update_frequency="annual",
+        coverage_years=(2000, 2024),
+    ),
+    IndicatorMeta(
+        dataset_id="kosis_101_DT_1DA7001S_T80",
+        source="KOSIS",
+        indicator_code="101/DT_1DA7001S/T80",   # T80 = 실업률
+        name_ko="시도별 실업률",
+        name_en="Unemployment Rate by Province",
+        category="economy",
+        subcategory="unemployment",
+        unit="%",
+        description_ko="경제활동인구 대비 실업자 비율. 경제활동인구조사.",
+        license="KOGL Type 1",
+        update_frequency="annual",
+        coverage_years=(2000, 2024),
+    ),
+    IndicatorMeta(
+        dataset_id="kosis_101_DT_1DA7001S_T90",
+        source="KOSIS",
+        indicator_code="101/DT_1DA7001S/T90",   # T90 = 고용률
+        name_ko="시도별 고용률",
+        name_en="Employment Rate by Province",
+        category="economy",
+        subcategory="employment",
+        unit="%",
+        description_ko="15세 이상 인구 대비 취업자 비율. 경제활동인구조사.",
+        license="KOGL Type 1",
+        update_frequency="annual",
+        coverage_years=(2000, 2024),
+    ),
+    IndicatorMeta(
+        dataset_id="kosis_101_DT_1C86_T1",
+        source="KOSIS",
+        indicator_code="101/DT_1C86/T1",        # T1 = 1인당 지역내총생산
+        name_ko="시도별 1인당 GRDP",
+        name_en="GRDP per capita by Province",
+        category="economy",
+        subcategory="grdp",
+        unit="천원",
+        description_ko="시도 인구로 나눈 1인당 지역내총생산. 통계청 지역소득.",
+        license="KOGL Type 1",
+        update_frequency="annual",
+        coverage_years=(2000, 2024),
+    ),
     # 필요한 통계표를 여기에 계속 추가
 ]
 
@@ -95,7 +151,12 @@ class KosisAdapter(SourceAdapter):
         if not self.api_key:
             return []  # 키 없으면 빈 결과
 
-        parts = indicator_code.split("/")
+        # indicator_code 형식:
+        #   "{org}/{tbl}/{itm}"             — 기본
+        #   "{org}/{tbl}/{itm}?objL2=ALL"   — 2차 차원 추가
+        # objL2/objL3는 querystring 형태로 부착해 일부 테이블의 필수 파라미터를 채운다.
+        code, _, extra = indicator_code.partition("?")
+        parts = code.split("/")
         org_id, tbl_id = parts[0], parts[1]
         itm_id = parts[2] if len(parts) > 2 else "ALL"
 
@@ -112,6 +173,12 @@ class KosisAdapter(SourceAdapter):
             "startPrdDe": str(year_range[0]),
             "endPrdDe": str(year_range[1]),
         }
+        # 추가 파라미터 (예: ?objL2=ALL&objL3=ALL)
+        for kv in extra.split("&"):
+            if "=" in kv:
+                k, v = kv.split("=", 1)
+                params[k] = v
+
         url = f"{self.base_url}?{urllib.parse.urlencode(params)}"
         with urllib.request.urlopen(url, timeout=30) as resp:
             payload = json.loads(resp.read())
