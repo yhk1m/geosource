@@ -1163,22 +1163,22 @@ const SCOPE_SOURCES = {
 const KOREA_REGIONS = [
   { iso: "KR-00", ko: "전국",   full: "전국" },
   { iso: "KR-11", ko: "서울",   full: "서울특별시" },
-  { iso: "KR-21", ko: "부산",   full: "부산광역시" },
-  { iso: "KR-22", ko: "대구",   full: "대구광역시" },
-  { iso: "KR-23", ko: "인천",   full: "인천광역시" },
-  { iso: "KR-24", ko: "광주",   full: "광주광역시" },
-  { iso: "KR-25", ko: "대전",   full: "대전광역시" },
-  { iso: "KR-26", ko: "울산",   full: "울산광역시" },
-  { iso: "KR-29", ko: "세종",   full: "세종특별자치시" },
-  { iso: "KR-31", ko: "경기",   full: "경기도" },
-  { iso: "KR-32", ko: "강원",   full: "강원특별자치도" },
-  { iso: "KR-33", ko: "충북",   full: "충청북도" },
-  { iso: "KR-34", ko: "충남",   full: "충청남도" },
-  { iso: "KR-35", ko: "전북",   full: "전북특별자치도" },
-  { iso: "KR-36", ko: "전남",   full: "전라남도" },
-  { iso: "KR-37", ko: "경북",   full: "경상북도" },
-  { iso: "KR-38", ko: "경남",   full: "경상남도" },
-  { iso: "KR-39", ko: "제주",   full: "제주특별자치도" },
+  { iso: "KR-26", ko: "부산",   full: "부산광역시" },
+  { iso: "KR-27", ko: "대구",   full: "대구광역시" },
+  { iso: "KR-28", ko: "인천",   full: "인천광역시" },
+  { iso: "KR-29", ko: "광주",   full: "광주광역시" },
+  { iso: "KR-30", ko: "대전",   full: "대전광역시" },
+  { iso: "KR-31", ko: "울산",   full: "울산광역시" },
+  { iso: "KR-36", ko: "세종",   full: "세종특별자치시" },
+  { iso: "KR-41", ko: "경기",   full: "경기도" },
+  { iso: "KR-51", ko: "강원",   full: "강원특별자치도" },
+  { iso: "KR-43", ko: "충북",   full: "충청북도" },
+  { iso: "KR-44", ko: "충남",   full: "충청남도" },
+  { iso: "KR-52", ko: "전북",   full: "전북특별자치도" },
+  { iso: "KR-46", ko: "전남",   full: "전라남도" },
+  { iso: "KR-47", ko: "경북",   full: "경상북도" },
+  { iso: "KR-48", ko: "경남",   full: "경상남도" },
+  { iso: "KR-50", ko: "제주",   full: "제주특별자치도" },
 ];
 
 /* 현재 로드된 KOSIS 레코드에서 동적 추출되는 시군구·읍면동 인덱스
@@ -1232,7 +1232,7 @@ const state = {
 /* 스코프별 선택 캐시 — 탭 전환 시 복원 */
 const SCOPE_DEFAULTS = {
   world: ["KOR", "JPN", "CHN", "USA"],
-  korea: ["KR-11", "KR-21", "KR-22", "KR-23"],   // 서울·부산·대구·인천
+  korea: ["KR-11", "KR-26", "KR-27", "KR-28"],   // 서울·부산·대구·인천
 };
 const scopeCache = {
   world: SCOPE_DEFAULTS.world.slice(),
