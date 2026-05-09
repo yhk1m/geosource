@@ -41,6 +41,34 @@ INDICATORS: list[IndicatorMeta] = [
         update_frequency="annual",
         coverage_years=(2000, 2024),
     ),
+    IndicatorMeta(
+        dataset_id="kosis_101_DT_1B81A21_T1",
+        source="KOSIS",
+        indicator_code="101/DT_1B81A21/T1",  # T1 = 합계출산율
+        name_ko="시도별 합계출산율",
+        name_en="Total Fertility Rate by Province",
+        category="population",
+        subcategory="fertility",
+        unit="명",
+        description_ko="시도 단위 합계출산율(여성 1인이 평생 낳을 것으로 기대되는 평균 출생아 수). 통계청 인구동향조사.",
+        license="KOGL Type 1",
+        update_frequency="annual",
+        coverage_years=(2000, 2024),
+    ),
+    IndicatorMeta(
+        dataset_id="kosis_101_DT_1B040B3_T1",
+        source="KOSIS",
+        indicator_code="101/DT_1B040B3/T1",  # T1 = 세대수
+        name_ko="시도별 세대수",
+        name_en="Number of Households by Province",
+        category="population",
+        subcategory="household",
+        unit="세대",
+        description_ko="시도/시군구 단위 주민등록 세대수. 통계청.",
+        license="KOGL Type 1",
+        update_frequency="annual",
+        coverage_years=(2000, 2024),
+    ),
     # 필요한 통계표를 여기에 계속 추가
 ]
 
