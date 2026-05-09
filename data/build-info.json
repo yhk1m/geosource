@@ -1,26 +1,16 @@
 {
-  "last_built_at": "2026-05-09T01:59:01.931341Z",
+  "last_built_at": "2026-05-09T03:08:12.293699Z",
   "triggered_by": "manual (yhk1m)",
-  "requested_source": "all",
+  "requested_source": "kosis",
   "sources_built": [
-    "World Bank",
-    "FAO",
     "KOSIS"
   ],
-  "indicator_count": 15,
-  "record_count_total": 13056,
+  "indicator_count": 3,
+  "record_count_total": 13796,
   "per_source": {
-    "World Bank": {
-      "indicator_count": 8,
-      "record_count": 3840
-    },
-    "FAO": {
-      "indicator_count": 6,
-      "record_count": 2528
-    },
     "KOSIS": {
-      "indicator_count": 1,
-      "record_count": 6688
+      "indicator_count": 3,
+      "record_count": 13796
     }
   }
 }
