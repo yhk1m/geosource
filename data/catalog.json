@@ -1,0 +1,138 @@
+{
+  "sources": [
+    {
+      "source": "World Bank",
+      "indicators": [
+        {
+          "dataset_id": "wb_NY.GDP.MKTP.CD",
+          "source": "World Bank",
+          "name_ko": "국내총생산(GDP, 명목)",
+          "name_en": "GDP (current US$)",
+          "category": "economy",
+          "subcategory": "national_accounts",
+          "unit": "USD",
+          "license": "CC BY 4.0",
+          "file": "data/wb_NY.GDP.MKTP.CD.json",
+          "record_count": 480
+        },
+        {
+          "dataset_id": "wb_NY.GDP.PCAP.CD",
+          "source": "World Bank",
+          "name_ko": "1인당 GDP(명목)",
+          "name_en": "GDP per capita (current US$)",
+          "category": "economy",
+          "subcategory": "national_accounts",
+          "unit": "USD",
+          "license": "CC BY 4.0",
+          "file": "data/wb_NY.GDP.PCAP.CD.json",
+          "record_count": 480
+        },
+        {
+          "dataset_id": "wb_SP.POP.TOTL",
+          "source": "World Bank",
+          "name_ko": "총인구",
+          "name_en": "Population, total",
+          "category": "population",
+          "subcategory": "size",
+          "unit": "명",
+          "license": "CC BY 4.0",
+          "file": "data/wb_SP.POP.TOTL.json",
+          "record_count": 480
+        },
+        {
+          "dataset_id": "wb_SP.URB.TOTL.IN.ZS",
+          "source": "World Bank",
+          "name_ko": "도시화율",
+          "name_en": "Urban population (% of total)",
+          "category": "population",
+          "subcategory": "urbanization",
+          "unit": "%",
+          "license": "CC BY 4.0",
+          "file": "data/wb_SP.URB.TOTL.IN.ZS.json",
+          "record_count": 480
+        },
+        {
+          "dataset_id": "wb_EN.GHG.CO2.PC.CE.AR5",
+          "source": "World Bank",
+          "name_ko": "1인당 이산화탄소 배출량",
+          "name_en": "CO2 emissions per capita (t)",
+          "category": "environment",
+          "subcategory": "emissions",
+          "unit": "tCO2/명",
+          "license": "CC BY 4.0",
+          "file": "data/wb_EN.GHG.CO2.PC.CE.AR5.json",
+          "record_count": 480
+        },
+        {
+          "dataset_id": "wb_AG.LND.FRST.ZS",
+          "source": "World Bank",
+          "name_ko": "산림 면적 비율",
+          "name_en": "Forest area (% of land area)",
+          "category": "environment",
+          "subcategory": "land_cover",
+          "unit": "%",
+          "license": "CC BY 4.0",
+          "file": "data/wb_AG.LND.FRST.ZS.json",
+          "record_count": 480
+        },
+        {
+          "dataset_id": "wb_EG.USE.PCAP.KG.OE",
+          "source": "World Bank",
+          "name_ko": "1인당 에너지 사용량",
+          "name_en": "Energy use per capita (kg of oil eq.)",
+          "category": "energy",
+          "subcategory": "consumption",
+          "unit": "kgoe/명",
+          "license": "CC BY 4.0",
+          "file": "data/wb_EG.USE.PCAP.KG.OE.json",
+          "record_count": 480
+        },
+        {
+          "dataset_id": "wb_SP.DYN.LE00.IN",
+          "source": "World Bank",
+          "name_ko": "기대수명",
+          "name_en": "Life expectancy at birth (years)",
+          "category": "population",
+          "subcategory": "health",
+          "unit": "년",
+          "license": "CC BY 4.0",
+          "file": "data/wb_SP.DYN.LE00.IN.json",
+          "record_count": 480
+        }
+      ]
+    },
+    {
+      "source": "FAO",
+      "indicators": [
+        {
+          "dataset_id": "fao_RL_6610_5110",
+          "source": "FAO",
+          "name_ko": "농경지 면적",
+          "name_en": "Agricultural land area",
+          "category": "agriculture",
+          "subcategory": "land_use",
+          "unit": "ha",
+          "license": "CC BY-NC-SA 3.0 IGO",
+          "file": "data/fao_RL_6610_5110.json",
+          "record_count": 480
+        },
+        {
+          "dataset_id": "fao_FBS_2901_664",
+          "source": "FAO",
+          "name_ko": "1인당 일일 식이에너지 공급",
+          "name_en": "Dietary energy supply (kcal/cap/day)",
+          "category": "agriculture",
+          "subcategory": "food_supply",
+          "unit": "kcal/cap/day",
+          "license": "CC BY-NC-SA 3.0 IGO",
+          "file": "data/fao_FBS_2901_664.json",
+          "record_count": 266
+        }
+      ]
+    },
+    {
+      "source": "KOSIS",
+      "indicators": []
+    }
+  ]
+}

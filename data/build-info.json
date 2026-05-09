@@ -1,0 +1,26 @@
+{
+  "last_built_at": "2026-05-09T01:50:13.144473Z",
+  "triggered_by": "manual (yhk1m)",
+  "requested_source": "all",
+  "sources_built": [
+    "World Bank",
+    "FAO",
+    "KOSIS"
+  ],
+  "indicator_count": 10,
+  "record_count_total": 4586,
+  "per_source": {
+    "World Bank": {
+      "indicator_count": 8,
+      "record_count": 3840
+    },
+    "FAO": {
+      "indicator_count": 2,
+      "record_count": 746
+    },
+    "KOSIS": {
+      "indicator_count": 0,
+      "record_count": 0
+    }
+  }
+}
