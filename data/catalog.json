@@ -105,13 +105,61 @@
       "source": "FAO",
       "indicators": [
         {
+          "dataset_id": "fao_QCL_15_2510",
+          "source": "FAO",
+          "name_ko": "밀 생산량",
+          "name_en": "Wheat production",
+          "category": "agriculture",
+          "subcategory": "crop_production",
+          "unit": "t",
+          "license": "CC BY-NC-SA 3.0 IGO",
+          "file": "data/fao_QCL_15_2510.json",
+          "record_count": 432
+        },
+        {
+          "dataset_id": "fao_QCL_27_2510",
+          "source": "FAO",
+          "name_ko": "쌀(벼) 생산량",
+          "name_en": "Rice (paddy) production",
+          "category": "agriculture",
+          "subcategory": "crop_production",
+          "unit": "t",
+          "license": "CC BY-NC-SA 3.0 IGO",
+          "file": "data/fao_QCL_27_2510.json",
+          "record_count": 414
+        },
+        {
+          "dataset_id": "fao_QCL_56_2510",
+          "source": "FAO",
+          "name_ko": "옥수수 생산량",
+          "name_en": "Maize (corn) production",
+          "category": "agriculture",
+          "subcategory": "crop_production",
+          "unit": "t",
+          "license": "CC BY-NC-SA 3.0 IGO",
+          "file": "data/fao_QCL_56_2510.json",
+          "record_count": 456
+        },
+        {
+          "dataset_id": "fao_QCL_866_2111",
+          "source": "FAO",
+          "name_ko": "소 사육두수",
+          "name_en": "Cattle stocks",
+          "category": "agriculture",
+          "subcategory": "livestock",
+          "unit": "head",
+          "license": "CC BY-NC-SA 3.0 IGO",
+          "file": "data/fao_QCL_866_2111.json",
+          "record_count": 480
+        },
+        {
           "dataset_id": "fao_RL_6610_5110",
           "source": "FAO",
           "name_ko": "농경지 면적",
           "name_en": "Agricultural land area",
           "category": "agriculture",
           "subcategory": "land_use",
-          "unit": "ha",
+          "unit": "1000 ha",
           "license": "CC BY-NC-SA 3.0 IGO",
           "file": "data/fao_RL_6610_5110.json",
           "record_count": 480
@@ -132,7 +180,20 @@
     },
     {
       "source": "KOSIS",
-      "indicators": []
+      "indicators": [
+        {
+          "dataset_id": "kosis_101_DT_1B040A3_T20",
+          "source": "KOSIS",
+          "name_ko": "시도별 인구",
+          "name_en": "Population by Province (Korea)",
+          "category": "population",
+          "subcategory": "size",
+          "unit": "명",
+          "license": "KOGL Type 1",
+          "file": "data/kosis_101_DT_1B040A3_T20.json",
+          "record_count": 6688
+        }
+      ]
     }
   ]
 }
