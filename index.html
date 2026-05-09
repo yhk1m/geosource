@@ -438,6 +438,17 @@ section.viewer {
 }
 .b-select:focus { border-color: var(--ocean); }
 .b-select:disabled { color: var(--ink-faint); background: var(--paper-dim); cursor: not-allowed; }
+
+.year-select {
+  width: 110px;
+  padding: 8px 10px;
+  background: var(--highlight);
+  border: 1px solid var(--line);
+  font-family: var(--font-mono); font-size: 13px;
+  color: var(--ink);
+  outline: none;
+}
+.year-select:focus { border-color: var(--ocean); }
 .op-status {
   font-family: var(--font-mono); font-size: 11px;
   color: var(--ink-faint); padding: 6px 0;
@@ -1102,6 +1113,8 @@ const state = {
   selectedCountries: ["KOR", "JPN", "CHN", "USA"],   // 현 스코프의 entity 리스트 (ISO3 또는 시도명)
   yearStart: 2000,
   yearEnd: 2023,
+  pieYear: null,                                     // 파이차트 기준 연도 (null=최신)
+  indexBaseYear: null,                               // 지수(=100) 기준 연도 (null=최초 가용 연도)
   chartType: "line",
   category: "all",
   search: "",
@@ -1237,8 +1250,13 @@ function getActiveRecords() {
     A.forEach(r => { (byCountry[r.country_iso3] ||= []).push(r); });
     const out = [];
     Object.keys(byCountry).forEach(iso => {
-      const arr = byCountry[iso].slice().sort((x,y) => x.year - y.year);
-      const base = arr.find(r => r.value != null && r.value !== 0);
+      const arr = byCountry[iso].slice().sort((x, y) => x.year - y.year);
+      // 사용자 지정 기준연도 우선, 없으면 가장 이른 비결측 연도
+      let base = null;
+      if (state.indexBaseYear != null) {
+        base = arr.find(r => r.year === state.indexBaseYear && r.value != null && r.value !== 0);
+      }
+      if (!base) base = arr.find(r => r.value != null && r.value !== 0);
       if (!base) return;
       arr.forEach(r => {
         if (r.value == null) return;
@@ -1519,6 +1537,22 @@ function renderViewer() {
     .map(i => `<option value="${i.dataset_id}" ${state.indicatorB === i.dataset_id ? 'selected' : ''}>${i.name_ko} (${i.unit})</option>`)
     .join("");
 
+  // 연도 셀렉터용 옵션 (현재 records 기준 가용 연도)
+  const availableYears = (() => {
+    const ys = new Set();
+    state.records.forEach(r => { if (r.value != null) ys.add(r.year); });
+    [...ys].forEach(()=>{}); // (no-op for clarity)
+    return [...ys].sort((a, b) => a - b);
+  })();
+  const defaultPieYear = availableYears.length ? availableYears[availableYears.length - 1] : state.yearEnd;
+  const pieYearVal = (state.pieYear != null && availableYears.includes(state.pieYear))
+    ? state.pieYear : defaultPieYear;
+  const indexYearVal = (state.indexBaseYear != null && availableYears.includes(state.indexBaseYear))
+    ? state.indexBaseYear
+    : (availableYears.length ? availableYears[0] : state.yearStart);
+  const yearOptionsHtml = (sel) => availableYears.map(y =>
+    `<option value="${y}" ${y === sel ? 'selected' : ''}>${y}</option>`).join("");
+
   const countryHtml = getDisplayCountries().map((c) => {
     const active = state.selectedCountries.includes(c.iso);
     const colorIdx = state.selectedCountries.indexOf(c.iso);
@@ -1577,6 +1611,11 @@ function renderViewer() {
               <button data-type="pie"   class="${state.chartType==='pie'?'active':''}">파이</button>
             </div>
           </div>
+          ${state.chartType === 'pie' ? `
+          <div class="control-group">
+            <label>파이 연도</label>
+            <select id="pie-year" class="year-select">${yearOptionsHtml(pieYearVal)}</select>
+          </div>` : ''}
         </div>
       </div>
       <div class="op-row">
@@ -1585,13 +1624,14 @@ function renderViewer() {
           <div class="op-buttons" id="op-buttons">${opButtonsHtml}</div>
         </div>
         <div class="control-group">
-          <label>${op.binary ? 'B 지표 선택' : '상태'}</label>
+          <label>${op.binary ? 'B 지표 선택' : (state.operation === 'index' ? '기준 연도' : '상태')}</label>
           ${op.binary ? `
             <select class="b-select" id="b-select">
               <option value="">— B 지표 선택 —</option>
               ${bOptionsHtml}
-            </select>` : `
-            <div class="op-status">${derived ? `현재 변환: <strong>${op.label}</strong>` : '— 원본 데이터'}</div>`}
+            </select>` : (state.operation === 'index' ? `
+            <select id="index-year" class="year-select">${yearOptionsHtml(indexYearVal)}</select>` : `
+            <div class="op-status">${derived ? `현재 변환: <strong>${op.label}</strong>` : '— 원본 데이터'}</div>`)}
         </div>
       </div>
     </div>
@@ -1694,6 +1734,24 @@ function renderViewer() {
     };
   }
 
+  // 파이 연도 셀렉터
+  const pieYearEl = document.getElementById("pie-year");
+  if (pieYearEl) {
+    pieYearEl.onchange = (e) => {
+      state.pieYear = parseInt(e.target.value);
+      renderChart();
+    };
+  }
+
+  // 지수(=100) 기준 연도 셀렉터
+  const indexYearEl = document.getElementById("index-year");
+  if (indexYearEl) {
+    indexYearEl.onchange = (e) => {
+      state.indexBaseYear = parseInt(e.target.value);
+      renderChart(); renderTable();
+    };
+  }
+
   // 국가 자동완성 검색
   bindCountrySearch();
 }
@@ -1770,6 +1828,8 @@ function renderChart() {
 
   const records = getActiveRecords();
   const unit = getActiveUnit();
+  // renderChart 호출 시점에선 데이터가 이미 준비됨 — 로딩 표시 해제
+  setLoading(false);
 
   // 파이 차트는 단일 연도(가장 최근) 기준으로 자동 전환
   if (state.chartType === "pie") {
@@ -1825,13 +1885,20 @@ function renderChart() {
 }
 
 function renderPieChart(canvas, records, unit) {
-  // 가장 최근 데이터 기준으로 국가 비교
+  // 사용자 지정 연도 우선, 없으면 가장 최근 데이터
+  const targetYear = state.pieYear;
   const latest = {};
   state.selectedCountries.forEach(iso => {
-    const recs = records
-      .filter(r => r.country_iso3 === iso && r.value !== null)
-      .sort((a,b) => b.year - a.year);
-    if (recs.length) latest[iso] = recs[0];
+    const recs = records.filter(r => r.country_iso3 === iso && r.value !== null);
+    let pick = null;
+    if (targetYear != null) {
+      pick = recs.find(r => r.year === targetYear) || null;
+    }
+    if (!pick) {
+      const sorted = recs.slice().sort((a, b) => b.year - a.year);
+      if (sorted.length) pick = sorted[0];
+    }
+    if (pick) latest[iso] = pick;
   });
   const labels = [], values = [], colors = [], year = [];
   state.selectedCountries.forEach((iso, idx) => {
@@ -1868,15 +1935,21 @@ function renderPieChart(canvas, records, unit) {
   });
   document.getElementById("chart-card").style.height = "440px";
 
-  // 비교 연도 안내
-  const yearStr = year.length ? `최신 가용 연도 기준 (${Math.min(...year)}–${Math.max(...year)})` : "";
-  const note = document.querySelector(".pie-note");
-  if (!note) {
-    const div = document.createElement("div");
-    div.className = "pie-note";
-    div.textContent = yearStr;
-    document.getElementById("chart-card").appendChild(div);
+  // 비교 연도 안내 — 모든 시리즈가 targetYear와 일치할 때만 단일 연도 표기
+  let yearStr;
+  if (!year.length) {
+    yearStr = targetYear != null ? `${targetYear}년 데이터 없음` : "";
+  } else if (targetYear != null && year.every(y => y === targetYear)) {
+    yearStr = `${targetYear}년 기준`;
+  } else {
+    yearStr = `최신 가용 연도 기준 (${Math.min(...year)}–${Math.max(...year)})`;
   }
+  const note = document.querySelector(".pie-note");
+  if (note) note.remove();
+  const div = document.createElement("div");
+  div.className = "pie-note";
+  div.textContent = yearStr;
+  document.getElementById("chart-card").appendChild(div);
 }
 
 /* ─────────────────────────────────────────────────────────
