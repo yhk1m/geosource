@@ -976,6 +976,23 @@ const INDICATORS = [
     category: "agriculture", unit: "천가구",
     description_ko: "농가+어가 가구 수. 통계청.",
     license: "KOGL Type 1" },
+
+  // ── OWID 재배포 (Pew Research) ─────────────────────────────
+  { dataset_id: "owid_religious_composition", source: "OWID (Pew Research)", code: "religious-composition",
+    name_ko: "종교 인구 비율", name_en: "Share of population who are religious",
+    category: "development", unit: "%",
+    description_ko: "국가별 종교인 인구 비율 (Pew Research, OWID 재배포).",
+    license: "CC BY 4.0" },
+  { dataset_id: "owid_religiosity_change", source: "OWID (Pew Research)", code: "percentage-point-change-religiosity",
+    name_ko: "종교성 변화 (2010→2020)", name_en: "Change in share religious",
+    category: "development", unit: "%p",
+    description_ko: "2010 대비 2020 종교인 비율의 % 포인트 변화 (Pew, OWID).",
+    license: "CC BY 4.0" },
+  { dataset_id: "owid_attend_religious_services", source: "OWID (Pew/WVS)", code: "share-attending-religious-services",
+    name_ko: "종교의식 참석 비율", name_en: "Share attending religious services",
+    category: "development", unit: "%",
+    description_ko: "정기적으로 종교의식에 참석하는 인구 비율. World Values Survey + Pew.",
+    license: "CC BY 4.0" },
   // 인구이동 (5년 단위 인구총조사)
   { dataset_id: "kosis_101_DT_1PA2002_T10", source: "KOSIS", code: "101/DT_1PA2002/T10",
     name_ko: "시도별 거주지 이전 인구", name_en: "Population by Migration Type",
@@ -1161,7 +1178,7 @@ function resetColor(iso) {
  * 스코프(세계/대한민국) ↔ 출처 매핑
  * ───────────────────────────────────────────────────────── */
 const SCOPE_SOURCES = {
-  world: ["World Bank", "IMF", "FAO", "WMO", "IEA"],
+  world: ["World Bank", "IMF", "FAO", "OWID (Pew Research)", "OWID (Pew/WVS)", "WMO", "IEA"],
   korea: ["KOSIS"],
 };
 

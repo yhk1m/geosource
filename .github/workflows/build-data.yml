@@ -16,6 +16,7 @@ on:
           - worldbank
           - imf
           - fao
+          - owid
           - kosis
         default: all
 
