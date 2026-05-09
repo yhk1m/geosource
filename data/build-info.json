@@ -1,16 +1,16 @@
 {
-  "last_built_at": "2026-05-09T14:57:42.284635Z",
+  "last_built_at": "2026-05-09T15:19:30.405126Z",
   "triggered_by": "manual (yhk1m)",
-  "requested_source": "kosis",
+  "requested_source": "imf",
   "sources_built": [
-    "KOSIS"
+    "IMF"
   ],
-  "indicator_count": 15,
-  "record_count_total": 18486,
+  "indicator_count": 6,
+  "record_count_total": 54385,
   "per_source": {
-    "KOSIS": {
-      "indicator_count": 15,
-      "record_count": 18486
+    "IMF": {
+      "indicator_count": 6,
+      "record_count": 54385
     }
   }
 }
