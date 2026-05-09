@@ -18,7 +18,7 @@ import json
 import os
 from datetime import datetime
 from pathlib import Path
-from adapters import WorldBankAdapter, KosisAdapter
+from adapters import WorldBankAdapter, KosisAdapter, FaoAdapter
 
 DATA_DIR = Path(__file__).parent / "data"
 DATA_DIR.mkdir(exist_ok=True)
@@ -60,6 +60,39 @@ def build_worldbank() -> dict:
         except Exception as e:
             print(f"    ! 실패: {e}")
     return {"source": "World Bank", "indicators": catalog}
+
+
+def build_fao() -> dict:
+    adapter = FaoAdapter()
+    catalog = []
+    for ind in adapter.list_indicators():
+        print(f"  → {ind.dataset_id} ({ind.name_ko})")
+        try:
+            bundle = adapter.build_bundle(
+                indicator_code=ind.indicator_code,
+                countries=DEFAULT_COUNTRIES,
+                year_range=DEFAULT_YEAR_RANGE,
+            )
+            if not bundle.records:
+                print("    (스킵: 데이터 없음 - FAO_USERNAME/FAO_PASSWORD 미설정 가능성)")
+                continue
+            out_path = DATA_DIR / f"{ind.dataset_id}.json"
+            out_path.write_text(bundle.to_json(), encoding="utf-8")
+            catalog.append({
+                "dataset_id": ind.dataset_id,
+                "source": ind.source,
+                "name_ko": ind.name_ko,
+                "name_en": ind.name_en,
+                "category": ind.category,
+                "subcategory": ind.subcategory,
+                "unit": ind.unit,
+                "license": ind.license,
+                "file": f"data/{ind.dataset_id}.json",
+                "record_count": len(bundle.records),
+            })
+        except Exception as e:
+            print(f"    ! 실패: {e}")
+    return {"source": "FAO", "indicators": catalog}
 
 
 def build_kosis() -> dict:
@@ -122,15 +155,18 @@ def write_build_info(sources: list[dict], requested_source: str) -> dict:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--source", choices=["worldbank", "kosis", "all"], default="all")
+    parser.add_argument("--source", choices=["worldbank", "fao", "kosis", "all"], default="all")
     args = parser.parse_args()
 
     sources = []
     if args.source in ("worldbank", "all"):
-        print("[1/2] World Bank 빌드 중…")
+        print("[1/3] World Bank 빌드 중…")
         sources.append(build_worldbank())
+    if args.source in ("fao", "all"):
+        print("[2/3] FAO 빌드 중…")
+        sources.append(build_fao())
     if args.source in ("kosis", "all"):
-        print("[2/2] KOSIS 빌드 중…")
+        print("[3/3] KOSIS 빌드 중…")
         sources.append(build_kosis())
 
     # 마스터 카탈로그 작성 (프론트엔드 진입점)

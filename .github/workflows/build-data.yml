@@ -14,6 +14,7 @@ on:
         options:
           - all
           - worldbank
+          - fao
           - kosis
         default: all
 
@@ -69,6 +70,8 @@ jobs:
       - name: Run build
         env:
           KOSIS_API_KEY: ${{ secrets.KOSIS_API_KEY }}
+          FAO_USERNAME: ${{ secrets.FAO_USERNAME }}
+          FAO_PASSWORD: ${{ secrets.FAO_PASSWORD }}
           GEOSOURCE_TRIGGER: ${{ steps.ctx.outputs.triggered_by }}
         run: |
           python build.py --source ${{ steps.ctx.outputs.source }}

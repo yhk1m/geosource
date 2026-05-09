@@ -13,6 +13,7 @@ geosource/
 ├── adapters/
 │   ├── base.py             # 추상 SourceAdapter
 │   ├── worldbank.py        # World Bank Open Data 어댑터 (인증 불필요)
+│   ├── fao.py              # FAOSTAT 어댑터 (JWT 인증 필요)
 │   └── kosis.py            # KOSIS OpenAPI 어댑터 (API 키 필요)
 ├── build.py                # 어댑터 호출 → /data/*.json 생성
 └── data/                   # 정규화된 정적 JSON (KOSIS 등 CORS 막힌 출처용)
@@ -23,7 +24,7 @@ geosource/
 | 출처 | 호출 방식 | 비고 |
 |------|-----------|------|
 | World Bank | 브라우저에서 직접 fetch | CORS 허용. 실시간 데이터. |
-| KOSIS, IEA, WMO 등 | `python build.py` → 정적 JSON | CORS·인증 이슈 회피. cron으로 갱신. |
+| FAO, KOSIS, IEA, WMO 등 | `python build.py` → 정적 JSON | CORS·인증 이슈 회피. cron으로 갱신. |
 
 ## 표준 스키마 핵심 필드
 
@@ -71,8 +72,12 @@ class FaoAdapter(SourceAdapter):
 # KOSIS 키 (선택)
 export KOSIS_API_KEY="..."
 
+# FAOSTAT 인증 (선택) — Developer Portal에서 가입 후 발급
+export FAO_USERNAME="..."
+export FAO_PASSWORD="..."
+
 python build.py                       # 전체
-python build.py --source worldbank    # 특정 어댑터만
+python build.py --source worldbank    # 특정 어댑터만 (worldbank | fao | kosis)
 ```
 
 결과는 `data/{dataset_id}.json` 파일들과 마스터 `data/catalog.json`, 메타정보 `data/build-info.json`.
@@ -99,8 +104,9 @@ python build.py --source worldbank    # 특정 어댑터만
      - `Actions: Read and write`
      - `Metadata: Read-only` (자동)
 
-**2. KOSIS 키 등록** — 레포 Settings → Secrets and variables → Actions
-   - `KOSIS_API_KEY` 시크릿 추가
+**2. 외부 API 키 등록** — 레포 Settings → Secrets and variables → Actions
+   - `KOSIS_API_KEY` (KOSIS 어댑터)
+   - `FAO_USERNAME`, `FAO_PASSWORD` (FAOSTAT 어댑터; Developer Portal 가입 후 발급, JWT 토큰 60분 TTL은 어댑터가 자동 처리)
 
 **3. Workflow 권한 확인** — 레포 Settings → Actions → General → Workflow permissions
    - "Read and write permissions" 선택 (data/ 자동 커밋용)
@@ -131,7 +137,7 @@ python build.py --source worldbank    # 특정 어댑터만
 
 ## 다음 단계
 
-- [ ] FAO STAT 어댑터 (CC BY 4.0, bulk download)
+- [x] FAO STAT 어댑터 (JWT 인증, CC BY-NC-SA 3.0 IGO)
 - [ ] IMF SDMX 어댑터 (WEO, IFS)
 - [ ] 지도 시각화 (GeoStatAtlas와 연동, choropleth)
 - [ ] 시계열 비교 (지표 ÷ 지표, 예: GDP/인구)
