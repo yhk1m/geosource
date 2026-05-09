@@ -132,9 +132,41 @@ header.masthead {
 }
 .coords .label { color: var(--terra); }
 
+/* 스코프 탭 */
+.scope-tabs {
+  margin-top: 22px;
+  display: flex; gap: 0;
+  max-width: 1500px; margin-left: auto; margin-right: auto;
+  border-bottom: 1px solid var(--line);
+}
+.scope-tab {
+  font-family: var(--font-body); font-size: 13px;
+  letter-spacing: 0.4px;
+  padding: 10px 22px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-bottom: none;
+  color: var(--ink-faint);
+  cursor: pointer;
+  margin-bottom: -1px;
+  transition: color 0.15s;
+}
+.scope-tab:hover { color: var(--ink-soft); }
+.scope-tab.active {
+  color: var(--ocean);
+  border-color: var(--line);
+  border-bottom: 1px solid var(--paper);
+  background: var(--paper);
+  font-weight: 500;
+}
+.scope-tab .flag {
+  margin-right: 6px;
+  font-size: 14px;
+}
+
 /* 출처 뱃지 */
 .sources-bar {
-  margin-top: 22px;
+  margin-top: 14px;
   display: flex; gap: 8px; flex-wrap: wrap;
   max-width: 1500px; margin-left: auto; margin-right: auto;
 }
@@ -146,11 +178,27 @@ header.masthead {
   background: var(--highlight);
   color: var(--ink-soft);
   display: inline-flex; align-items: center; gap: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.source-badge:hover {
+  border-color: var(--ocean);
+  color: var(--ocean);
 }
 .source-badge.active {
   border-color: var(--ocean);
   color: var(--ocean);
   background: var(--paper);
+}
+.source-badge.selected {
+  background: var(--ocean);
+  color: #fff;
+  border-color: var(--ocean);
+}
+.source-badge.selected .stat { color: rgba(255,255,255,0.85); }
+.source-badge.disabled {
+  opacity: 0.35;
+  pointer-events: none;
 }
 .source-badge .stat {
   color: var(--terra); font-weight: 500;
@@ -669,6 +717,10 @@ footer.colophon a:hover { text-decoration: underline; }
       <div id="now-utc">UTC ----</div>
     </div>
   </div>
+  <div class="scope-tabs" id="scope-tabs">
+    <button class="scope-tab active" data-scope="world"><span class="flag">🌍</span>세계</button>
+    <button class="scope-tab" data-scope="korea"><span class="flag">🇰🇷</span>대한민국</button>
+  </div>
   <div class="sources-bar" id="sources-bar"></div>
 </header>
 
@@ -940,10 +992,29 @@ function getCountryByIso(iso) {
       || { iso, ko: iso, en: iso, region: '' };
 }
 
-/* 칩 영역에 보여줄 국가: 큐레이션 30개 + 그 외 선택된 국가 (뒤에 부착). */
+/* entity 표시명 — COUNTRIES → KOREA_REGIONS → iso 자체 순으로 폴백 */
+function getEntityLabel(iso) {
+  const c = COUNTRIES.find(x => x.iso === iso);
+  if (c) return c.ko;
+  const r = KOREA_REGIONS.find(x => x.iso === iso);
+  if (r) return r.ko;
+  return iso;
+}
+
+/* 칩 영역에 보여줄 entity: 세계 모드면 국가, 대한민국 모드면 시도. */
 function getDisplayCountries() {
   const seen = new Set();
   const result = [];
+  if (state.scope === "korea") {
+    KOREA_REGIONS.forEach(r => { result.push(r); seen.add(r.iso); });
+    state.selectedCountries.forEach(name => {
+      if (!seen.has(name)) {
+        result.push({ iso: name, ko: name, en: name, region: "Korea" });
+        seen.add(name);
+      }
+    });
+    return result;
+  }
   COUNTRIES.forEach(c => { result.push(c); seen.add(c.iso); });
   state.selectedCountries.forEach(iso => {
     if (!seen.has(iso)) {
@@ -982,11 +1053,43 @@ function resetColor(iso) {
 }
 
 /* ─────────────────────────────────────────────────────────
+ * 스코프(세계/대한민국) ↔ 출처 매핑
+ * ───────────────────────────────────────────────────────── */
+const SCOPE_SOURCES = {
+  world: ["World Bank", "IMF", "FAO", "WMO", "IEA"],
+  korea: ["KOSIS"],
+};
+
+/* 한국 시도 (KOSIS 데이터의 entity 차원으로 사용) */
+const KOREA_REGIONS = [
+  { iso: "전국",             ko: "전국" },
+  { iso: "서울특별시",        ko: "서울" },
+  { iso: "부산광역시",        ko: "부산" },
+  { iso: "대구광역시",        ko: "대구" },
+  { iso: "인천광역시",        ko: "인천" },
+  { iso: "광주광역시",        ko: "광주" },
+  { iso: "대전광역시",        ko: "대전" },
+  { iso: "울산광역시",        ko: "울산" },
+  { iso: "세종특별자치시",     ko: "세종" },
+  { iso: "경기도",           ko: "경기" },
+  { iso: "강원특별자치도",     ko: "강원" },
+  { iso: "충청북도",         ko: "충북" },
+  { iso: "충청남도",         ko: "충남" },
+  { iso: "전북특별자치도",     ko: "전북" },
+  { iso: "전라남도",         ko: "전남" },
+  { iso: "경상북도",         ko: "경북" },
+  { iso: "경상남도",         ko: "경남" },
+  { iso: "제주특별자치도",     ko: "제주" },
+];
+
+/* ─────────────────────────────────────────────────────────
  * 상태
  * ───────────────────────────────────────────────────────── */
 const state = {
+  scope: "world",                                    // 'world' | 'korea'
+  selectedSource: null,                              // null=전체 / 'World Bank' 등
   selectedIndicator: null,
-  selectedCountries: ["KOR", "JPN", "CHN", "USA"],
+  selectedCountries: ["KOR", "JPN", "CHN", "USA"],   // 현 스코프의 entity 리스트 (ISO3 또는 시도명)
   yearStart: 2000,
   yearEnd: 2023,
   chartType: "line",
@@ -997,6 +1100,16 @@ const state = {
   indicatorB: null,     // 지표 B의 dataset_id
   operation: "none",    // none|divide|subtract|multiply|add|yoy_pct|index
   chart: null,
+};
+
+/* 스코프별 선택 캐시 — 탭 전환 시 복원 */
+const SCOPE_DEFAULTS = {
+  world: ["KOR", "JPN", "CHN", "USA"],
+  korea: ["서울특별시", "부산광역시", "대구광역시", "인천광역시"],
+};
+const scopeCache = {
+  world: SCOPE_DEFAULTS.world.slice(),
+  korea: SCOPE_DEFAULTS.korea.slice(),
 };
 
 /* 지표 연산자 정의 */
@@ -1133,16 +1246,75 @@ function getActiveRecords() {
  * 헤더 / 사이드바 렌더
  * ───────────────────────────────────────────────────────── */
 function renderSourcesBar() {
+  // 현 스코프에 속한 지표만 카운트
+  const scopeIndicators = INDICATORS.filter(i => SCOPE_SOURCES[state.scope].includes(i.source));
   const counts = {};
-  INDICATORS.forEach(i => counts[i.source] = (counts[i.source] || 0) + 1);
-  const sources = ["World Bank", "KOSIS", "WMO", "FAO", "IEA", "IMF"];
+  scopeIndicators.forEach(i => counts[i.source] = (counts[i.source] || 0) + 1);
+  const sources = SCOPE_SOURCES[state.scope];
   const html = sources.map(s => {
     const n = counts[s] || 0;
-    const cls = n > 0 ? "active" : "";
-    return `<div class="source-badge ${cls}">${s}
+    const isSelected = state.selectedSource === s;
+    const cls = [
+      n > 0 ? "active" : "disabled",
+      isSelected ? "selected" : "",
+    ].filter(Boolean).join(" ");
+    return `<div class="source-badge ${cls}" data-source="${s}">${s}
       <span class="stat">${n > 0 ? `${n} 종` : "준비중"}</span></div>`;
   }).join("");
-  document.getElementById("sources-bar").innerHTML = html;
+  const bar = document.getElementById("sources-bar");
+  bar.innerHTML = html;
+  bar.querySelectorAll(".source-badge[data-source]").forEach(el => {
+    if (el.classList.contains("disabled")) return;
+    el.onclick = () => {
+      const src = el.dataset.source;
+      state.selectedSource = (state.selectedSource === src) ? null : src;
+      renderSourcesBar();
+      renderIndicatorList();
+    };
+  });
+}
+
+function renderScopeTabs() {
+  document.querySelectorAll(".scope-tab").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.scope === state.scope);
+    btn.onclick = async () => {
+      const newScope = btn.dataset.scope;
+      if (state.scope === newScope) return;
+
+      // 현 entity 선택을 scopeCache에 저장하고, 새 스코프의 캐시를 복원
+      scopeCache[state.scope] = state.selectedCountries.slice();
+      state.scope = newScope;
+      state.selectedCountries = scopeCache[newScope].slice();
+      state.selectedSource = null;
+
+      // 카테고리 리셋 (해당 스코프에 없으면)
+      const visible = INDICATORS.filter(i => SCOPE_SOURCES[state.scope].includes(i.source));
+      if (state.category !== "all" && !visible.some(i => i.category === state.category)) {
+        state.category = "all";
+      }
+      // 선택 지표가 스코프 밖이면 해제
+      const indActive = state.selectedIndicator &&
+          SCOPE_SOURCES[state.scope].includes(state.selectedIndicator.source);
+      if (!indActive) {
+        state.selectedIndicator = null;
+        state.records = []; state.recordsB = [];
+        document.getElementById("viewer").innerHTML =
+          `<div class="viewer-empty"><div class="compass"><div class="compass-needle"></div></div>
+           <p>지표를 선택해주세요.</p><div class="hint">Select an indicator to begin</div></div>`;
+      }
+      renderScopeTabs();
+      renderSourcesBar();
+      renderCategoryChips();
+      renderIndicatorList();
+      // 활성 지표 유지 시 데이터/뷰어 새로고침
+      if (state.selectedIndicator) {
+        renderViewer();
+        await fetchData();
+        renderChart();
+        renderTable();
+      }
+    };
+  });
 }
 
 function renderCategoryChips() {
@@ -1159,6 +1331,8 @@ function renderCategoryChips() {
 
 function renderIndicatorList() {
   const filtered = INDICATORS.filter(ind => {
+    if (!SCOPE_SOURCES[state.scope].includes(ind.source)) return false;
+    if (state.selectedSource && ind.source !== state.selectedSource) return false;
     if (state.category !== "all" && ind.category !== state.category) return false;
     if (state.search) {
       const q = state.search.toLowerCase();
@@ -1225,7 +1399,22 @@ async function fetchIndicatorData(ind) {
   try {
     const r = await fetch(`data/${ind.dataset_id}.json`);
     const json = await r.json();
-    return json.records || [];
+    let records = json.records || [];
+    // KOSIS: 시도 단위 데이터를 entity 차원으로 노출
+    // 원본: country_iso3="KOR", country_name_ko="대한민국 - {시도명}", notes="행정구역: {시도명}"
+    // 변환: country_iso3 = 시도명, country_name_ko = 시도명 (단축형은 KOREA_REGIONS에서 매핑)
+    if (ind.source === "KOSIS") {
+      const shortByName = Object.fromEntries(KOREA_REGIONS.map(r => [r.iso, r.ko]));
+      records = records.map(r => {
+        const region = (r.notes || "").replace(/^행정구역:\s*/, "")
+          || (r.country_name_ko || "").split(" - ").pop();
+        return { ...r,
+          country_iso3: region,
+          country_name_ko: shortByName[region] || region,
+          country_name_en: region };
+      });
+    }
+    return records;
   } catch (e) { return []; }
 }
 
@@ -1352,13 +1541,14 @@ function renderViewer() {
     <div class="controls">
       <div class="controls-row">
         <div class="control-group">
-          <label>국가 선택 (복수 선택 가능, 최대 8개)</label>
+          <label>${state.scope === "korea" ? "시도 선택" : "국가 선택"} (복수 선택 가능, 최대 8개)</label>
           <div class="country-chips" id="country-chips">${countryHtml}</div>
+          ${state.scope === "korea" ? "" : `
           <div class="country-search-wrap">
             <input id="country-search" class="country-search" type="text"
                    placeholder="국가 추가… (예: 폴란드, KEN, korea)" autocomplete="off">
             <div class="country-results" id="country-results"></div>
-          </div>
+          </div>`}
         </div>
         <div class="right-controls">
           <div class="control-group">
@@ -1424,7 +1614,10 @@ function renderViewer() {
       if (state.selectedCountries.includes(iso)) {
         state.selectedCountries = state.selectedCountries.filter(c => c !== iso);
       } else {
-        if (state.selectedCountries.length >= 8) { alert("최대 8개국까지 선택"); return; }
+        if (state.selectedCountries.length >= 8) {
+          alert(state.scope === "korea" ? "최대 8개 시도까지 선택" : "최대 8개국까지 선택");
+          return;
+        }
         state.selectedCountries.push(iso);
       }
       renderViewer();
@@ -1579,14 +1772,13 @@ function renderChart() {
   for (let y = state.yearStart; y <= state.yearEnd; y++) years.push(y);
 
   const datasets = state.selectedCountries.map((iso, idx) => {
-    const country = COUNTRIES.find(c => c.iso === iso);
     const color = colorFor(iso, idx);
     const data = years.map(y => {
       const rec = records.find(r => r.country_iso3 === iso && r.year === y);
       return rec ? rec.value : null;
     });
     return {
-      label: country?.ko || iso,
+      label: getEntityLabel(iso),
       data, borderColor: color, backgroundColor: color + (state.chartType==='bar' ? 'cc' : '22'),
       borderWidth: state.chartType === 'line' ? 2 : 1,
       pointRadius: state.chartType === 'line' ? 2.5 : 0,
@@ -1634,8 +1826,7 @@ function renderPieChart(canvas, records, unit) {
   const labels = [], values = [], colors = [], year = [];
   state.selectedCountries.forEach((iso, idx) => {
     if (latest[iso]) {
-      const country = COUNTRIES.find(c => c.iso === iso);
-      labels.push(country?.ko || iso);
+      labels.push(getEntityLabel(iso));
       values.push(latest[iso].value);
       colors.push(colorFor(iso, idx));
       year.push(latest[iso].year);
@@ -1686,7 +1877,9 @@ function renderTable() {
   if (!tbody) return;
 
   const records = getActiveRecords();
-  const sorted = [...records].sort((a,b) =>
+  const selSet = new Set(state.selectedCountries);
+  const filtered = records.filter(r => selSet.has(r.country_iso3));
+  const sorted = filtered.sort((a,b) =>
     a.country_iso3.localeCompare(b.country_iso3) || a.year - b.year);
 
   const op = activeOp();
@@ -1697,11 +1890,14 @@ function renderTable() {
 
   const thead = document.querySelector("#data-table thead tr");
   if (showAB) {
-    thead.innerHTML = `<th>국가</th><th>연도</th><th>A (${ind?.unit||''})</th><th>B (${indB?.unit||''})</th><th>값</th><th>단위</th>`;
+    const colHead = state.scope === "korea" ? "시도" : "국가";
+    thead.innerHTML = `<th>${colHead}</th><th>연도</th><th>A (${ind?.unit||''})</th><th>B (${indB?.unit||''})</th><th>값</th><th>단위</th>`;
   } else if (showA) {
-    thead.innerHTML = `<th>국가</th><th>연도</th><th>원값(A)</th><th>변환값</th><th>단위</th>`;
+    const colHead = state.scope === "korea" ? "시도" : "국가";
+    thead.innerHTML = `<th>${colHead}</th><th>연도</th><th>원값(A)</th><th>변환값</th><th>단위</th>`;
   } else {
-    thead.innerHTML = `<th>국가</th><th>연도</th><th>값</th><th>단위</th>`;
+    const colHead = state.scope === "korea" ? "시도" : "국가";
+    thead.innerHTML = `<th>${colHead}</th><th>연도</th><th>값</th><th>단위</th>`;
   }
 
   tbody.innerHTML = sorted.map(r => {
@@ -1733,7 +1929,7 @@ function renderTable() {
   }).join("");
 
   document.getElementById("record-meta").textContent =
-    `${records.length.toLocaleString()} 레코드 · ${state.selectedCountries.length}개국${isDerived() ? ` · ${op.label}` : ''}`;
+    `${records.length.toLocaleString()} 레코드 · ${state.selectedCountries.length}${state.scope === "korea" ? "개 시도" : "개국"}${isDerived() ? ` · ${op.label}` : ''}`;
 }
 
 /* ─────────────────────────────────────────────────────────
@@ -1847,6 +2043,7 @@ async function loadBuildInfo() {
 }
 
 function init() {
+  renderScopeTabs();
   renderSourcesBar();
   renderCategoryChips();
   renderIndicatorList();
