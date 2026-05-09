@@ -302,9 +302,16 @@ class KosisAdapter(SourceAdapter):
             except (TypeError, ValueError):
                 continue
 
-            # 시도명을 country_* 필드에 시도명으로 채워넣는 비표준 사용.
-            # 추후 행정구역 코드 컬럼을 별도로 추가하는 것이 정석.
+            # KOSIS C1 코드를 entity 키로 사용 (KR- 프리픽스로 다른 출처와 분리)
+            #   2자리 → 시도 (00=전국, 11=서울 ...)
+            #   5자리 → 시군구 (11010=종로구 ...)
+            #   7~10자리 → 읍면동
+            c1_code = (row.get("C1") or "00").strip()
             region_name = row.get("C1_NM") or "전국"
+            iso_key = f"KR-{c1_code}"
+            level = "sido" if len(c1_code) <= 2 else (
+                "sigungu" if len(c1_code) == 5 else "eupmyeondong"
+            )
 
             records.append(StandardRecord(
                 dataset_id=indicator.dataset_id,
@@ -317,9 +324,9 @@ class KosisAdapter(SourceAdapter):
                 category=indicator.category,
                 subcategory=indicator.subcategory,
                 unit=indicator.unit,
-                country_iso3="KOR",
-                country_name_ko=f"대한민국 - {region_name}",
-                country_name_en=f"Korea - {region_name}",
+                country_iso3=iso_key,
+                country_name_ko=region_name,
+                country_name_en=region_name,
                 region="Eastern Asia",
                 year=year,
                 period_type="annual",
@@ -327,6 +334,6 @@ class KosisAdapter(SourceAdapter):
                 value=value,
                 license=self.license,
                 fetched_at=fetched_at,
-                notes=f"행정구역: {region_name}",
+                notes=f"코드:{c1_code}|단위:{level}|이름:{region_name}",
             ))
         return records

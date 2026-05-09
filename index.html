@@ -1072,26 +1072,32 @@ function getCountryByIso(iso) {
       || { iso, ko: iso, en: iso, region: '' };
 }
 
-/* entity 표시명 — COUNTRIES → KOREA_REGIONS → iso 자체 순으로 폴백 */
+/* entity 표시명 — COUNTRIES → KOREA_REGIONS → KOREA_DISTRICTS → iso 자체 순으로 폴백 */
 function getEntityLabel(iso) {
   const c = COUNTRIES.find(x => x.iso === iso);
   if (c) return c.ko;
   const r = KOREA_REGIONS.find(x => x.iso === iso);
   if (r) return r.ko;
+  const d = KOREA_DISTRICTS.find(x => x.iso === iso);
+  if (d) return d.ko;
   return iso;
 }
 
-/* 칩 영역에 보여줄 entity: 세계 모드면 국가, 대한민국 모드면 시도. */
+/* 칩 영역에 보여줄 entity: 세계면 국가, 대한민국이면 시도+선택된 시군구·읍면동. */
 function getDisplayCountries() {
   const seen = new Set();
   const result = [];
   if (state.scope === "korea") {
     KOREA_REGIONS.forEach(r => { result.push(r); seen.add(r.iso); });
-    state.selectedCountries.forEach(name => {
-      if (!seen.has(name)) {
-        result.push({ iso: name, ko: name, en: name, region: "Korea" });
-        seen.add(name);
+    state.selectedCountries.forEach(iso => {
+      if (seen.has(iso)) return;
+      const d = KOREA_DISTRICTS.find(x => x.iso === iso);
+      if (d) {
+        result.push(d);
+      } else {
+        result.push({ iso, ko: iso, en: iso, region: "Korea" });
       }
+      seen.add(iso);
     });
     return result;
   }
@@ -1105,10 +1111,23 @@ function getDisplayCountries() {
   return result;
 }
 
-/* 검색어로 ALL_COUNTRIES 필터 (ko·en·iso 모두 매칭, 이미 선택된 국가 제외). */
+/* 검색어로 entity 필터 (스코프별).
+   - world: ALL_COUNTRIES (WB API에서 받은 ~250 국가)
+   - korea: KOREA_REGIONS(17 시도) + KOREA_DISTRICTS(records에서 동적 추출된 시군구·읍면동)
+   ko·en·iso·full 모두 매칭, 이미 선택된 entity 제외. */
 function filterCountries(q) {
   if (!q) return [];
   const ql = q.toLowerCase();
+  if (state.scope === "korea") {
+    const pool = [...KOREA_REGIONS, ...KOREA_DISTRICTS];
+    return pool
+      .filter(c => !state.selectedCountries.includes(c.iso))
+      .filter(c =>
+        c.ko.toLowerCase().includes(ql)
+        || (c.full || "").toLowerCase().includes(ql)
+        || c.iso.toLowerCase().includes(ql))
+      .slice(0, 20);
+  }
   return ALL_COUNTRIES
     .filter(c => !state.selectedCountries.includes(c.iso))
     .filter(c =>
@@ -1140,27 +1159,53 @@ const SCOPE_SOURCES = {
   korea: ["KOSIS"],
 };
 
-/* 한국 시도 (KOSIS 데이터의 entity 차원으로 사용) */
+/* 한국 시도 (KOSIS C1 코드 기반, KR-{2자리}). KOSIS records의 country_iso3와 일치. */
 const KOREA_REGIONS = [
-  { iso: "전국",             ko: "전국" },
-  { iso: "서울특별시",        ko: "서울" },
-  { iso: "부산광역시",        ko: "부산" },
-  { iso: "대구광역시",        ko: "대구" },
-  { iso: "인천광역시",        ko: "인천" },
-  { iso: "광주광역시",        ko: "광주" },
-  { iso: "대전광역시",        ko: "대전" },
-  { iso: "울산광역시",        ko: "울산" },
-  { iso: "세종특별자치시",     ko: "세종" },
-  { iso: "경기도",           ko: "경기" },
-  { iso: "강원특별자치도",     ko: "강원" },
-  { iso: "충청북도",         ko: "충북" },
-  { iso: "충청남도",         ko: "충남" },
-  { iso: "전북특별자치도",     ko: "전북" },
-  { iso: "전라남도",         ko: "전남" },
-  { iso: "경상북도",         ko: "경북" },
-  { iso: "경상남도",         ko: "경남" },
-  { iso: "제주특별자치도",     ko: "제주" },
+  { iso: "KR-00", ko: "전국",   full: "전국" },
+  { iso: "KR-11", ko: "서울",   full: "서울특별시" },
+  { iso: "KR-21", ko: "부산",   full: "부산광역시" },
+  { iso: "KR-22", ko: "대구",   full: "대구광역시" },
+  { iso: "KR-23", ko: "인천",   full: "인천광역시" },
+  { iso: "KR-24", ko: "광주",   full: "광주광역시" },
+  { iso: "KR-25", ko: "대전",   full: "대전광역시" },
+  { iso: "KR-26", ko: "울산",   full: "울산광역시" },
+  { iso: "KR-29", ko: "세종",   full: "세종특별자치시" },
+  { iso: "KR-31", ko: "경기",   full: "경기도" },
+  { iso: "KR-32", ko: "강원",   full: "강원특별자치도" },
+  { iso: "KR-33", ko: "충북",   full: "충청북도" },
+  { iso: "KR-34", ko: "충남",   full: "충청남도" },
+  { iso: "KR-35", ko: "전북",   full: "전북특별자치도" },
+  { iso: "KR-36", ko: "전남",   full: "전라남도" },
+  { iso: "KR-37", ko: "경북",   full: "경상북도" },
+  { iso: "KR-38", ko: "경남",   full: "경상남도" },
+  { iso: "KR-39", ko: "제주",   full: "제주특별자치도" },
 ];
+
+/* 현재 로드된 KOSIS 레코드에서 동적 추출되는 시군구·읍면동 인덱스
+   {iso: "KR-11010", ko: "종로구", full: "서울특별시 종로구", level: "sigungu"} */
+let KOREA_DISTRICTS = [];
+
+function refreshKoreaDistricts() {
+  // 현 records의 country_iso3 중 KR-XXXXX 패턴 (5자리 코드 = 시군구) + KR-7~10자리 (읍면동) 추출
+  const seen = new Set(KOREA_REGIONS.map(r => r.iso));
+  const allRecs = [...(state.records || []), ...(state.recordsB || [])];
+  const map = new Map();
+  for (const r of allRecs) {
+    const iso = r.country_iso3 || "";
+    if (!iso.startsWith("KR-") || seen.has(iso)) continue;
+    if (map.has(iso)) continue;
+    const codeOnly = iso.slice(3);   // "11010" 등
+    let level = "sigungu";
+    if (codeOnly.length >= 7) level = "eupmyeondong";
+    map.set(iso, {
+      iso,
+      ko: r.country_name_ko || iso,
+      full: r.country_name_ko || iso,
+      level,
+    });
+  }
+  KOREA_DISTRICTS = [...map.values()].sort((a, b) => a.ko.localeCompare(b.ko, "ko"));
+}
 
 /* ─────────────────────────────────────────────────────────
  * 상태
@@ -1187,7 +1232,7 @@ const state = {
 /* 스코프별 선택 캐시 — 탭 전환 시 복원 */
 const SCOPE_DEFAULTS = {
   world: ["KOR", "JPN", "CHN", "USA"],
-  korea: ["서울특별시", "부산광역시", "대구광역시", "인천광역시"],
+  korea: ["KR-11", "KR-21", "KR-22", "KR-23"],   // 서울·부산·대구·인천
 };
 const scopeCache = {
   world: SCOPE_DEFAULTS.world.slice(),
@@ -1477,6 +1522,8 @@ async function fetchData() {
   } else {
     state.recordsB = [];
   }
+  // KOSIS 시군구/읍면동 동적 리스트 갱신 → 검색박스에서 활용
+  if (state.scope === "korea") refreshKoreaDistricts();
   setLoading(false);
 }
 
@@ -1486,22 +1533,7 @@ async function fetchIndicatorData(ind) {
   try {
     const r = await fetch(`data/${ind.dataset_id}.json`);
     const json = await r.json();
-    let records = json.records || [];
-    // KOSIS: 시도 단위 데이터를 entity 차원으로 노출
-    // 원본: country_iso3="KOR", country_name_ko="대한민국 - {시도명}", notes="행정구역: {시도명}"
-    // 변환: country_iso3 = 시도명, country_name_ko = 시도명 (단축형은 KOREA_REGIONS에서 매핑)
-    if (ind.source === "KOSIS") {
-      const shortByName = Object.fromEntries(KOREA_REGIONS.map(r => [r.iso, r.ko]));
-      records = records.map(r => {
-        const region = (r.notes || "").replace(/^행정구역:\s*/, "")
-          || (r.country_name_ko || "").split(" - ").pop();
-        return { ...r,
-          country_iso3: region,
-          country_name_ko: shortByName[region] || region,
-          country_name_en: region };
-      });
-    }
-    return records;
+    return json.records || [];
   } catch (e) { return []; }
 }
 
@@ -1644,14 +1676,14 @@ function renderViewer() {
     <div class="controls">
       <div class="controls-row">
         <div class="control-group">
-          <label>${state.scope === "korea" ? "시도 선택" : "국가 선택"} (복수 선택 가능, 최대 8개)</label>
+          <label>${state.scope === "korea" ? "행정구역 선택" : "국가 선택"} (복수 선택 가능, 최대 8개)</label>
           <div class="country-chips" id="country-chips">${countryHtml}</div>
-          ${state.scope === "korea" ? "" : `
           <div class="country-search-wrap">
             <input id="country-search" class="country-search" type="text"
-                   placeholder="국가 추가… (예: 폴란드, KEN, korea)" autocomplete="off">
+                   placeholder="${state.scope === "korea" ? "시·군·구·동 추가… (예: 강남구, 종로, 분당)" : "국가 추가… (예: 폴란드, KEN, korea)"}"
+                   autocomplete="off">
             <div class="country-results" id="country-results"></div>
-          </div>`}
+          </div>
         </div>
         <div class="right-controls">
           <div class="control-group">
@@ -1822,20 +1854,26 @@ function bindCountrySearch() {
 
   function renderResults(q) {
     if (!q) { results.classList.remove("open"); results.innerHTML = ""; return; }
-    if (COUNTRIES_LOADING && !ALL_COUNTRIES.length) {
+    if (state.scope === "world" && COUNTRIES_LOADING && !ALL_COUNTRIES.length) {
       results.innerHTML = '<div class="country-result-loading">국가 목록 불러오는 중…</div>';
       results.classList.add("open");
       return;
     }
     const matches = filterCountries(q);
     if (!matches.length) {
-      results.innerHTML = '<div class="country-result-empty">검색 결과 없음</div>';
+      const hint = state.scope === "korea"
+        ? '검색 결과 없음 (지표를 선택해야 시군구·읍면동이 활성화됩니다)'
+        : '검색 결과 없음';
+      results.innerHTML = `<div class="country-result-empty">${hint}</div>`;
     } else {
       results.innerHTML = matches.map(c => {
-        const koDiff = c.ko !== c.en;
+        const right = state.scope === "korea"
+          ? (c.full && c.full !== c.ko ? c.full : c.iso)
+          : `${c.iso}${c.region ? ` · ${c.region}` : ''}`;
+        const sub = state.scope === "korea" ? '' : (c.ko !== c.en ? `<span class="en">${c.en}</span>` : '');
         return `<div class="country-result-item" data-iso="${c.iso}">
-          <span><span class="ko">${c.ko}</span>${koDiff ? `<span class="en">${c.en}</span>` : ''}</span>
-          <span class="meta-right"><span class="iso">${c.iso}</span>${c.region ? ` · ${c.region}` : ''}</span>
+          <span><span class="ko">${c.ko}</span>${sub}</span>
+          <span class="meta-right"><span class="iso">${right}</span></span>
         </div>`;
       }).join('');
     }
@@ -1845,7 +1883,7 @@ function bindCountrySearch() {
       item.onclick = async () => {
         const iso = item.dataset.iso;
         if (state.selectedCountries.length >= 8) {
-          alert("최대 8개국까지 선택");
+          alert(state.scope === "korea" ? "최대 8개 행정구역까지 선택" : "최대 8개국까지 선택");
           return;
         }
         if (!state.selectedCountries.includes(iso)) state.selectedCountries.push(iso);
