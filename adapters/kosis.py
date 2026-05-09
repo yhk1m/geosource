@@ -26,6 +26,32 @@ from adapters.base import SourceAdapter
 # World Bank처럼 단일 indicator_code로 매핑하기 어렵다.
 # → indicator_code에 "{orgId}/{tblId}/{itmId}" 합성 ID를 부여한다.
 # → fetch에 추가로 objL1 인자(분류1) 필요. KOSIS는 itmId·objL1 누락 시 err=20 반환.
+
+# 시도명 → 표준 행정구역분류코드 (KOSIS 표마다 옛/신 코드가 섞여있어 이름 기반 정규화)
+SIDO_NAME_TO_CODE = {
+    "전국": "00",
+    "서울특별시": "11",
+    "부산광역시": "26",
+    "대구광역시": "27",
+    "인천광역시": "28",
+    "광주광역시": "29",
+    "대전광역시": "30",
+    "울산광역시": "31",
+    "세종특별자치시": "36",
+    "세종시": "36",
+    "경기도": "41",
+    "강원특별자치도": "51",
+    "강원도": "51",  # 옛 이름
+    "충청북도": "43",
+    "충청남도": "44",
+    "전북특별자치도": "52",
+    "전라북도": "52",  # 옛 이름
+    "전라남도": "46",
+    "경상북도": "47",
+    "경상남도": "48",
+    "제주특별자치도": "50",
+    "제주도": "50",  # 옛 이름
+}
 INDICATORS: list[IndicatorMeta] = [
     IndicatorMeta(
         dataset_id="kosis_101_DT_1B040A3_T20",
@@ -227,6 +253,21 @@ INDICATORS: list[IndicatorMeta] = [
         update_frequency="annual",
         coverage_years=(2000, 2024),
     ),
+    # 인구이동 (인구총조사 5년 단위, 시도+시군구)
+    IndicatorMeta(
+        dataset_id="kosis_101_DT_1PA2002_T10",
+        source="KOSIS",
+        indicator_code="101/DT_1PA2002/T10?objL2=0&objL3=000&prdSe=F&newEstPrdCnt=3",
+        name_ko="시도별 거주지 이전 인구",
+        name_en="Population by Migration Type",
+        category="population",
+        subcategory="migration",
+        unit="명",
+        description_ko="12세 이상 인구 중 5년 내 거주지를 이전한 인구 (성·연령 계). 인구총조사 5년 단위.",
+        license="KOGL Type 1",
+        update_frequency="annual",  # 표시는 연간이지만 실제 5년 단위
+        coverage_years=(2010, 2020),
+    ),
     # 필요한 통계표를 여기에 계속 추가
 ]
 
@@ -271,15 +312,19 @@ class KosisAdapter(SourceAdapter):
             "tblId": tbl_id,
             "itmId": itm_id,                      # 항목 ID (필수)
             "objL1": "ALL",                       # 분류1 = 전체 행정구역 (필수)
-            "prdSe": "Y",                         # 연간
+            "prdSe": "Y",                         # 연간 (querystring으로 override 가능: F=5년 등)
             "startPrdDe": str(year_range[0]),
             "endPrdDe": str(year_range[1]),
         }
-        # 추가 파라미터 (예: ?objL2=ALL&objL3=ALL)
+        # 추가 파라미터 (예: ?objL2=ALL&objL3=ALL&prdSe=F&newEstPrdCnt=3)
+        # newEstPrdCnt가 있으면 startPrdDe/endPrdDe는 제거 (충돌)
         for kv in extra.split("&"):
             if "=" in kv:
                 k, v = kv.split("=", 1)
                 params[k] = v
+        if "newEstPrdCnt" in params:
+            params.pop("startPrdDe", None)
+            params.pop("endPrdDe", None)
 
         url = f"{self.base_url}?{urllib.parse.urlencode(params)}"
         with urllib.request.urlopen(url, timeout=30) as resp:
@@ -306,12 +351,15 @@ class KosisAdapter(SourceAdapter):
             #   2자리 → 시도 (00=전국, 11=서울 ...)
             #   5자리 → 시군구 (11010=종로구 ...)
             #   7~10자리 → 읍면동
+            # 시도 레벨은 표마다 옛/신 코드가 다르므로 이름 기반 정규화로 통일.
             c1_code = (row.get("C1") or "00").strip()
             region_name = row.get("C1_NM") or "전국"
-            iso_key = f"KR-{c1_code}"
             level = "sido" if len(c1_code) <= 2 else (
                 "sigungu" if len(c1_code) == 5 else "eupmyeondong"
             )
+            if level == "sido" and region_name in SIDO_NAME_TO_CODE:
+                c1_code = SIDO_NAME_TO_CODE[region_name]
+            iso_key = f"KR-{c1_code}"
 
             records.append(StandardRecord(
                 dataset_id=indicator.dataset_id,
