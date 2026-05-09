@@ -40,19 +40,7 @@
           "record_count": 6688
         },
         {
-          "dataset_id": "kosis_101_DT_1DA7001S_T20",
-          "source": "KOSIS",
-          "name_ko": "시도별 경제활동인구",
-          "name_en": "Economically Active Population by Province",
-          "category": "economy",
-          "subcategory": "labor_force",
-          "unit": "천명",
-          "license": "KOGL Type 1",
-          "file": "data/kosis_101_DT_1DA7001S_T20.json",
-          "record_count": 216
-        },
-        {
-          "dataset_id": "kosis_101_DT_1DA7001S_T80",
+          "dataset_id": "kosis_101_DT_1DA7104S_T80",
           "source": "KOSIS",
           "name_ko": "시도별 실업률",
           "name_en": "Unemployment Rate by Province",
@@ -60,20 +48,8 @@
           "subcategory": "unemployment",
           "unit": "%",
           "license": "KOGL Type 1",
-          "file": "data/kosis_101_DT_1DA7001S_T80.json",
-          "record_count": 216
-        },
-        {
-          "dataset_id": "kosis_101_DT_1DA7001S_T90",
-          "source": "KOSIS",
-          "name_ko": "시도별 고용률",
-          "name_en": "Employment Rate by Province",
-          "category": "economy",
-          "subcategory": "employment",
-          "unit": "%",
-          "license": "KOGL Type 1",
-          "file": "data/kosis_101_DT_1DA7001S_T90.json",
-          "record_count": 216
+          "file": "data/kosis_101_DT_1DA7104S_T80.json",
+          "record_count": 415
         },
         {
           "dataset_id": "kosis_101_DT_1C86_T1",
