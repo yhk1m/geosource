@@ -62,6 +62,114 @@
           "license": "KOGL Type 1",
           "file": "data/kosis_101_DT_1C86_T1.json",
           "record_count": 401
+        },
+        {
+          "dataset_id": "kosis_101_DT_1B81A19_T1",
+          "source": "KOSIS",
+          "name_ko": "시도별 출생성비",
+          "name_en": "Sex Ratio at Birth by Province",
+          "category": "population",
+          "subcategory": "births",
+          "unit": "명",
+          "license": "KOGL Type 1",
+          "file": "data/kosis_101_DT_1B81A19_T1.json",
+          "record_count": 420
+        },
+        {
+          "dataset_id": "kosis_101_DT_1B83A03_T10",
+          "source": "KOSIS",
+          "name_ko": "시도별 혼인건수",
+          "name_en": "Number of Marriages by Province",
+          "category": "population",
+          "subcategory": "marriage",
+          "unit": "건",
+          "license": "KOGL Type 1",
+          "file": "data/kosis_101_DT_1B83A03_T10.json",
+          "record_count": 444
+        },
+        {
+          "dataset_id": "kosis_101_DT_1B85003_T10",
+          "source": "KOSIS",
+          "name_ko": "시도별 이혼건수",
+          "name_en": "Number of Divorces by Province",
+          "category": "population",
+          "subcategory": "divorce",
+          "unit": "건",
+          "license": "KOGL Type 1",
+          "file": "data/kosis_101_DT_1B85003_T10.json",
+          "record_count": 444
+        },
+        {
+          "dataset_id": "kosis_101_DT_1DA7004S_T10",
+          "source": "KOSIS",
+          "name_ko": "시도별 15세이상인구",
+          "name_en": "Population aged 15+ by Province",
+          "category": "economy",
+          "subcategory": "labor_force",
+          "unit": "천명",
+          "license": "KOGL Type 1",
+          "file": "data/kosis_101_DT_1DA7004S_T10.json",
+          "record_count": 415
+        },
+        {
+          "dataset_id": "kosis_101_DT_1DA7030S_T30",
+          "source": "KOSIS",
+          "name_ko": "시도별 취업자",
+          "name_en": "Employed Persons by Province",
+          "category": "economy",
+          "subcategory": "employment",
+          "unit": "천명",
+          "license": "KOGL Type 1",
+          "file": "data/kosis_101_DT_1DA7030S_T30.json",
+          "record_count": 415
+        },
+        {
+          "dataset_id": "kosis_101_DT_1DA7088S_T40",
+          "source": "KOSIS",
+          "name_ko": "시도별 실업자",
+          "name_en": "Unemployed Persons by Province",
+          "category": "economy",
+          "subcategory": "unemployment",
+          "unit": "천명",
+          "license": "KOGL Type 1",
+          "file": "data/kosis_101_DT_1DA7088S_T40.json",
+          "record_count": 415
+        },
+        {
+          "dataset_id": "kosis_101_DT_1DA7146S_T50",
+          "source": "KOSIS",
+          "name_ko": "시도별 비경제활동인구",
+          "name_en": "Economically Inactive Population by Province",
+          "category": "economy",
+          "subcategory": "labor_inactive",
+          "unit": "천명",
+          "license": "KOGL Type 1",
+          "file": "data/kosis_101_DT_1DA7146S_T50.json",
+          "record_count": 415
+        },
+        {
+          "dataset_id": "kosis_101_DT_1F02001_T10",
+          "source": "KOSIS",
+          "name_ko": "시도별 소비자물가지수",
+          "name_en": "Consumer Price Index by Province",
+          "category": "economy",
+          "subcategory": "cpi",
+          "unit": "2020=100",
+          "license": "KOGL Type 1",
+          "file": "data/kosis_101_DT_1F02001_T10.json",
+          "record_count": 422
+        },
+        {
+          "dataset_id": "kosis_101_DT_1ES4F09S_T00",
+          "source": "KOSIS",
+          "name_ko": "시도별 농어가 가구수",
+          "name_en": "Farm and Fishery Households by Province",
+          "category": "agriculture",
+          "subcategory": "farm_household",
+          "unit": "천가구",
+          "license": "KOGL Type 1",
+          "file": "data/kosis_101_DT_1ES4F09S_T00.json",
+          "record_count": 160
         }
       ]
     }

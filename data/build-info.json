@@ -1,16 +1,16 @@
 {
-  "last_built_at": "2026-05-09T04:34:55.081239Z",
+  "last_built_at": "2026-05-09T14:29:18.693157Z",
   "triggered_by": "manual (yhk1m)",
   "requested_source": "kosis",
   "sources_built": [
     "KOSIS"
   ],
-  "indicator_count": 5,
-  "record_count_total": 14612,
+  "indicator_count": 14,
+  "record_count_total": 18162,
   "per_source": {
     "KOSIS": {
-      "indicator_count": 5,
-      "record_count": 14612
+      "indicator_count": 14,
+      "record_count": 18162
     }
   }
 }
