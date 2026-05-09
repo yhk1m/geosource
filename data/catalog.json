@@ -170,6 +170,18 @@
           "license": "KOGL Type 1",
           "file": "data/kosis_101_DT_1ES4F09S_T00.json",
           "record_count": 160
+        },
+        {
+          "dataset_id": "kosis_101_DT_1PA2002_T10",
+          "source": "KOSIS",
+          "name_ko": "시도별 거주지 이전 인구",
+          "name_en": "Population by Migration Type",
+          "category": "population",
+          "subcategory": "migration",
+          "unit": "명",
+          "license": "KOGL Type 1",
+          "file": "data/kosis_101_DT_1PA2002_T10.json",
+          "record_count": 324
         }
       ]
     }
