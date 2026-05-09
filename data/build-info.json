@@ -1,16 +1,16 @@
 {
-  "last_built_at": "2026-05-09T15:56:07.926121Z",
+  "last_built_at": "2026-05-09T16:03:12.168511Z",
   "triggered_by": "manual (yhk1m)",
-  "requested_source": "owid",
+  "requested_source": "pew",
   "sources_built": [
-    "OWID"
+    "Pew Research Center"
   ],
-  "indicator_count": 3,
-  "record_count_total": 1006,
+  "indicator_count": 8,
+  "record_count_total": 9000,
   "per_source": {
-    "OWID": {
-      "indicator_count": 3,
-      "record_count": 1006
+    "Pew Research Center": {
+      "indicator_count": 8,
+      "record_count": 9000
     }
   }
 }

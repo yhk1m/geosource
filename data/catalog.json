@@ -1,43 +1,103 @@
 {
   "sources": [
     {
-      "source": "OWID",
+      "source": "Pew Research Center",
       "indicators": [
         {
-          "dataset_id": "owid_religious_composition",
-          "source": "OWID (Pew Research)",
-          "name_ko": "종교 인구 비율",
-          "name_en": "Share of population who are religious",
+          "dataset_id": "pew_religion_christian",
+          "source": "Pew Research Center",
+          "name_ko": "기독교 신자 비율",
+          "name_en": "Christians (% of population)",
           "category": "development",
-          "subcategory": "religion",
+          "subcategory": "religion_christian",
           "unit": "%",
-          "license": "CC BY 4.0",
-          "file": "data/owid_religious_composition.json",
-          "record_count": 398
+          "license": "Public Domain (Pew 출처 표기)",
+          "file": "data/pew_religion_christian.json",
+          "record_count": 1125
         },
         {
-          "dataset_id": "owid_religiosity_change",
-          "source": "OWID (Pew Research)",
-          "name_ko": "종교성 변화 (2010-2020)",
-          "name_en": "Percentage point change in share religious",
+          "dataset_id": "pew_religion_muslim",
+          "source": "Pew Research Center",
+          "name_ko": "이슬람 신자 비율",
+          "name_en": "Muslims (% of population)",
           "category": "development",
-          "subcategory": "religion",
-          "unit": "%p",
-          "license": "CC BY 4.0",
-          "file": "data/owid_religiosity_change.json",
-          "record_count": 199
+          "subcategory": "religion_muslim",
+          "unit": "%",
+          "license": "Public Domain (Pew 출처 표기)",
+          "file": "data/pew_religion_muslim.json",
+          "record_count": 1125
         },
         {
-          "dataset_id": "owid_attend_religious_services",
-          "source": "OWID (Pew/WVS)",
-          "name_ko": "종교의식 참석 비율",
-          "name_en": "Share attending religious services frequently",
+          "dataset_id": "pew_religion_hindu",
+          "source": "Pew Research Center",
+          "name_ko": "힌두교 신자 비율",
+          "name_en": "Hindus (% of population)",
           "category": "development",
-          "subcategory": "religion",
+          "subcategory": "religion_hindu",
           "unit": "%",
-          "license": "CC BY 4.0",
-          "file": "data/owid_attend_religious_services.json",
-          "record_count": 409
+          "license": "Public Domain (Pew 출처 표기)",
+          "file": "data/pew_religion_hindu.json",
+          "record_count": 1125
+        },
+        {
+          "dataset_id": "pew_religion_buddhist",
+          "source": "Pew Research Center",
+          "name_ko": "불교 신자 비율",
+          "name_en": "Buddhists (% of population)",
+          "category": "development",
+          "subcategory": "religion_buddhist",
+          "unit": "%",
+          "license": "Public Domain (Pew 출처 표기)",
+          "file": "data/pew_religion_buddhist.json",
+          "record_count": 1125
+        },
+        {
+          "dataset_id": "pew_religion_jewish",
+          "source": "Pew Research Center",
+          "name_ko": "유대교 신자 비율",
+          "name_en": "Jews (% of population)",
+          "category": "development",
+          "subcategory": "religion_jewish",
+          "unit": "%",
+          "license": "Public Domain (Pew 출처 표기)",
+          "file": "data/pew_religion_jewish.json",
+          "record_count": 1125
+        },
+        {
+          "dataset_id": "pew_religion_unaffiliated",
+          "source": "Pew Research Center",
+          "name_ko": "무종교 인구 비율",
+          "name_en": "Religiously unaffiliated (%)",
+          "category": "development",
+          "subcategory": "religion_unaffiliated",
+          "unit": "%",
+          "license": "Public Domain (Pew 출처 표기)",
+          "file": "data/pew_religion_unaffiliated.json",
+          "record_count": 1125
+        },
+        {
+          "dataset_id": "pew_religion_folk",
+          "source": "Pew Research Center",
+          "name_ko": "민속종교 신자 비율",
+          "name_en": "Folk religions (% of population)",
+          "category": "development",
+          "subcategory": "religion_folk",
+          "unit": "%",
+          "license": "Public Domain (Pew 출처 표기)",
+          "file": "data/pew_religion_folk.json",
+          "record_count": 1125
+        },
+        {
+          "dataset_id": "pew_religion_other",
+          "source": "Pew Research Center",
+          "name_ko": "기타 종교 신자 비율",
+          "name_en": "Other religions (% of population)",
+          "category": "development",
+          "subcategory": "religion_other",
+          "unit": "%",
+          "license": "Public Domain (Pew 출처 표기)",
+          "file": "data/pew_religion_other.json",
+          "record_count": 1125
         }
       ]
     }
