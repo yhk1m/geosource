@@ -121,10 +121,50 @@ notes           = "코드:{c1}|단위:{level}|이름:{name}"
 
 ---
 
-## 6. KOSIS 표 추가 방법
+## 6. 지표 추가 방법 (출처별)
 
-### 사용자 → AI에게 보내는 방법
-KOSIS 통계표 페이지에서 **OpenAPI** 버튼 → 항목·분류·시점 선택 → "URL 생성" 클릭 → 생성된 URL을 그대로 메시지로 전달
+현재 등록된 39종 외에도 4개 출처 모두에서 추가 가능. 출처별 추가 방법 정리.
+
+### World Bank (~1500개 가능)
+- 카탈로그: https://data.worldbank.org/indicator
+- 사용자 → AI: 지표 코드(예: `NY.GDP.MKTP.CD`) 또는 페이지 URL 전달
+- AI 처리: `index.html` `INDICATORS` 배열에 1줄 추가 + 별도 빌드 불필요 (브라우저 실시간 fetch)
+- 한국어명·카테고리만 정해주면 즉시 등록 가능
+
+```js
+{ dataset_id: "wb_NEW_CODE", source: "World Bank", code: "NEW_CODE",
+  name_ko: "한국어명", name_en: "English name",
+  category: "economy", unit: "USD",
+  description_ko: "설명", license: "CC BY 4.0" },
+```
+
+### IMF (50+ WEO 지표 + 추가 데이터셋)
+- 카탈로그: https://www.imf.org/external/datamapper/datasets
+- 사용자 → AI: 지표 코드(예: `NGDP_RPCH`) 또는 페이지 URL
+- AI 처리:
+  1. `adapters/imf.py`의 `INDICATORS`에 `IndicatorMeta` 1개 추가
+  2. `index.html`의 `INDICATORS`에도 동일 항목 추가
+  3. 워크플로우 트리거 → 정적 JSON 생성 → Vercel 배포
+
+### FAO (수백 개 농업·식량·임업 지표)
+- 카탈로그: https://www.fao.org/faostat/en/#data
+- 사용자 → AI: 도메인 코드(QCL/RL/FBS 등) + item 코드 + element 코드
+- AI 처리:
+  1. `adapters/fao.py`의 `INDICATORS`에 추가 (`indicator_code`는 `"DOMAIN/item/element"` 형식)
+  2. `index.html` `INDICATORS`에도 추가
+  3. 워크플로우(JWT 인증 자동) → 정적 JSON
+
+> 주의: FAO QCL element는 신 API에서 `2510=Production`, `2111=Stocks` 등 2xxx 체계.
+> RL·FBS는 5110·664 등 기존 코드 유지.
+
+### KOSIS (수만 개 한국 통계)
+가장 추천 — KOSIS 사이트에서 OpenAPI URL을 만들 수 있어 가장 정확.
+
+**사용자 작업**:
+1. https://kosis.kr 에서 원하는 표 검색
+2. 표 페이지 우측 **OpenAPI** 버튼 클릭
+3. 항목·분류·시점 선택 → "URL 생성"
+4. 생성된 URL을 그대로 메시지로 전달
 
 ```
 https://kosis.kr/openapi/Param/statisticsParameterData.do?
@@ -133,13 +173,28 @@ prdSe=Y&startPrdDe=2000&endPrdDe=2024&format=json&jsonVD=Y&
 orgId=101&tblId=DT_1B040A3
 ```
 
-### AI 처리 흐름
-1. 우리 `KOSIS_API_KEY`로 apiKey 교체해서 1년치 검증 호출
-2. C1_OBJ_NM에 "시도" 포함 여부 확인
+**AI 처리 흐름**:
+1. `KOSIS_API_KEY`로 apiKey 교체 → 1년치 검증 호출
+2. C1_OBJ_NM에 "시도" 포함 여부 확인 (시도/시군구 단위 데이터인지)
 3. C2/C3 dimension 있으면 "계" 코드(0/00/000) 자동 탐지
 4. ITM_ID 후보 중 의미있는 것 선택 (또는 사용자 지정)
-5. `IndicatorMeta` (kosis.py) + `INDICATORS` (index.html) 양쪽에 등록
-6. workflow_dispatch로 데이터 빌드 → Vercel 자동 재배포
+5. `adapters/kosis.py` + `index.html` 양쪽 동시 등록
+6. 옛/신 시도 코드 자동 정규화 (`SIDO_NAME_TO_CODE`)
+7. 워크플로우 dispatch → 정적 JSON → Vercel 배포
+
+### 가장 빠른 워크플로우
+사용자가 보낼 형식 (예시):
+- "World Bank 인터넷 사용률 추가" → 검색해서 IT.NET.USER.ZS 찾아 등록
+- 페이지 URL → AI가 코드 추출
+- KOSIS OpenAPI URL → 그대로 등록 (가장 정확)
+- 한 번에 5~10개 묶어서 보내면 일괄 등록·빌드 효율적
+
+### 등록 시 자동 처리되는 것
+- 어댑터(Python) + INDICATORS(JS) 양쪽 동시 등록
+- 카테고리·단위·라이선스 메타데이터 자동 입력
+- 시도/시군구/읍면동 entity 차원 자동 인식 (KOSIS)
+- 워크플로우 빌드 트리거 → 데이터 자동 커밋 → Vercel 자동 배포
+- 카탈로그(`data/catalog.json`) + 빌드정보(`data/build-info.json`) 자동 갱신
 
 ---
 
@@ -164,12 +219,12 @@ orgId=101&tblId=DT_1B040A3
 
 | 출처 | 지표 수 | 호출 방식 |
 |------|--------|-----------|
-| World Bank | 11 | 브라우저 직접 fetch (CORS, 실시간) |
-| IMF | 6 | 브라우저 직접 fetch (DataMapper API) |
-| FAO | 6 | GitHub Actions에서 빌드 → 정적 JSON |
-| KOSIS | 15 | GitHub Actions에서 빌드 → 정적 JSON |
-| **합계** | **38** | |
+| World Bank | 11 | 브라우저 직접 fetch (CORS 허용, 실시간) |
+| IMF | 6 | GitHub Actions 빌드 → 정적 JSON (CORS 미지원으로 전환) |
+| FAO | 6 | GitHub Actions 빌드 → 정적 JSON |
+| KOSIS | 16 | GitHub Actions 빌드 → 정적 JSON |
+| **합계** | **39** | |
 
 데이터 갱신:
-- World Bank/IMF: 매번 최신
-- FAO/KOSIS: admin.html에서 dispatch 또는 매월 1일 03:00 KST cron
+- World Bank: 브라우저가 매번 최신 데이터 fetch
+- IMF/FAO/KOSIS: admin.html dispatch 또는 매월 1일 03:00 KST cron

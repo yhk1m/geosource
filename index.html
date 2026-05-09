@@ -1684,7 +1684,7 @@ function renderViewer() {
     <div class="controls">
       <div class="controls-row">
         <div class="control-group">
-          <label>${state.scope === "korea" ? "행정구역 선택" : "국가 선택"} (복수 선택 가능, 최대 8개)</label>
+          <label>${state.scope === "korea" ? "행정구역 선택" : "국가 선택"} (복수 선택)</label>
           <div class="country-chips" id="country-chips">${countryHtml}</div>
           <div class="country-search-wrap">
             <input id="country-search" class="country-search" type="text"
@@ -1763,10 +1763,6 @@ function renderViewer() {
       if (state.selectedCountries.includes(iso)) {
         state.selectedCountries = state.selectedCountries.filter(c => c !== iso);
       } else {
-        if (state.selectedCountries.length >= 8) {
-          alert(state.scope === "korea" ? "최대 8개 시도까지 선택" : "최대 8개국까지 선택");
-          return;
-        }
         state.selectedCountries.push(iso);
       }
       renderViewer();
@@ -1890,10 +1886,6 @@ function bindCountrySearch() {
     results.querySelectorAll(".country-result-item").forEach(item =>
       item.onclick = async () => {
         const iso = item.dataset.iso;
-        if (state.selectedCountries.length >= 8) {
-          alert(state.scope === "korea" ? "최대 8개 행정구역까지 선택" : "최대 8개국까지 선택");
-          return;
-        }
         if (!state.selectedCountries.includes(iso)) state.selectedCountries.push(iso);
         renderViewer();
         await fetchData(); renderChart(); renderTable();
