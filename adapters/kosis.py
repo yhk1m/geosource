@@ -24,18 +24,19 @@ from adapters.base import SourceAdapter
 
 # KOSIS는 통계표(orgId, tblId) 단위로 호출하는 구조라
 # World Bank처럼 단일 indicator_code로 매핑하기 어렵다.
-# → dataset_id에 "{orgId}_{tblId}_{itmId}" 식으로 합성 ID를 부여한다.
+# → indicator_code에 "{orgId}/{tblId}/{itmId}" 합성 ID를 부여한다.
+# → fetch에 추가로 objL1 인자(분류1) 필요. KOSIS는 itmId·objL1 누락 시 err=20 반환.
 INDICATORS: list[IndicatorMeta] = [
     IndicatorMeta(
-        dataset_id="kosis_101_DT_1B040A3",
+        dataset_id="kosis_101_DT_1B040A3_T20",
         source="KOSIS",
-        indicator_code="101/DT_1B040A3",  # orgId/tblId
+        indicator_code="101/DT_1B040A3/T20",  # orgId/tblId/itmId (T20 = 한국인 인구)
         name_ko="시도별 인구",
         name_en="Population by Province (Korea)",
         category="population",
         subcategory="size",
         unit="명",
-        description_ko="대한민국 시도 단위 연앙 인구. 통계청 인구동향조사.",
+        description_ko="대한민국 시도/시군구 단위 주민등록 한국인 인구. 통계청.",
         license="KOGL Type 1",
         update_frequency="annual",
         coverage_years=(2000, 2024),
@@ -66,7 +67,10 @@ class KosisAdapter(SourceAdapter):
         if not self.api_key:
             return []  # 키 없으면 빈 결과
 
-        org_id, tbl_id = indicator_code.split("/")
+        parts = indicator_code.split("/")
+        org_id, tbl_id = parts[0], parts[1]
+        itm_id = parts[2] if len(parts) > 2 else "ALL"
+
         params = {
             "method": "getList",
             "apiKey": self.api_key,
@@ -74,13 +78,21 @@ class KosisAdapter(SourceAdapter):
             "jsonVD": "Y",
             "orgId": org_id,
             "tblId": tbl_id,
+            "itmId": itm_id,                      # 항목 ID (필수)
+            "objL1": "ALL",                       # 분류1 = 전체 행정구역 (필수)
             "prdSe": "Y",                         # 연간
             "startPrdDe": str(year_range[0]),
             "endPrdDe": str(year_range[1]),
         }
         url = f"{self.base_url}?{urllib.parse.urlencode(params)}"
         with urllib.request.urlopen(url, timeout=30) as resp:
-            return json.loads(resp.read())
+            payload = json.loads(resp.read())
+
+        # KOSIS 에러 응답: {"err":"20","errMsg":"..."}
+        if isinstance(payload, dict):
+            print(f"[KOSIS] API 오류 (err={payload.get('err')}): {payload.get('errMsg')}")
+            return []
+        return payload
 
     def transform(self, raw: list[dict], indicator: IndicatorMeta) -> list[StandardRecord]:
         records: list[StandardRecord] = []

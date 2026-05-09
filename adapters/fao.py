@@ -81,9 +81,9 @@ FAO_AREAS: dict[str, tuple[int, str, str, str]] = {
 # indicator_code 형식: "{DOMAIN}/{item}/{element}"
 INDICATORS: list[IndicatorMeta] = [
     IndicatorMeta(
-        dataset_id="fao_QCL_15_5510",
+        dataset_id="fao_QCL_15_2510",
         source="FAO",
-        indicator_code="QCL/15/5510",
+        indicator_code="QCL/15/2510",
         name_ko="밀 생산량",
         name_en="Wheat production",
         category="agriculture",
@@ -95,9 +95,9 @@ INDICATORS: list[IndicatorMeta] = [
         coverage_years=(2000, 2023),
     ),
     IndicatorMeta(
-        dataset_id="fao_QCL_27_5510",
+        dataset_id="fao_QCL_27_2510",
         source="FAO",
-        indicator_code="QCL/27/5510",
+        indicator_code="QCL/27/2510",
         name_ko="쌀(벼) 생산량",
         name_en="Rice (paddy) production",
         category="agriculture",
@@ -109,9 +109,9 @@ INDICATORS: list[IndicatorMeta] = [
         coverage_years=(2000, 2023),
     ),
     IndicatorMeta(
-        dataset_id="fao_QCL_56_5510",
+        dataset_id="fao_QCL_56_2510",
         source="FAO",
-        indicator_code="QCL/56/5510",
+        indicator_code="QCL/56/2510",
         name_ko="옥수수 생산량",
         name_en="Maize (corn) production",
         category="agriculture",
@@ -123,9 +123,9 @@ INDICATORS: list[IndicatorMeta] = [
         coverage_years=(2000, 2023),
     ),
     IndicatorMeta(
-        dataset_id="fao_QCL_866_5112",
+        dataset_id="fao_QCL_866_2111",
         source="FAO",
-        indicator_code="QCL/866/5112",
+        indicator_code="QCL/866/2111",
         name_ko="소 사육두수",
         name_en="Cattle stocks",
         category="agriculture",
@@ -144,8 +144,8 @@ INDICATORS: list[IndicatorMeta] = [
         name_en="Agricultural land area",
         category="agriculture",
         subcategory="land_use",
-        unit="ha",
-        description_ko="농경지(경작지+영구작물지+목초지) 총 면적(ha). FAOSTAT Land Use 도메인.",
+        unit="1000 ha",
+        description_ko="농경지(경작지+영구작물지+목초지) 총 면적(천 ha). FAOSTAT Land Use 도메인.",
         license="CC BY-NC-SA 3.0 IGO",
         update_frequency="annual",
         coverage_years=(2000, 2022),
