@@ -30,7 +30,7 @@ from adapters.worldbank import COUNTRY_NAMES
 INDICATORS: list[IndicatorMeta] = [
     IndicatorMeta(
         dataset_id="owid_religious_composition",
-        source="OWID (Pew Research)",
+        source="OWID",
         indicator_code="religious-composition",
         name_ko="종교 인구 비율",
         name_en="Share of population who are religious",
@@ -44,7 +44,7 @@ INDICATORS: list[IndicatorMeta] = [
     ),
     IndicatorMeta(
         dataset_id="owid_religiosity_change",
-        source="OWID (Pew Research)",
+        source="OWID",
         indicator_code="percentage-point-change-religiosity",
         name_ko="종교성 변화 (2010-2020)",
         name_en="Percentage point change in share religious",
@@ -58,7 +58,7 @@ INDICATORS: list[IndicatorMeta] = [
     ),
     IndicatorMeta(
         dataset_id="owid_attend_religious_services",
-        source="OWID (Pew/WVS)",
+        source="OWID",
         indicator_code="share-attending-religious-services",
         name_ko="종교의식 참석 비율",
         name_en="Share attending religious services frequently",

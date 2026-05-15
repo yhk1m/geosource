@@ -975,17 +975,17 @@ const INDICATORS = [
     license: "KOGL Type 1" },
 
   // ── OWID 재배포 (Pew Research) ─────────────────────────────
-  { dataset_id: "owid_religious_composition", source: "OWID (Pew Research)", code: "religious-composition",
+  { dataset_id: "owid_religious_composition", source: "OWID", code: "religious-composition",
     name_ko: "종교 인구 비율", name_en: "Share of population who are religious",
     category: "development", unit: "%",
     description_ko: "국가별 종교인 인구 비율 (Pew Research, OWID 재배포).",
     license: "CC BY 4.0" },
-  { dataset_id: "owid_religiosity_change", source: "OWID (Pew Research)", code: "percentage-point-change-religiosity",
+  { dataset_id: "owid_religiosity_change", source: "OWID", code: "percentage-point-change-religiosity",
     name_ko: "종교성 변화 (2010→2020)", name_en: "Change in share religious",
     category: "development", unit: "%p",
     description_ko: "2010 대비 2020 종교인 비율의 % 포인트 변화 (Pew, OWID).",
     license: "CC BY 4.0" },
-  { dataset_id: "owid_attend_religious_services", source: "OWID (Pew/WVS)", code: "share-attending-religious-services",
+  { dataset_id: "owid_attend_religious_services", source: "OWID", code: "share-attending-religious-services",
     name_ko: "종교의식 참석 비율", name_en: "Share attending religious services",
     category: "development", unit: "%",
     description_ko: "정기적으로 종교의식에 참석하는 인구 비율. World Values Survey + Pew.",
@@ -1217,15 +1217,13 @@ function resetColor(iso) {
  * 스코프(세계/대한민국) ↔ 출처 매핑
  * ───────────────────────────────────────────────────────── */
 const SCOPE_SOURCES = {
-  world: ["World Bank", "IMF", "FAO", "Pew Research Center", "OWID (Pew Research)", "OWID (Pew/WVS)", "WMO", "IEA"],
+  world: ["World Bank", "IMF", "FAO", "Pew Research Center", "OWID", "WMO", "IEA"],
   korea: ["KOSIS"],
 };
 
 /* 출처 표시 라벨 — Pew/OWID만 풀네임, 나머지는 약어 그대로 */
 const SOURCE_DISPLAY = {
-  "Pew Research Center":   "Pew Research Center",
-  "OWID (Pew Research)":   "Our World in Data (Pew Research 재배포)",
-  "OWID (Pew/WVS)":        "Our World in Data (Pew · World Values Survey)",
+  "OWID": "Our World in Data",
 };
 
 /* 한국 시도 (KOSIS C1 코드 기반, KR-{2자리}). KOSIS records의 country_iso3와 일치. */
