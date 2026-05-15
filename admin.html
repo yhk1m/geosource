@@ -6,52 +6,52 @@
 <title>GeoSource 관리 콘솔</title>
 <meta name="robots" content="noindex,nofollow">
 
-<link href="https://cdn.jsdelivr.net/gh/orioncactus/[email protected]/dist/web/static/pretendard.min.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
 
 <style>
 :root {
-  --paper:        #f5f1e8;
-  --paper-dim:    #ebe6d8;
-  --ink:          #1c2321;
-  --ink-soft:     #4a4f4a;
-  --ink-faint:    #8a8d86;
-  --line:         #c7c1ad;
-  --line-soft:    #ddd6c2;
-  --ocean:        #1e4d5c;
-  --ocean-bright: #2a7388;
-  --forest:       #3d5a35;
-  --terra:        #a85d3a;
-  --gold:         #b8923b;
-  --crimson:      #8a3324;
-  --highlight:    #fefbf3;
-  --warn-bg:      #fbf3e0;
-  --ok:           #3d5a35;
-  --err:          #8a3324;
+  /* 화이트 + 네이비 팔레트 (index.html과 통일) */
+  --paper:        #ffffff;
+  --paper-dim:    #f3f5f9;
+  --ink:          #0b1f3a;
+  --ink-soft:     #3a4a64;
+  --ink-faint:    #8892a6;
+  --line:         #d8dee8;
+  --line-soft:    #ebeef4;
+  --ocean:        #0b3a7a;
+  --ocean-bright: #1f5fbf;
+  --terra:        #0b3a7a;
+  --gold:         #1f5fbf;
+  --crimson:      #0b1f3a;
+  --highlight:    #ffffff;
+  --warn-bg:      #f3f5f9;
+  --ok:           #1f5fbf;
+  --err:          #c0392b;
 
-  --font-display: 'Cormorant Garamond', 'Pretendard', serif;
+  --font-display: 'Pretendard', sans-serif;
   --font-body:    'Pretendard', sans-serif;
-  --font-mono:    'JetBrains Mono', monospace;
+  --font-mono:    'Pretendard', sans-serif;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { background: var(--paper); color: var(--ink); font-family: var(--font-body); }
 
-/* 좌표선 그리드 + ADMIN 워터마크 */
+/* 좌표선 그리드 배경 (index.html과 동일) */
 body::before {
   content: ''; position: fixed; inset: 0;
   background-image:
     linear-gradient(var(--line-soft) 1px, transparent 1px),
     linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
   background-size: 80px 80px;
-  opacity: 0.35; pointer-events: none; z-index: 0;
+  opacity: 0.5; pointer-events: none; z-index: 0;
 }
 body::after {
   content: 'ADMIN';
   position: fixed; top: 50%; left: 50%;
   transform: translate(-50%, -50%) rotate(-22deg);
   font-family: var(--font-display);
-  font-size: 320px; font-weight: 600;
+  font-size: 320px; font-weight: 700;
   color: var(--ink); opacity: 0.025;
   pointer-events: none; z-index: 0;
   letter-spacing: 12px;
@@ -59,20 +59,22 @@ body::after {
 
 .app { position: relative; z-index: 1; min-height: 100vh; }
 
-/* ── 헤더 ── */
+/* ── 헤더 (index.html과 통일) ── */
 header.masthead {
   border-bottom: 1px solid var(--line);
-  padding: 24px 40px;
+  background: var(--paper);
+  padding: 28px 40px 24px;
   display: flex; align-items: center; justify-content: space-between;
   flex-wrap: wrap; gap: 16px;
+  max-width: 1500px; margin: 0 auto;
 }
 .brand {
-  display: flex; align-items: center; gap: 14px;
+  display: flex; align-items: center; gap: 18px;
 }
 .brand-mark {
-  width: 42px; height: 42px;
+  width: 56px; height: 56px;
   border: 1.5px solid var(--ink); border-radius: 50%;
-  position: relative;
+  position: relative; flex-shrink: 0;
 }
 .brand-mark::before, .brand-mark::after {
   content: ''; position: absolute; background: var(--ink);
@@ -85,17 +87,35 @@ header.masthead {
   top: -2px; bottom: -2px; left: 50%;
   width: 1px; transform: translateX(-50%);
 }
+.brand-mark .meridian {
+  position: absolute; inset: 0;
+  border-radius: 50%; border: 1px solid var(--ink);
+  border-top-color: transparent; border-bottom-color: transparent;
+  transform: scaleX(0.55);
+}
+.brand-mark .meridian-2 {
+  position: absolute; inset: 0;
+  border-radius: 50%; border: 1px solid var(--ink-faint);
+  border-left-color: transparent; border-right-color: transparent;
+  transform: scaleY(0.55);
+}
 .brand-text h1 {
   font-family: var(--font-display);
-  font-size: 26px; font-weight: 600;
-  letter-spacing: 0.5px;
+  font-size: 36px; font-weight: 700;
+  letter-spacing: -0.5px; line-height: 1;
+  color: var(--ink);
 }
-.brand-text h1 em { font-style: italic; color: var(--ocean); font-weight: 400; }
+.brand-text h1 em {
+  font-style: normal; color: var(--ocean);
+  font-weight: 700;
+}
 .brand-text .role {
-  font-family: var(--font-mono); font-size: 10px;
-  letter-spacing: 2.5px; color: var(--terra);
-  margin-top: 2px;
+  font-family: var(--font-mono); font-size: 12px;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-top: 6px;
 }
+.brand-text .role .dot { color: var(--terra); margin: 0 6px; }
 .header-link {
   font-family: var(--font-mono); font-size: 11px;
   color: var(--ink-soft); text-decoration: none;
@@ -119,7 +139,8 @@ main {
 }
 .auth-card h2 {
   font-family: var(--font-display);
-  font-size: 30px; font-weight: 600;
+  font-size: 28px; font-weight: 700;
+  letter-spacing: -0.3px;
   margin-bottom: 8px;
 }
 .auth-card .sub {
@@ -182,8 +203,8 @@ main {
   margin-bottom: 18px;
   background: var(--warn-bg);
 }
-.alert.err { border-color: var(--err); color: var(--err); }
-.alert.ok { border-color: var(--ok); color: var(--ok); background: #eff5e8; }
+.alert.err { border-color: var(--err); color: var(--err); background: #fdecea; }
+.alert.ok { border-color: var(--ok); color: var(--ok); background: #eef4fc; }
 
 /* ── 콘솔 ── */
 .console { margin-top: 24px; display: none; }
@@ -226,7 +247,8 @@ main {
 }
 .build-info h3 {
   font-family: var(--font-display);
-  font-size: 22px; font-weight: 600;
+  font-size: 20px; font-weight: 700;
+  letter-spacing: -0.2px;
   margin-bottom: 6px;
 }
 .build-info .ts {
@@ -278,8 +300,8 @@ main {
   font-weight: 600; font-size: 15px; margin-bottom: 4px;
 }
 .source-card .name em {
-  font-family: var(--font-display); font-style: italic;
-  color: var(--ocean); font-weight: 400;
+  font-style: normal;
+  color: var(--ocean); font-weight: 700;
 }
 .source-card .desc {
   font-size: 12px; color: var(--ink-soft);
@@ -351,12 +373,19 @@ main {
 }
 .runs-link:hover { text-decoration: underline; }
 
-footer {
-  text-align: center; padding: 30px;
+footer.colophon {
+  margin-top: 40px;
+  padding: 24px 40px;
+  border-top: 1px solid var(--line);
   font-family: var(--font-mono); font-size: 10.5px;
   color: var(--ink-faint);
   letter-spacing: 0.5px;
+  display: flex; justify-content: space-between;
+  flex-wrap: wrap; gap: 16px;
+  max-width: 1500px; margin-left: auto; margin-right: auto;
 }
+footer.colophon a { color: var(--ocean); text-decoration: none; }
+footer.colophon a:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
@@ -364,10 +393,13 @@ footer {
 
 <header class="masthead">
   <div class="brand">
-    <div class="brand-mark"></div>
+    <div class="brand-mark">
+      <div class="meridian"></div>
+      <div class="meridian-2"></div>
+    </div>
     <div class="brand-text">
       <h1>Geo<em>Source</em></h1>
-      <div class="role">관리 콘솔 · ADMIN</div>
+      <div class="role">관리 콘솔 <span class="dot">·</span> ADMIN</div>
     </div>
   </div>
   <a class="header-link" href="index.html">← 메인으로</a>
@@ -455,13 +487,28 @@ footer {
         </div>
         <div class="source-card" data-source="worldbank">
           <div class="name">World <em>Bank</em></div>
-          <div class="desc">WDI 지표(GDP, 인구, 도시화율 등 8종).</div>
+          <div class="desc">WDI 지표 (GDP, 인구, 도시화율 등 8종).</div>
           <div class="freq">갱신주기: 연 2회</div>
+        </div>
+        <div class="source-card" data-source="imf">
+          <div class="name">IMF</div>
+          <div class="desc">WEO 지표 (성장률·인플레·실업·재정·경상수지 6종).</div>
+          <div class="freq">갱신주기: 연 2회 (4월·10월 WEO)</div>
         </div>
         <div class="source-card" data-source="fao">
           <div class="name">FAO</div>
           <div class="desc">FAOSTAT 농업 지표 (작물·축산·식량 6종, JWT 인증).</div>
           <div class="freq">갱신주기: 연 1회</div>
+        </div>
+        <div class="source-card" data-source="owid">
+          <div class="name">Our World in Data</div>
+          <div class="desc">Pew Research·WVS 등 재배포 (종교 인구·종교성 변화·종교의식 참석률 3종).</div>
+          <div class="freq">갱신주기: 비정기</div>
+        </div>
+        <div class="source-card" data-source="pew">
+          <div class="name">Pew Research Center</div>
+          <div class="desc">Religious Composition Projections 2010~2050 (7대 종교 + 무종교 비율 8종).</div>
+          <div class="freq">갱신주기: 비정기 (보고서 발표 시)</div>
         </div>
         <div class="source-card" data-source="kosis">
           <div class="name">KOSIS</div>
@@ -490,8 +537,16 @@ footer {
 
 </main>
 
-<footer>
-  GeoSource Admin · 토큰은 sessionStorage에만 저장 · bgnl.kr
+<footer class="colophon">
+  <div>
+    <div>Copyright 2026. 양정고등학교 김용현 | <a href="https://bgnl.kr" target="_blank" rel="noopener">https://bgnl.kr</a></div>
+    <div style="margin-top:6px">
+      GeoSource Admin · 토큰은 sessionStorage에만 저장
+    </div>
+  </div>
+  <div>
+    <a href="index.html">← 메인</a>
+  </div>
 </footer>
 
 </div>

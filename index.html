@@ -3,13 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GeoSource — 세계 공식 데이터 허브</title>
+<title>GeoSource</title>
 <meta name="description" content="World Bank, KOSIS, WMO, FAO, IEA, IMF 등 공식 통계기관의 지리·통계 데이터를 단일 표준으로 모아 제공합니다.">
 
 <!-- 폰트 -->
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -44,7 +43,7 @@
 
   --font-display: 'Pretendard', sans-serif;
   --font-body:    'Pretendard', sans-serif;
-  --font-mono:    'Pretendard', 'JetBrains Mono', monospace;
+  --font-mono:    'Pretendard', sans-serif;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -720,12 +719,7 @@ footer.colophon a:hover { text-decoration: underline; }
       </div>
       <div class="brand-text">
         <h1>Geo<em>Source</em></h1>
-        <div class="tagline">세계 공식 데이터 허브 <span class="dot">·</span> bgnl.kr</div>
       </div>
-    </div>
-    <div class="coords">
-      <div><span class="label">LAT</span> 37°35′N · <span class="label">LON</span> 126°59′E</div>
-      <div id="now-utc">UTC ----</div>
     </div>
   </div>
   <div class="scope-tabs" id="scope-tabs">
@@ -762,8 +756,11 @@ footer.colophon a:hover { text-decoration: underline; }
 
 <footer class="colophon">
   <div>
-    GeoSource · 비그늘 EdTech · 데이터는 각 출처의 라이선스를 따릅니다.
-    <span id="build-info" style="margin-left:12px;color:var(--terra)"></span>
+    <div>Copyright 2026. 양정고등학교 김용현 | <a href="https://bgnl.kr" target="_blank" rel="noopener">https://bgnl.kr</a></div>
+    <div style="margin-top:6px">
+      GeoSource · 비그늘 EdTech · 데이터는 각 출처의 라이선스를 따릅니다.
+      <span id="build-info" style="margin-left:12px;color:var(--terra)"></span>
+    </div>
   </div>
   <div>
     World Bank Open Data <a href="https://datacatalog.worldbank.org/public-licenses#cc-by" target="_blank">CC BY 4.0</a>
@@ -1224,6 +1221,13 @@ const SCOPE_SOURCES = {
   korea: ["KOSIS"],
 };
 
+/* 출처 표시 라벨 — Pew/OWID만 풀네임, 나머지는 약어 그대로 */
+const SOURCE_DISPLAY = {
+  "Pew Research Center":   "Pew Research Center",
+  "OWID (Pew Research)":   "Our World in Data (Pew Research 재배포)",
+  "OWID (Pew/WVS)":        "Our World in Data (Pew · World Values Survey)",
+};
+
 /* 한국 시도 (KOSIS C1 코드 기반, KR-{2자리}). KOSIS records의 country_iso3와 일치. */
 const KOREA_REGIONS = [
   { iso: "KR-00", ko: "전국",   full: "전국" },
@@ -1455,7 +1459,8 @@ function renderSourcesBar() {
       n > 0 ? "active" : "disabled",
       isSelected ? "selected" : "",
     ].filter(Boolean).join(" ");
-    return `<div class="source-badge ${cls}" data-source="${s}">${s}
+    const label = SOURCE_DISPLAY[s] || s;
+    return `<div class="source-badge ${cls}" data-source="${s}">${label}
       <span class="stat">${n > 0 ? `${n} 종` : "준비중"}</span></div>`;
   }).join("");
   const bar = document.getElementById("sources-bar");
@@ -1546,7 +1551,7 @@ function renderIndicatorList() {
     return `<div class="indicator-item ${active ? 'active' : ''}" data-id="${ind.dataset_id}">
       <div class="name">${ind.name_ko}</div>
       <div class="meta">
-        <span class="source">${ind.source}</span> ·
+        <span class="source">${SOURCE_DISPLAY[ind.source] || ind.source}</span> ·
         <span class="unit">${ind.unit}</span> ·
         <span>${ind.code}</span>
       </div>
@@ -1726,7 +1731,7 @@ function renderViewer() {
   document.getElementById("viewer").innerHTML = `
     <div class="indicator-header">
       <div class="breadcrumb">
-        ${ind.source}<span class="sep">/</span>
+        ${SOURCE_DISPLAY[ind.source] || ind.source}<span class="sep">/</span>
         ${catLabel}<span class="sep">/</span>
         ${ind.code}
       </div>
@@ -2259,12 +2264,6 @@ function formatValue(v, unit) {
   return v.toFixed(2);
 }
 
-function updateClock() {
-  const d = new Date();
-  const utc = d.toISOString().slice(0, 19).replace("T", " ");
-  document.getElementById("now-utc").textContent = `UTC ${utc}`;
-}
-
 /* ─────────────────────────────────────────────────────────
  * 부트스트랩
  * ───────────────────────────────────────────────────────── */
@@ -2275,7 +2274,9 @@ async function loadBuildInfo() {
     const info = await r.json();
     const date = new Date(info.last_built_at);
     const ymd = date.toISOString().slice(0, 10);
-    const sources = (info.sources_built || []).join(', ');
+    const sources = (info.sources_built || [])
+      .map(s => SOURCE_DISPLAY[s] || s)
+      .join(', ');
     document.getElementById('build-info').textContent =
       `· 마지막 갱신: ${ymd} (${sources})`;
   } catch (e) { /* build-info.json 없으면 조용히 무시 */ }
@@ -2290,8 +2291,6 @@ function init() {
     state.search = e.target.value;
     renderIndicatorList();
   };
-  updateClock();
-  setInterval(updateClock, 1000);
   loadBuildInfo();
   fetchAllCountries();   // 비동기 — 검색창에서 결과로 사용
 }
