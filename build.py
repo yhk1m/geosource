@@ -219,9 +219,33 @@ def build_kosis() -> dict:
 
 
 def write_build_info(sources: list[dict], requested_source: str) -> dict:
-    """프론트엔드가 푸터에 표시할 메타정보."""
+    """프론트엔드가 푸터에 표시할 메타정보.
+
+    per_source는 출처별로 누적 — 이번에 빌드되지 않은 출처의 기존 last_built_at은 그대로 유지.
+    """
+    now = datetime.utcnow().isoformat() + "Z"
+
+    # 기존 build-info.json의 per_source 보존
+    existing_per_source = {}
+    bi_path = DATA_DIR / "build-info.json"
+    if bi_path.exists():
+        try:
+            existing = json.loads(bi_path.read_text(encoding="utf-8"))
+            existing_per_source = existing.get("per_source", {}) or {}
+        except Exception:
+            existing_per_source = {}
+
+    # 이번에 빌드한 출처는 덮어쓰기, 나머지는 기존값 유지
+    per_source = dict(existing_per_source)
+    for s in sources:
+        per_source[s["source"]] = {
+            "last_built_at": now,
+            "indicator_count": len(s["indicators"]),
+            "record_count": sum(i.get("record_count", 0) for i in s["indicators"]),
+        }
+
     info = {
-        "last_built_at": datetime.utcnow().isoformat() + "Z",
+        "last_built_at": now,
         "triggered_by": os.environ.get("GEOSOURCE_TRIGGER", "local"),
         "requested_source": requested_source,
         "sources_built": [s["source"] for s in sources],
@@ -229,14 +253,9 @@ def write_build_info(sources: list[dict], requested_source: str) -> dict:
         "record_count_total": sum(
             i.get("record_count", 0) for s in sources for i in s["indicators"]
         ),
-        "per_source": {
-            s["source"]: {
-                "indicator_count": len(s["indicators"]),
-                "record_count": sum(i.get("record_count", 0) for i in s["indicators"]),
-            } for s in sources
-        },
+        "per_source": per_source,
     }
-    (DATA_DIR / "build-info.json").write_text(
+    bi_path.write_text(
         json.dumps(info, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )

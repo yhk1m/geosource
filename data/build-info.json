@@ -1,16 +1,42 @@
 {
-  "last_built_at": "2026-05-15T03:48:37.468950Z",
+  "last_built_at": "2026-05-15T03:48:37Z",
   "triggered_by": "manual (yhk1m)",
   "requested_source": "fao",
   "sources_built": [
     "FAO"
   ],
-  "indicator_count": 8,
-  "record_count_total": 3440,
+  "indicator_count": 48,
+  "record_count_total": 90157,
   "per_source": {
+    "World Bank": {
+      "last_built_at": "2026-05-09T01:59:02Z",
+      "indicator_count": 8,
+      "record_count": 3840
+    },
+    "IMF": {
+      "last_built_at": "2026-05-09T15:19:30Z",
+      "indicator_count": 6,
+      "record_count": 54385
+    },
     "FAO": {
+      "last_built_at": "2026-05-15T03:48:37Z",
       "indicator_count": 8,
       "record_count": 3440
+    },
+    "KOSIS": {
+      "last_built_at": "2026-05-09T14:57:42Z",
+      "indicator_count": 15,
+      "record_count": 18486
+    },
+    "OWID": {
+      "last_built_at": "2026-05-09T15:56:08Z",
+      "indicator_count": 3,
+      "record_count": 1006
+    },
+    "Pew Research Center": {
+      "last_built_at": "2026-05-09T16:03:12Z",
+      "indicator_count": 8,
+      "record_count": 9000
     }
   }
 }
