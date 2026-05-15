@@ -620,30 +620,44 @@ section.viewer {
   margin-top: 8px; text-align: center;
 }
 
-/* 데이터 테이블 */
+/* 데이터 테이블 (3컬럼 그리드) */
 .table-wrap {
   border: 1px solid var(--line-soft);
   margin-bottom: 16px;
   max-height: 400px;
   overflow: auto;
   background: var(--paper);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
 }
+.table-wrap > table.data-table { border-right: 1px solid var(--line-soft); }
+.table-wrap > table.data-table:last-child { border-right: none; }
 table.data-table {
-  width: auto; border-collapse: collapse;
+  width: 100%; border-collapse: collapse;
   font-family: var(--font-mono); font-size: 11.5px;
 }
 table.data-table thead {
   position: sticky; top: 0;
   background: var(--paper-dim);
+  z-index: 1;
 }
 table.data-table th, table.data-table td {
-  padding: 6px 14px;
+  padding: 6px 10px;
   border-bottom: 1px solid var(--line-soft);
   text-align: left;
   white-space: nowrap;
 }
-table.data-table th:first-child, table.data-table td:first-child { padding-left: 16px; }
-table.data-table th:last-child, table.data-table td:last-child { padding-right: 16px; }
+table.data-table th:first-child, table.data-table td:first-child { padding-left: 14px; }
+table.data-table th:last-child, table.data-table td:last-child { padding-right: 14px; }
+
+@media (max-width: 1100px) {
+  .table-wrap { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 700px) {
+  .table-wrap { grid-template-columns: 1fr; }
+  .table-wrap > table.data-table { border-right: none; border-bottom: 1px solid var(--line-soft); }
+}
 table.data-table th {
   font-weight: 500; color: var(--ink);
   letter-spacing: 0.5px; text-transform: uppercase;
@@ -1815,12 +1829,7 @@ function renderViewer() {
       <div class="loading">데이터 불러오는 중…</div>
     </div>
 
-    <div class="table-wrap">
-      <table class="data-table" id="data-table">
-        <thead><tr><th>국가</th><th>연도</th><th>값</th><th>단위</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </div>
+    <div class="table-wrap" id="table-wrap"></div>
 
     <div class="action-row">
       <span class="meta" id="record-meta">— 레코드</span>
@@ -2128,8 +2137,8 @@ function renderPieChart(canvas, records, unit) {
  * 데이터 테이블
  * ───────────────────────────────────────────────────────── */
 function renderTable() {
-  const tbody = document.querySelector("#data-table tbody");
-  if (!tbody) return;
+  const wrap = document.getElementById("table-wrap");
+  if (!wrap) return;
 
   const records = getActiveRecords();
   const selSet = new Set(state.selectedCountries);
@@ -2142,20 +2151,18 @@ function renderTable() {
   const indB = indicatorBObj();
   const showAB = op.binary && indB;
   const showA  = !!op.unary;
+  const colHead = state.scope === "korea" ? "시도" : "국가";
 
-  const thead = document.querySelector("#data-table thead tr");
+  let headHtml;
   if (showAB) {
-    const colHead = state.scope === "korea" ? "시도" : "국가";
-    thead.innerHTML = `<th>${colHead}</th><th>연도</th><th>A (${ind?.unit||''})</th><th>B (${indB?.unit||''})</th><th>값</th><th>단위</th>`;
+    headHtml = `<th>${colHead}</th><th>연도</th><th>A (${ind?.unit||''})</th><th>B (${indB?.unit||''})</th><th>값</th><th>단위</th>`;
   } else if (showA) {
-    const colHead = state.scope === "korea" ? "시도" : "국가";
-    thead.innerHTML = `<th>${colHead}</th><th>연도</th><th>원값(A)</th><th>변환값</th><th>단위</th>`;
+    headHtml = `<th>${colHead}</th><th>연도</th><th>원값(A)</th><th>변환값</th><th>단위</th>`;
   } else {
-    const colHead = state.scope === "korea" ? "시도" : "국가";
-    thead.innerHTML = `<th>${colHead}</th><th>연도</th><th>값</th><th>단위</th>`;
+    headHtml = `<th>${colHead}</th><th>연도</th><th>값</th><th>단위</th>`;
   }
 
-  tbody.innerHTML = sorted.map(r => {
+  const rowHtml = (r) => {
     if (showAB) {
       return `<tr>
         <td class="country">${r.country_name_ko || r.country_iso3}</td>
@@ -2181,7 +2188,21 @@ function renderTable() {
       <td class="num">${formatValue(r.value, r.unit)}</td>
       <td>${r.unit}</td>
     </tr>`;
-  }).join("");
+  };
+
+  // 3 컬럼으로 분할 (정렬 순서 유지: 좌→우로 순차 chunk)
+  const N = sorted.length;
+  const cols = 3;
+  const per = Math.ceil(N / cols);
+  let html = "";
+  for (let c = 0; c < cols; c++) {
+    const slice = sorted.slice(c * per, (c + 1) * per);
+    html += `<table class="data-table">
+      <thead><tr>${headHtml}</tr></thead>
+      <tbody>${slice.map(rowHtml).join("")}</tbody>
+    </table>`;
+  }
+  wrap.innerHTML = html;
 
   document.getElementById("record-meta").textContent =
     `${records.length.toLocaleString()} 레코드 · ${state.selectedCountries.length}${state.scope === "korea" ? "개 시도" : "개국"}${isDerived() ? ` · ${op.label}` : ''}`;
