@@ -629,7 +629,7 @@ section.viewer {
   background: var(--paper);
 }
 table.data-table {
-  width: 100%; border-collapse: collapse;
+  width: auto; border-collapse: collapse;
   font-family: var(--font-mono); font-size: 11.5px;
 }
 table.data-table thead {
@@ -637,10 +637,13 @@ table.data-table thead {
   background: var(--paper-dim);
 }
 table.data-table th, table.data-table td {
-  padding: 7px 12px;
+  padding: 6px 14px;
   border-bottom: 1px solid var(--line-soft);
   text-align: left;
+  white-space: nowrap;
 }
+table.data-table th:first-child, table.data-table td:first-child { padding-left: 16px; }
+table.data-table th:last-child, table.data-table td:last-child { padding-right: 16px; }
 table.data-table th {
   font-weight: 500; color: var(--ink);
   letter-spacing: 0.5px; text-transform: uppercase;
