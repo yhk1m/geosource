@@ -329,9 +329,23 @@ def main():
         sources.append(build_kosis())
 
     # 마스터 카탈로그 작성 (프론트엔드 진입점)
+    # 이번에 빌드한 출처만 덮어쓰고 나머지는 기존 카탈로그를 보존한다.
+    # (특정 --source만 빌드해도 다른 출처가 카탈로그에서 사라지지 않게)
     catalog_path = DATA_DIR / "catalog.json"
+    existing_sources: list[dict] = []
+    if catalog_path.exists():
+        try:
+            existing = json.loads(catalog_path.read_text(encoding="utf-8"))
+            existing_sources = existing.get("sources", []) or []
+        except Exception:
+            existing_sources = []
+
+    built_names = {s["source"] for s in sources}
+    merged_sources = [s for s in existing_sources if s.get("source") not in built_names]
+    merged_sources.extend(sources)
+
     catalog_path.write_text(
-        json.dumps({"sources": sources}, ensure_ascii=False, indent=2),
+        json.dumps({"sources": merged_sources}, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
 
