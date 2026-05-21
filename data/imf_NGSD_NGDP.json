@@ -1,0 +1,21 @@
+{
+  "indicator": {
+    "dataset_id": "imf_NGSD_NGDP",
+    "source": "IMF",
+    "indicator_code": "NGSD_NGDP",
+    "name_ko": "국민총저축률 (GDP 비)",
+    "name_en": "Gross national savings (% of GDP)",
+    "category": "economy",
+    "subcategory": "savings",
+    "unit": "%",
+    "description_ko": "국민총저축 / GDP.",
+    "license": "IMF Open Data",
+    "update_frequency": "annual",
+    "coverage_years": [
+      1980,
+      2030
+    ]
+  },
+  "records": [],
+  "built_at": "2026-05-20T11:10:30.497192Z"
+}

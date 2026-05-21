@@ -1,0 +1,21 @@
+{
+  "indicator": {
+    "dataset_id": "who_tobacco_use",
+    "source": "WHO",
+    "indicator_code": "M_Est_smk_curr_std",
+    "name_ko": "흡연율 (성인, 연령표준화)",
+    "name_en": "Current tobacco use (15+, age-std)",
+    "category": "development",
+    "subcategory": "health",
+    "unit": "%",
+    "description_ko": "15세 이상 인구 중 현재 흡연 비율(연령표준화).",
+    "license": "CC BY-NC-SA 3.0 IGO",
+    "update_frequency": "annual",
+    "coverage_years": [
+      2000,
+      2025
+    ]
+  },
+  "records": [],
+  "built_at": "2026-05-20T11:10:51.070471Z"
+}

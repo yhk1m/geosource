@@ -6,6 +6,9 @@
 <title>GeoSource</title>
 <meta name="description" content="World Bank, KOSIS, WMO, FAO, IEA, IMF 등 공식 통계기관의 지리·통계 데이터를 단일 표준으로 모아 제공합니다.">
 
+<!-- 파비콘 -->
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+
 <!-- 폰트 -->
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
@@ -79,33 +82,12 @@ header.masthead {
 }
 .brand-mark {
   width: 56px; height: 56px;
-  border: 1.5px solid var(--ink);
-  border-radius: 50%;
-  position: relative; flex-shrink: 0;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.brand-mark::before, .brand-mark::after {
-  content: ''; position: absolute; background: var(--ink);
-}
-.brand-mark::before { /* 적도 */
-  left: -2px; right: -2px; top: 50%;
-  height: 1px; transform: translateY(-50%);
-}
-.brand-mark::after { /* 본초자오선 */
-  top: -2px; bottom: -2px; left: 50%;
-  width: 1px; transform: translateX(-50%);
-}
-.brand-mark .meridian {
-  position: absolute; inset: 0;
-  border-radius: 50%; border: 1px solid var(--ink);
-  border-top-color: transparent; border-bottom-color: transparent;
-  transform: scaleX(0.55);
-}
-.brand-mark .meridian-2 {
-  position: absolute; inset: 0;
-  border-radius: 50%; border: 1px solid var(--ink-faint);
-  border-left-color: transparent; border-right-color: transparent;
-  transform: scaleY(0.55);
-}
+.brand-mark svg { width: 100%; height: 100%; display: block; }
 .brand-text h1 {
   font-family: var(--font-display);
   font-size: 36px; font-weight: 700;
@@ -131,29 +113,57 @@ header.masthead {
 }
 .coords .label { color: var(--terra); }
 
-/* 우상단 — 출처별 마지막 갱신 */
+/* 우상단 — 출처별 마지막 갱신 (드롭다운) */
 .build-status {
-  text-align: right;
+  position: relative;
   font-size: 11px;
   color: var(--ink-faint);
-  min-width: 220px;
 }
-.build-status-title {
+.build-status-toggle {
+  font-family: var(--font-mono);
   font-size: 10px;
   letter-spacing: 1.5px;
   text-transform: uppercase;
   color: var(--ink-soft);
-  margin-bottom: 6px;
-  border-bottom: 1px solid var(--line-soft);
-  padding-bottom: 4px;
+  background: transparent;
+  border: 1px solid var(--line);
+  padding: 5px 10px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   white-space: nowrap;
+  transition: all 0.15s;
+}
+.build-status-toggle:hover {
+  border-color: var(--ocean);
+  color: var(--ocean);
+}
+.build-status-toggle .caret {
+  font-size: 8px;
+  transition: transform 0.15s;
+}
+.build-status.open .build-status-toggle .caret {
+  transform: rotate(180deg);
 }
 .build-status-list {
-  display: grid;
+  display: none;
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 50;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  box-shadow: 0 6px 18px rgba(11, 31, 58, 0.08);
+  padding: 10px 14px;
+  min-width: 220px;
   grid-template-columns: 1fr auto;
   column-gap: 14px;
-  row-gap: 2px;
+  row-gap: 3px;
   align-items: baseline;
+}
+.build-status.open .build-status-list {
+  display: grid;
 }
 .build-status-list .bs-src {
   text-align: left;
@@ -165,6 +175,24 @@ header.masthead {
   color: var(--ocean);
   white-space: nowrap;
 }
+/* 우상단 카피라이트 + 마지막 갱신 컨테이너 */
+.masthead-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+.masthead-copyright {
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--ink-faint);
+  letter-spacing: 0.5px;
+  line-height: 1.6;
+}
+.masthead-copyright a { color: var(--ocean); text-decoration: none; }
+.masthead-copyright a:hover { text-decoration: underline; }
+.masthead-copyright .muted { margin-top: 4px; color: var(--ink-faint); }
 
 /* 스코프 탭 */
 .scope-tabs {
@@ -302,6 +330,79 @@ aside.catalog {
 }
 
 .indicator-list { display: flex; flex-direction: column; gap: 2px; }
+
+.indicator-pager {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-family: var(--font-mono);
+}
+.indicator-pager:empty { display: none; }
+.indicator-pager .pager-sizes {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.indicator-pager .pager-label {
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-right: 4px;
+}
+.indicator-pager .pp-btn {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 4px 9px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.indicator-pager .pp-btn:hover {
+  border-color: var(--ocean);
+  color: var(--ocean);
+}
+.indicator-pager .pp-btn.active {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+.indicator-pager .pager-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.indicator-pager .pager-arrow {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 1;
+  padding: 4px 11px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.indicator-pager .pager-arrow:hover:not([disabled]) {
+  border-color: var(--ocean);
+  color: var(--ocean);
+}
+.indicator-pager .pager-arrow[disabled] {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.indicator-pager .pager-info {
+  font-size: 11px;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
 .indicator-item {
   padding: 11px 12px 11px 14px;
   border-left: 3px solid transparent;
@@ -733,8 +834,7 @@ footer.colophon {
   font-family: var(--font-mono); font-size: 10.5px;
   color: var(--ink-faint);
   letter-spacing: 0.5px;
-  display: flex; justify-content: space-between;
-  flex-wrap: wrap; gap: 16px;
+  text-align: right;
 }
 footer.colophon a { color: var(--ocean); text-decoration: none; }
 footer.colophon a:hover { text-decoration: underline; }
@@ -766,16 +866,30 @@ footer.colophon a:hover { text-decoration: underline; }
   <div class="masthead-row">
     <div class="brand">
       <div class="brand-mark">
-        <div class="meridian"></div>
-        <div class="meridian-2"></div>
+        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="16" cy="16" r="9" fill="none" stroke="#0B2447" stroke-width="1.5"/>
+          <ellipse cx="16" cy="16" rx="9" ry="3" fill="none" stroke="#19376D" stroke-width="1" opacity="0.8"/>
+          <ellipse cx="16" cy="16" rx="3" ry="9" fill="none" stroke="#19376D" stroke-width="1" opacity="0.8"/>
+          <circle cx="11" cy="11" r="1.6" fill="#5BA4E6"/>
+          <circle cx="21" cy="13" r="1.6" fill="#5BA4E6"/>
+          <circle cx="14" cy="22" r="1.6" fill="#5BA4E6"/>
+        </svg>
       </div>
       <div class="brand-text">
         <h1>Geo<em>Source</em></h1>
       </div>
     </div>
-    <div class="build-status">
-      <div class="build-status-title">마지막 갱신</div>
-      <div class="build-status-list" id="build-status-list"></div>
+    <div class="masthead-meta">
+      <div class="masthead-copyright">
+        <div>Copyright 2026. 양정고등학교 김용현 | <a href="https://bgnl.kr" target="_blank" rel="noopener">https://bgnl.kr</a></div>
+        <div class="muted">데이터는 각 출처의 라이선스를 따릅니다.</div>
+      </div>
+      <div class="build-status" id="build-status">
+        <button type="button" class="build-status-toggle" id="build-status-toggle">
+          마지막 갱신 <span class="caret">▾</span>
+        </button>
+        <div class="build-status-list" id="build-status-list"></div>
+      </div>
     </div>
   </div>
   <div class="scope-tabs" id="scope-tabs">
@@ -798,6 +912,7 @@ footer.colophon a:hover { text-decoration: underline; }
     </div>
     <div class="category-chips" id="category-chips"></div>
     <div class="indicator-list" id="indicator-list"></div>
+    <div class="indicator-pager" id="indicator-pager"></div>
   </aside>
 
   <section class="viewer" id="viewer">
@@ -812,13 +927,8 @@ footer.colophon a:hover { text-decoration: underline; }
 
 <footer class="colophon">
   <div>
-    <div>Copyright 2026. 양정고등학교 김용현 | <a href="https://bgnl.kr" target="_blank" rel="noopener">https://bgnl.kr</a></div>
-    <div style="margin-top:6px">데이터는 각 출처의 라이선스를 따릅니다.</div>
-  </div>
-  <div>
     World Bank Open Data <a href="https://datacatalog.worldbank.org/public-licenses#cc-by" target="_blank">CC BY 4.0</a>
     · KOSIS <a href="https://www.kogl.or.kr/info/license.do" target="_blank">KOGL</a>
-    · <a href="admin.html">관리</a>
   </div>
 </footer>
 
@@ -870,21 +980,211 @@ const INDICATORS = [
     description_ko: "출생 시 기대수명(전체).",
     license: "CC BY 4.0" },
 
-  // ── World Bank 추가 ─────────────────────────────────────
-  { dataset_id: "wb_IT.NET.USER.ZS", source: "World Bank", code: "IT.NET.USER.ZS",
-    name_ko: "인터넷 사용률", name_en: "Individuals using the Internet (% of population)",
-    category: "development", unit: "%",
-    description_ko: "전체 인구 중 인터넷을 사용하는 인구의 비율.",
+  // ── World Bank: 인구·인구구조 ───────────────────────────
+  { dataset_id: "wb_SP.POP.GROW", source: "World Bank", code: "SP.POP.GROW",
+    name_ko: "인구 증가율", name_en: "Population growth (annual %)",
+    category: "population", unit: "%",
+    description_ko: "전년 대비 연간 인구 증가율.",
     license: "CC BY 4.0" },
+  { dataset_id: "wb_SP.DYN.TFRT.IN", source: "World Bank", code: "SP.DYN.TFRT.IN",
+    name_ko: "합계출산율", name_en: "Total fertility rate (births/woman)",
+    category: "population", unit: "명/여성",
+    description_ko: "여성 1명이 평생 낳을 것으로 기대되는 자녀 수.",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_SP.DYN.CBRT.IN", source: "World Bank", code: "SP.DYN.CBRT.IN",
+    name_ko: "조출생률", name_en: "Crude birth rate (per 1,000)",
+    category: "population", unit: "‰",
+    description_ko: "인구 1,000명당 연간 출생아 수.",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_SP.DYN.CDRT.IN", source: "World Bank", code: "SP.DYN.CDRT.IN",
+    name_ko: "조사망률", name_en: "Crude death rate (per 1,000)",
+    category: "population", unit: "‰",
+    description_ko: "인구 1,000명당 연간 사망자 수.",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_SP.DYN.IMRT.IN", source: "World Bank", code: "SP.DYN.IMRT.IN",
+    name_ko: "영아 사망률", name_en: "Infant mortality rate (per 1,000 live births)",
+    category: "population", unit: "‰",
+    description_ko: "출생 1,000명당 1세 미만 사망 영아 수.",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_SP.POP.65UP.TO.ZS", source: "World Bank", code: "SP.POP.65UP.TO.ZS",
+    name_ko: "65세 이상 인구 비율", name_en: "Population ages 65+ (% of total)",
+    category: "population", unit: "%",
+    description_ko: "고령화 지표. 7%↑ 고령화사회, 14%↑ 고령사회, 20%↑ 초고령사회.",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_SP.POP.0014.TO.ZS", source: "World Bank", code: "SP.POP.0014.TO.ZS",
+    name_ko: "0-14세 인구 비율", name_en: "Population ages 0-14 (% of total)",
+    category: "population", unit: "%",
+    description_ko: "유소년 부양 부담을 보여주는 지표.",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_SP.POP.DPND.OL", source: "World Bank", code: "SP.POP.DPND.OL",
+    name_ko: "노년 부양비", name_en: "Age dependency ratio, old",
+    category: "population", unit: "%",
+    description_ko: "생산가능인구 100명당 65세 이상 인구 수.",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_SP.POP.DPND.YG", source: "World Bank", code: "SP.POP.DPND.YG",
+    name_ko: "유년 부양비", name_en: "Age dependency ratio, young",
+    category: "population", unit: "%",
+    description_ko: "생산가능인구 100명당 0-14세 인구 수.",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_SM.POP.NETM", source: "World Bank", code: "SM.POP.NETM",
+    name_ko: "순이주", name_en: "Net migration",
+    category: "population", unit: "명",
+    description_ko: "유입 이주민 − 유출 이주민(5년 누적).",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_EN.POP.DNST", source: "World Bank", code: "EN.POP.DNST",
+    name_ko: "인구 밀도", name_en: "Population density (per km²)",
+    category: "population", unit: "명/km²",
+    description_ko: "국토 면적당 인구 수.",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_SP.URB.GROW", source: "World Bank", code: "SP.URB.GROW",
+    name_ko: "도시 인구 증가율", name_en: "Urban population growth (annual %)",
+    category: "population", unit: "%",
+    description_ko: "전년 대비 도시 거주 인구 증가율.",
+    license: "CC BY 4.0" },
+
+  // ── World Bank: 경제·산업구조 ───────────────────────────
+  { dataset_id: "wb_NV.AGR.TOTL.ZS", source: "World Bank", code: "NV.AGR.TOTL.ZS",
+    name_ko: "농업 부가가치 (GDP 비)", name_en: "Agriculture value added (% of GDP)",
+    category: "economy", unit: "%",
+    description_ko: "GDP에서 농림어업이 차지하는 비중.",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_NV.IND.TOTL.ZS", source: "World Bank", code: "NV.IND.TOTL.ZS",
+    name_ko: "산업 부가가치 (GDP 비)", name_en: "Industry value added (% of GDP)",
+    category: "economy", unit: "%",
+    description_ko: "GDP에서 광업·제조업·건설업·전력가스가 차지하는 비중.",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_NV.IND.MANF.ZS", source: "World Bank", code: "NV.IND.MANF.ZS",
+    name_ko: "제조업 부가가치 (GDP 비)", name_en: "Manufacturing value added (% of GDP)",
+    category: "economy", unit: "%",
+    description_ko: "GDP에서 제조업이 차지하는 비중.",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_NV.SRV.TOTL.ZS", source: "World Bank", code: "NV.SRV.TOTL.ZS",
+    name_ko: "서비스업 부가가치 (GDP 비)", name_en: "Services value added (% of GDP)",
+    category: "economy", unit: "%",
+    description_ko: "GDP에서 서비스업이 차지하는 비중. 후기산업화 지표.",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_SI.POV.GINI", source: "World Bank", code: "SI.POV.GINI",
+    name_ko: "지니계수", name_en: "Gini index",
+    category: "economy", unit: "지수",
+    description_ko: "소득 불평등 정도(0=완전평등, 100=완전불평등).",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_SI.POV.DDAY", source: "World Bank", code: "SI.POV.DDAY",
+    name_ko: "극빈율 ($2.15/일)", name_en: "Poverty headcount ratio at $2.15/day",
+    category: "economy", unit: "%",
+    description_ko: "하루 2.15달러(2017 PPP) 미만으로 사는 인구 비율.",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_SL.UEM.TOTL.ZS", source: "World Bank", code: "SL.UEM.TOTL.ZS",
+    name_ko: "실업률", name_en: "Unemployment rate (% of labor force)",
+    category: "economy", unit: "%",
+    description_ko: "노동력 대비 실업자 비율(ILO 추정치).",
+    license: "CC BY 4.0" },
+
+  // ── World Bank: 무역·세계화 ─────────────────────────────
   { dataset_id: "wb_NE.TRD.GNFS.ZS", source: "World Bank", code: "NE.TRD.GNFS.ZS",
     name_ko: "무역의존도", name_en: "Trade (% of GDP)",
     category: "trade", unit: "%",
-    description_ko: "재화·서비스의 수출입 합계가 GDP에서 차지하는 비율.",
+    description_ko: "GDP 대비 (수출+수입) 합계. 무역 개방도 지표.",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_NE.EXP.GNFS.ZS", source: "World Bank", code: "NE.EXP.GNFS.ZS",
+    name_ko: "수출 (GDP 비)", name_en: "Exports of goods and services (% of GDP)",
+    category: "trade", unit: "%",
+    description_ko: "GDP 대비 상품·서비스 수출액.",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_NE.IMP.GNFS.ZS", source: "World Bank", code: "NE.IMP.GNFS.ZS",
+    name_ko: "수입 (GDP 비)", name_en: "Imports of goods and services (% of GDP)",
+    category: "trade", unit: "%",
+    description_ko: "GDP 대비 상품·서비스 수입액.",
     license: "CC BY 4.0" },
   { dataset_id: "wb_BX.KLT.DINV.WD.GD.ZS", source: "World Bank", code: "BX.KLT.DINV.WD.GD.ZS",
-    name_ko: "외국인직접투자(FDI) 유입", name_en: "Foreign direct investment, net inflows (% of GDP)",
-    category: "economy", unit: "%",
-    description_ko: "GDP 대비 외국인직접투자 순유입 비율.",
+    name_ko: "외국인직접투자 유입 (GDP 비)", name_en: "FDI net inflows (% of GDP)",
+    category: "trade", unit: "%",
+    description_ko: "GDP 대비 외국인직접투자 순유입. 개방도 지표.",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_TX.VAL.MRCH.CD.WT", source: "World Bank", code: "TX.VAL.MRCH.CD.WT",
+    name_ko: "상품 수출액", name_en: "Merchandise exports (current US$)",
+    category: "trade", unit: "USD",
+    description_ko: "상품 수출 총액(명목).",
+    license: "CC BY 4.0" },
+
+  // ── World Bank: 에너지·자원 ─────────────────────────────
+  { dataset_id: "wb_EG.ELC.RNEW.ZS", source: "World Bank", code: "EG.ELC.RNEW.ZS",
+    name_ko: "신재생 전력 비중", name_en: "Renewable electricity output (% of total)",
+    category: "energy", unit: "%",
+    description_ko: "전력 생산량 중 신재생에너지(수력 포함) 비중.",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_EG.FEC.RNEW.ZS", source: "World Bank", code: "EG.FEC.RNEW.ZS",
+    name_ko: "신재생에너지 소비 비중", name_en: "Renewable energy consumption (% of total)",
+    category: "energy", unit: "%",
+    description_ko: "최종에너지소비에서 재생가능에너지가 차지하는 비중.",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_EG.ELC.FOSL.ZS", source: "World Bank", code: "EG.ELC.FOSL.ZS",
+    name_ko: "화석연료 전력 비중", name_en: "Electricity from fossil fuels (% of total)",
+    category: "energy", unit: "%",
+    description_ko: "석탄·석유·천연가스 발전 비중.",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_EG.ELC.ACCS.ZS", source: "World Bank", code: "EG.ELC.ACCS.ZS",
+    name_ko: "전력 접근율", name_en: "Access to electricity (% of population)",
+    category: "energy", unit: "%",
+    description_ko: "전기를 사용할 수 있는 인구 비율.",
+    license: "CC BY 4.0" },
+
+  // ── World Bank: 환경·토지 ───────────────────────────────
+  { dataset_id: "wb_AG.LND.AGRI.ZS", source: "World Bank", code: "AG.LND.AGRI.ZS",
+    name_ko: "농업용지 비율", name_en: "Agricultural land (% of land area)",
+    category: "environment", unit: "%",
+    description_ko: "국토 중 농경지·목초지 등 농업 용도 비율.",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_AG.LND.ARBL.ZS", source: "World Bank", code: "AG.LND.ARBL.ZS",
+    name_ko: "경작지 비율", name_en: "Arable land (% of land area)",
+    category: "environment", unit: "%",
+    description_ko: "국토 중 일년생 작물 재배 가능 토지 비율.",
+    license: "CC BY 4.0" },
+
+  // ── World Bank: 개발·사회 (인권·복지) ────────────────────
+  { dataset_id: "wb_SE.PRM.ENRR", source: "World Bank", code: "SE.PRM.ENRR",
+    name_ko: "초등 교육 등록률", name_en: "School enrollment, primary (% gross)",
+    category: "development", unit: "%",
+    description_ko: "초등학교 등록 인구 / 초등 학령 인구. 100% 초과 가능.",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_SE.SEC.ENRR", source: "World Bank", code: "SE.SEC.ENRR",
+    name_ko: "중등 교육 등록률", name_en: "School enrollment, secondary (% gross)",
+    category: "development", unit: "%",
+    description_ko: "중등학교 등록률.",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_SE.TER.ENRR", source: "World Bank", code: "SE.TER.ENRR",
+    name_ko: "고등 교육 등록률", name_en: "School enrollment, tertiary (% gross)",
+    category: "development", unit: "%",
+    description_ko: "대학·전문대 등록률.",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_SE.ADT.LITR.ZS", source: "World Bank", code: "SE.ADT.LITR.ZS",
+    name_ko: "성인 문해율", name_en: "Adult literacy rate (% age 15+)",
+    category: "development", unit: "%",
+    description_ko: "15세 이상 인구 중 읽고 쓸 줄 아는 인구 비율.",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_SH.STA.MMRT", source: "World Bank", code: "SH.STA.MMRT",
+    name_ko: "모성 사망률", name_en: "Maternal mortality (per 100,000 live births)",
+    category: "development", unit: "명/10만명",
+    description_ko: "출생 10만 명당 임신·출산 관련 사망 산모 수.",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_SH.STA.BASS.ZS", source: "World Bank", code: "SH.STA.BASS.ZS",
+    name_ko: "기본 위생시설 접근율", name_en: "Access to basic sanitation",
+    category: "development", unit: "%",
+    description_ko: "개량 위생시설을 이용하는 인구 비율.",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_SH.H2O.BASW.ZS", source: "World Bank", code: "SH.H2O.BASW.ZS",
+    name_ko: "안전한 식수 접근율", name_en: "Access to basic drinking water",
+    category: "development", unit: "%",
+    description_ko: "안전한 식수원을 이용하는 인구 비율.",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_IT.NET.USER.ZS", source: "World Bank", code: "IT.NET.USER.ZS",
+    name_ko: "인터넷 사용률", name_en: "Individuals using the Internet (% of population)",
+    category: "development", unit: "%",
+    description_ko: "최근 3개월 내 인터넷을 사용한 인구 비율.",
+    license: "CC BY 4.0" },
+  { dataset_id: "wb_IT.CEL.SETS.P2", source: "World Bank", code: "IT.CEL.SETS.P2",
+    name_ko: "휴대전화 가입률", name_en: "Mobile cellular subscriptions (per 100 people)",
+    category: "development", unit: "건/100명",
+    description_ko: "인구 100명당 휴대전화 가입 건수.",
     license: "CC BY 4.0" },
 
   // ── IMF World Economic Outlook ───────────────────────────
@@ -919,33 +1219,79 @@ const INDICATORS = [
     description_ko: "경상수지가 GDP에서 차지하는 비율 (IMF WEO).",
     license: "IMF Open Data" },
 
+  // ── IMF: 1인당 GDP / 구매력 평가 ─────────────────────────
+  { dataset_id: "imf_NGDPDPC", source: "IMF", code: "NGDPDPC",
+    name_ko: "1인당 GDP (명목, USD)", name_en: "GDP per capita, current prices (USD)",
+    category: "economy", unit: "USD",
+    description_ko: "명목 1인당 GDP (IMF WEO).",
+    license: "IMF Open Data" },
+  { dataset_id: "imf_PPPPC", source: "IMF", code: "PPPPC",
+    name_ko: "1인당 GDP (PPP)", name_en: "GDP per capita, PPP (international $)",
+    category: "economy", unit: "국제달러",
+    description_ko: "구매력 평가 기준 1인당 GDP. 국가 간 생활수준 비교에 적합.",
+    license: "IMF Open Data" },
+  { dataset_id: "imf_PPPGDP", source: "IMF", code: "PPPGDP",
+    name_ko: "GDP (PPP)", name_en: "GDP, PPP (billions of international $)",
+    category: "economy", unit: "십억 국제달러",
+    description_ko: "구매력 평가 기준 GDP 총액.",
+    license: "IMF Open Data" },
+  { dataset_id: "imf_PPPSH", source: "IMF", code: "PPPSH",
+    name_ko: "세계 GDP 점유율 (PPP)", name_en: "Share of world GDP, PPP (%)",
+    category: "economy", unit: "%",
+    description_ko: "구매력 평가 기준 세계 GDP에서 차지하는 비중.",
+    license: "IMF Open Data" },
+
+  // ── IMF: 저축·투자 ──────────────────────────────────────
+  { dataset_id: "imf_NGSD_NGDP", source: "IMF", code: "NGSD_NGDP",
+    name_ko: "국민총저축률 (GDP 비)", name_en: "Gross national savings (% of GDP)",
+    category: "economy", unit: "%",
+    description_ko: "국민총저축 / GDP.",
+    license: "IMF Open Data" },
+  { dataset_id: "imf_NID_NGDP", source: "IMF", code: "NID_NGDP",
+    name_ko: "총투자율 (GDP 비)", name_en: "Total investment (% of GDP)",
+    category: "economy", unit: "%",
+    description_ko: "총고정자본형성+재고변동 / GDP.",
+    license: "IMF Open Data" },
+
+  // ── IMF: 정부 재정 ──────────────────────────────────────
+  { dataset_id: "imf_GGR_NGDP", source: "IMF", code: "GGR_NGDP",
+    name_ko: "정부 수입 (GDP 비)", name_en: "General government revenue (% of GDP)",
+    category: "economy", unit: "%",
+    description_ko: "조세+사회보험료 등 정부 총수입 / GDP.",
+    license: "IMF Open Data" },
+  { dataset_id: "imf_GGX_NGDP", source: "IMF", code: "GGX_NGDP",
+    name_ko: "정부 지출 (GDP 비)", name_en: "General government expenditure (% of GDP)",
+    category: "economy", unit: "%",
+    description_ko: "정부 총지출 / GDP.",
+    license: "IMF Open Data" },
+
   // ── FAO STAT (정적 JSON) ─────────────────────────────────
-  { dataset_id: "fao_QCL_15_2510", source: "FAO", code: "QCL/15/2510",
+  { dataset_id: "fao_QCL_15_5510", source: "FAO", code: "QCL/15/5510",
     name_ko: "밀 생산량", name_en: "Wheat production",
     category: "agriculture", unit: "t",
     description_ko: "연간 밀 생산량(톤). FAOSTAT QCL 도메인.",
     license: "CC BY-NC-SA 3.0 IGO" },
-  { dataset_id: "fao_QCL_27_2510", source: "FAO", code: "QCL/27/2510",
+  { dataset_id: "fao_QCL_27_5510", source: "FAO", code: "QCL/27/5510",
     name_ko: "쌀(벼) 생산량", name_en: "Rice (paddy) production",
     category: "agriculture", unit: "t",
     description_ko: "연간 벼(쌀) 생산량(톤). 도정 전 paddy 기준.",
     license: "CC BY-NC-SA 3.0 IGO" },
-  { dataset_id: "fao_QCL_56_2510", source: "FAO", code: "QCL/56/2510",
+  { dataset_id: "fao_QCL_56_5510", source: "FAO", code: "QCL/56/5510",
     name_ko: "옥수수 생산량", name_en: "Maize (corn) production",
     category: "agriculture", unit: "t",
     description_ko: "연간 옥수수 생산량(톤).",
     license: "CC BY-NC-SA 3.0 IGO" },
-  { dataset_id: "fao_QCL_866_2111", source: "FAO", code: "QCL/866/2111",
+  { dataset_id: "fao_QCL_866_5111", source: "FAO", code: "QCL/866/5111",
     name_ko: "소 사육두수", name_en: "Cattle stocks",
     category: "agriculture", unit: "head",
     description_ko: "연말 시점 소 사육두수(마리).",
     license: "CC BY-NC-SA 3.0 IGO" },
-  { dataset_id: "fao_QCL_1034_2111", source: "FAO", code: "QCL/1034/2111",
+  { dataset_id: "fao_QCL_1034_5111", source: "FAO", code: "QCL/1034/5111",
     name_ko: "돼지 사육두수", name_en: "Swine / pigs stocks",
     category: "agriculture", unit: "head",
     description_ko: "연말 시점 돼지 사육두수(마리).",
     license: "CC BY-NC-SA 3.0 IGO" },
-  { dataset_id: "fao_QCL_976_2111", source: "FAO", code: "QCL/976/2111",
+  { dataset_id: "fao_QCL_976_5111", source: "FAO", code: "QCL/976/5111",
     name_ko: "양 사육두수", name_en: "Sheep stocks",
     category: "agriculture", unit: "head",
     description_ko: "연말 시점 양 사육두수(마리).",
@@ -959,6 +1305,73 @@ const INDICATORS = [
     name_ko: "1인당 일일 식이에너지 공급", name_en: "Dietary energy supply (kcal/cap/day)",
     category: "agriculture", unit: "kcal/cap/day",
     description_ko: "1인당 1일 식이에너지 공급량. Food Balance Sheets.",
+    license: "CC BY-NC-SA 3.0 IGO" },
+  { dataset_id: "fao_QCL_236_5510", source: "FAO", code: "QCL/236/5510",
+    name_ko: "콩(대두) 생산량", name_en: "Soybean production",
+    category: "agriculture", unit: "t",
+    description_ko: "연간 대두 생산량(톤). 주요 단백질 작물.",
+    license: "CC BY-NC-SA 3.0 IGO" },
+  { dataset_id: "fao_QCL_116_5510", source: "FAO", code: "QCL/116/5510",
+    name_ko: "감자 생산량", name_en: "Potato production",
+    category: "agriculture", unit: "t",
+    description_ko: "연간 감자 생산량(톤).",
+    license: "CC BY-NC-SA 3.0 IGO" },
+  { dataset_id: "fao_QCL_44_5510", source: "FAO", code: "QCL/44/5510",
+    name_ko: "보리 생산량", name_en: "Barley production",
+    category: "agriculture", unit: "t",
+    description_ko: "연간 보리 생산량(톤).",
+    license: "CC BY-NC-SA 3.0 IGO" },
+  { dataset_id: "fao_QCL_156_5510", source: "FAO", code: "QCL/156/5510",
+    name_ko: "사탕수수 생산량", name_en: "Sugar cane production",
+    category: "agriculture", unit: "t",
+    description_ko: "연간 사탕수수 생산량(톤). 열대·아열대 주요 작물.",
+    license: "CC BY-NC-SA 3.0 IGO" },
+  { dataset_id: "fao_QCL_1057_5111", source: "FAO", code: "QCL/1057/5111",
+    name_ko: "닭 사육수", name_en: "Chicken stocks",
+    category: "agriculture", unit: "마리",
+    description_ko: "연말 시점 닭 사육 마릿수.",
+    license: "CC BY-NC-SA 3.0 IGO" },
+  { dataset_id: "fao_QCL_882_5510", source: "FAO", code: "QCL/882/5510",
+    name_ko: "우유 생산량", name_en: "Milk production (cow, whole fresh)",
+    category: "agriculture", unit: "t",
+    description_ko: "연간 생우유 생산량(톤). 젖소 기준.",
+    license: "CC BY-NC-SA 3.0 IGO" },
+
+  // ── FAO: 열대·상품작물 (세계지리 농업·세계화) ──────────
+  { dataset_id: "fao_QCL_656_5510", source: "FAO", code: "QCL/656/5510",
+    name_ko: "커피 생산량", name_en: "Coffee, green production",
+    category: "agriculture", unit: "t",
+    description_ko: "연간 생두 생산량(톤). 브라질·베트남·콜롬비아 등 열대 핵심 수출 작물.",
+    license: "CC BY-NC-SA 3.0 IGO" },
+  { dataset_id: "fao_QCL_661_5510", source: "FAO", code: "QCL/661/5510",
+    name_ko: "카카오 생산량", name_en: "Cocoa beans production",
+    category: "agriculture", unit: "t",
+    description_ko: "연간 카카오 콩 생산량(톤). 코트디부아르·가나·인도네시아.",
+    license: "CC BY-NC-SA 3.0 IGO" },
+  { dataset_id: "fao_QCL_254_5510", source: "FAO", code: "QCL/254/5510",
+    name_ko: "야자열매(팜오일 원료) 생산량", name_en: "Oil palm fruit production",
+    category: "agriculture", unit: "t",
+    description_ko: "연간 야자열매 생산량(톤). 팜오일 원료, 인도네시아·말레이시아가 세계 80%.",
+    license: "CC BY-NC-SA 3.0 IGO" },
+  { dataset_id: "fao_QCL_667_5510", source: "FAO", code: "QCL/667/5510",
+    name_ko: "차(잎) 생산량", name_en: "Tea leaves production",
+    category: "agriculture", unit: "t",
+    description_ko: "연간 차잎 생산량(톤). 중국·인도·케냐가 주요 생산국.",
+    license: "CC BY-NC-SA 3.0 IGO" },
+  { dataset_id: "fao_QCL_329_5510", source: "FAO", code: "QCL/329/5510",
+    name_ko: "면화(린트) 생산량", name_en: "Cotton lint production",
+    category: "agriculture", unit: "t",
+    description_ko: "연간 면화 린트 생산량(톤). 중국·인도·미국·중앙아시아.",
+    license: "CC BY-NC-SA 3.0 IGO" },
+  { dataset_id: "fao_QCL_836_5510", source: "FAO", code: "QCL/836/5510",
+    name_ko: "천연고무 생산량", name_en: "Natural rubber production",
+    category: "agriculture", unit: "t",
+    description_ko: "연간 천연고무 생산량(톤). 태국·인도네시아·베트남 등 동남아 집중.",
+    license: "CC BY-NC-SA 3.0 IGO" },
+  { dataset_id: "fao_QCL_486_5510", source: "FAO", code: "QCL/486/5510",
+    name_ko: "바나나 생산량", name_en: "Banana production",
+    category: "agriculture", unit: "t",
+    description_ko: "연간 바나나 생산량(톤). 인도·중국·필리핀·에콰도르.",
     license: "CC BY-NC-SA 3.0 IGO" },
 
   // ── KOSIS (정적 JSON, 한국 시도/시군구 단위) ─────────────
@@ -1054,6 +1467,64 @@ const INDICATORS = [
     description_ko: "정기적으로 종교의식에 참석하는 인구 비율. World Values Survey + Pew.",
     license: "CC BY 4.0" },
 
+  // ── OWID: 개발·인권·문화 종합 지수 ──────────────────────
+  { dataset_id: "owid_human_development_index", source: "OWID", code: "human-development-index",
+    name_ko: "인간개발지수 (HDI)", name_en: "Human Development Index",
+    category: "development", unit: "지수",
+    description_ko: "UNDP HDI. 기대수명·교육·소득의 종합지표 (0~1).",
+    license: "CC BY 4.0" },
+  { dataset_id: "owid_gender_inequality_index", source: "OWID", code: "gender-inequality-index-from-the-human-development-report",
+    name_ko: "성 불평등 지수 (GII)", name_en: "Gender Inequality Index",
+    category: "development", unit: "지수",
+    description_ko: "UNDP 성 불평등 지수 (0=평등, 1=불평등).",
+    license: "CC BY 4.0" },
+  { dataset_id: "owid_democracy_index_eiu", source: "OWID", code: "democracy-index-eiu",
+    name_ko: "민주주의 지수 (EIU)", name_en: "Democracy Index (EIU)",
+    category: "development", unit: "지수",
+    description_ko: "EIU 민주주의 지수 (0~10). 8↑ 완전민주, 6↑ 결함민주.",
+    license: "CC BY 4.0" },
+  { dataset_id: "owid_press_freedom_rsf", source: "OWID", code: "press-freedom-rsf",
+    name_ko: "언론자유 점수 (RSF)", name_en: "Press Freedom Score (RSF)",
+    category: "development", unit: "점",
+    description_ko: "국경 없는 기자회 언론자유 점수. 낮을수록 자유로움.",
+    license: "CC BY 4.0" },
+  { dataset_id: "owid_corruption_perception_index", source: "OWID", code: "corruption-perception-index",
+    name_ko: "부패인식지수 (CPI)", name_en: "Corruption Perceptions Index",
+    category: "development", unit: "점",
+    description_ko: "국제투명성기구 CPI (0=매우 부패, 100=청렴).",
+    license: "CC BY 4.0" },
+  // ── WHO Global Health Observatory ────────────────────────
+  { dataset_id: "who_physicians_density", source: "WHO", code: "HWF_0001",
+    name_ko: "의사 밀도 (인구 1만 명당)", name_en: "Medical doctors (per 10,000)",
+    category: "development", unit: "명/만명",
+    description_ko: "인구 1만 명당 의사 수. 의료 접근성 지표.",
+    license: "CC BY-NC-SA 3.0 IGO" },
+  { dataset_id: "who_hospital_beds", source: "WHO", code: "WHS6_102",
+    name_ko: "병상 수 (인구 1만 명당)", name_en: "Hospital beds (per 10,000)",
+    category: "development", unit: "개/만명",
+    description_ko: "인구 1만 명당 병상 수.",
+    license: "CC BY-NC-SA 3.0 IGO" },
+  { dataset_id: "who_alcohol_consumption", source: "WHO", code: "SA_0000001688",
+    name_ko: "1인당 알코올 소비량", name_en: "Alcohol consumption per capita (15+, L)",
+    category: "development", unit: "L/년",
+    description_ko: "15세 이상 1인당 연간 순수 알코올 소비량(리터).",
+    license: "CC BY-NC-SA 3.0 IGO" },
+  { dataset_id: "who_suicide_rate", source: "WHO", code: "MH_12",
+    name_ko: "자살률 (10만 명당)", name_en: "Suicide mortality rate (per 100,000)",
+    category: "development", unit: "명/10만명",
+    description_ko: "연간 자살 사망률, 인구 10만 명당, 연령표준화.",
+    license: "CC BY-NC-SA 3.0 IGO" },
+  { dataset_id: "who_obesity_adults", source: "WHO", code: "NCD_BMI_30A",
+    name_ko: "성인 비만율", name_en: "Obesity prevalence (BMI≥30, 18+, age-std)",
+    category: "development", unit: "%",
+    description_ko: "18세 이상 성인 중 BMI 30 이상 비율(연령표준화).",
+    license: "CC BY-NC-SA 3.0 IGO" },
+  { dataset_id: "who_tobacco_use", source: "WHO", code: "M_Est_smk_curr_std",
+    name_ko: "흡연율 (성인, 연령표준화)", name_en: "Current tobacco use (15+, age-std)",
+    category: "development", unit: "%",
+    description_ko: "15세 이상 인구 중 현재 흡연 비율(연령표준화).",
+    license: "CC BY-NC-SA 3.0 IGO" },
+
   // ── Pew Research (직접) — Religious Composition Projections 2010~2050 ─
   { dataset_id: "pew_religion_christian", source: "Pew Research Center", code: "Christians",
     name_ko: "기독교 신자 비율", name_en: "Christians (% of population)",
@@ -1107,6 +1578,8 @@ const CATEGORIES = [
   { key: "all",         label: "전체" },
   { key: "economy",     label: "경제" },
   { key: "population",  label: "인구" },
+  { key: "trade",       label: "무역" },
+  { key: "development", label: "개발·사회" },
   { key: "environment", label: "환경" },
   { key: "energy",      label: "에너지" },
   { key: "agriculture", label: "농업" },
@@ -1280,7 +1753,7 @@ function resetColor(iso) {
  * 스코프(세계/대한민국) ↔ 출처 매핑
  * ───────────────────────────────────────────────────────── */
 const SCOPE_SOURCES = {
-  world: ["World Bank", "IMF", "FAO", "Pew Research Center", "OWID", "WMO", "IEA"],
+  world: ["World Bank", "IMF", "FAO", "WHO", "Pew Research Center", "OWID", "WMO", "IEA"],
   korea: ["KOSIS"],
 };
 
@@ -1357,6 +1830,8 @@ const state = {
   indicatorB: null,     // 지표 B의 dataset_id
   operation: "none",    // none|divide|subtract|multiply|add|yoy_pct|index
   chart: null,
+  indPage: 1,
+  indPerPage: 10,
 };
 
 /* 스코프별 선택 캐시 — 탭 전환 시 복원 */
@@ -1531,6 +2006,7 @@ function renderSourcesBar() {
     el.onclick = () => {
       const src = el.dataset.source;
       state.selectedSource = (state.selectedSource === src) ? null : src;
+      state.indPage = 1;
       renderSourcesBar();
       renderIndicatorList();
     };
@@ -1549,6 +2025,7 @@ function renderScopeTabs() {
       state.scope = newScope;
       state.selectedCountries = scopeCache[newScope].slice();
       state.selectedSource = null;
+      state.indPage = 1;
 
       // 카테고리 리셋 (해당 스코프에 없으면)
       const visible = INDICATORS.filter(i => SCOPE_SOURCES[state.scope].includes(i.source));
@@ -1588,7 +2065,7 @@ function renderCategoryChips() {
   const el = document.getElementById("category-chips");
   el.innerHTML = html;
   el.querySelectorAll(".chip").forEach(btn =>
-    btn.onclick = () => { state.category = btn.dataset.cat; renderIndicatorList(); renderCategoryChips(); }
+    btn.onclick = () => { state.category = btn.dataset.cat; state.indPage = 1; renderIndicatorList(); renderCategoryChips(); }
   );
 }
 
@@ -1607,7 +2084,15 @@ function renderIndicatorList() {
   });
   document.getElementById("ind-count").textContent = `${filtered.length}종`;
 
-  const html = filtered.map(ind => {
+  const total = filtered.length;
+  const perPage = state.indPerPage;
+  const totalPages = Math.max(1, Math.ceil(total / perPage));
+  if (state.indPage > totalPages) state.indPage = totalPages;
+  if (state.indPage < 1) state.indPage = 1;
+  const startIdx = (state.indPage - 1) * perPage;
+  const pageItems = filtered.slice(startIdx, startIdx + perPage);
+
+  const itemsHtml = pageItems.map(ind => {
     const active = state.selectedIndicator?.dataset_id === ind.dataset_id;
     return `<div class="indicator-item ${active ? 'active' : ''}" data-id="${ind.dataset_id}">
       <div class="name">${ind.name_ko}</div>
@@ -1618,11 +2103,56 @@ function renderIndicatorList() {
       </div>
     </div>`;
   }).join("");
+
   const el = document.getElementById("indicator-list");
-  el.innerHTML = html || `<div style="color:var(--ink-faint);font-size:13px;padding:20px;text-align:center;">검색 결과 없음</div>`;
+  el.innerHTML = itemsHtml || `<div style="color:var(--ink-faint);font-size:13px;padding:20px;text-align:center;">검색 결과 없음</div>`;
   el.querySelectorAll(".indicator-item").forEach(item =>
     item.onclick = () => selectIndicator(item.dataset.id)
   );
+
+  renderIndicatorPagination(total, totalPages);
+}
+
+function renderIndicatorPagination(total, totalPages) {
+  const pager = document.getElementById("indicator-pager");
+  if (!pager) return;
+  if (total === 0) { pager.innerHTML = ""; return; }
+
+  const sizes = [5, 10, 15];
+  const sizeBtns = sizes.map(n =>
+    `<button class="pp-btn ${state.indPerPage === n ? 'active' : ''}" data-pp="${n}">${n}</button>`
+  ).join("");
+
+  const page = state.indPage;
+  const prevDisabled = page <= 1 ? 'disabled' : '';
+  const nextDisabled = page >= totalPages ? 'disabled' : '';
+
+  pager.innerHTML = `
+    <div class="pager-sizes">
+      <span class="pager-label">페이지당</span>
+      ${sizeBtns}
+    </div>
+    <div class="pager-nav">
+      <button class="pager-arrow" data-nav="prev" ${prevDisabled}>‹</button>
+      <span class="pager-info">${page} / ${totalPages}</span>
+      <button class="pager-arrow" data-nav="next" ${nextDisabled}>›</button>
+    </div>
+  `;
+
+  pager.querySelectorAll(".pp-btn").forEach(btn => {
+    btn.onclick = () => {
+      state.indPerPage = parseInt(btn.dataset.pp);
+      state.indPage = 1;
+      renderIndicatorList();
+    };
+  });
+  pager.querySelectorAll(".pager-arrow").forEach(btn => {
+    btn.onclick = () => {
+      if (btn.disabled) return;
+      state.indPage += (btn.dataset.nav === "next" ? 1 : -1);
+      renderIndicatorList();
+    };
+  });
 }
 
 /* ─────────────────────────────────────────────────────────
@@ -1869,8 +2399,7 @@ function renderViewer() {
 
     <div class="action-row">
       <span class="meta" id="record-meta">— 레코드</span>
-      <button class="btn" id="btn-csv">CSV 다운로드</button>
-      <button class="btn primary" id="btn-json">JSON 다운로드</button>
+      <button class="btn primary" id="btn-csv">CSV 다운로드</button>
     </div>
   `;
 
@@ -1929,7 +2458,6 @@ function renderViewer() {
     }
   );
   document.getElementById("btn-csv").onclick = downloadCSV;
-  document.getElementById("btn-json").onclick = downloadJSON;
 
   // 지표 연산 버튼 / B 셀렉터
   document.querySelectorAll("#op-buttons .op-btn").forEach(btn =>
@@ -2101,6 +2629,52 @@ function renderChart() {
   document.getElementById("chart-card").style.height = "440px";
 }
 
+const pieLabelsPlugin = {
+  id: 'pieLabels',
+  afterDatasetsDraw(chart) {
+    const { ctx, data } = chart;
+    const meta = chart.getDatasetMeta(0);
+    if (!meta || !meta.data) return;
+    const values = data.datasets[0].data;
+    const total = values.reduce((a, b) => a + (b || 0), 0);
+    if (!total) return;
+
+    ctx.save();
+    ctx.font = "600 11px Pretendard, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    meta.data.forEach((arc, i) => {
+      const val = values[i];
+      if (!val) return;
+      const pct = (val / total) * 100;
+      if (pct < 3) return; // 너무 좁은 조각은 생략 (가독성)
+
+      const { x, y, startAngle, endAngle, innerRadius, outerRadius } = arc.getProps(
+        ['x', 'y', 'startAngle', 'endAngle', 'innerRadius', 'outerRadius'],
+        true
+      );
+      const mid = (startAngle + endAngle) / 2;
+      const r = innerRadius + (outerRadius - innerRadius) * 0.62;
+      const tx = x + Math.cos(mid) * r;
+      const ty = y + Math.sin(mid) * r;
+
+      const label = data.labels[i];
+      const pctStr = pct.toFixed(1) + '%';
+
+      // 흰색 외곽선 → 어떤 배경색에서도 가독성 확보
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = 'rgba(255,255,255,0.92)';
+      ctx.fillStyle = '#0b1f3a';
+      ctx.strokeText(label, tx, ty - 7);
+      ctx.fillText(label, tx, ty - 7);
+      ctx.strokeText(pctStr, tx, ty + 7);
+      ctx.fillText(pctStr, tx, ty + 7);
+    });
+    ctx.restore();
+  }
+};
+
 function renderPieChart(canvas, records, unit) {
   // 사용자 지정 연도 우선, 없으면 가장 최근 데이터
   const targetYear = state.pieYear;
@@ -2127,12 +2701,15 @@ function renderPieChart(canvas, records, unit) {
     }
   });
 
+  const total = values.reduce((a, b) => a + b, 0);
+
   state.chart = new Chart(canvas.getContext("2d"), {
     type: 'pie',
     data: { labels, datasets: [{ data: values, backgroundColor: colors,
                                  borderColor: '#ffffff', borderWidth: 2 }] },
     options: {
       responsive: true, maintainAspectRatio: false,
+      layout: { padding: 8 },
       plugins: {
         legend: { position: 'right',
           labels: { font: { family: 'Pretendard', size: 12 }, color: '#0b1f3a',
@@ -2141,14 +2718,14 @@ function renderPieChart(canvas, records, unit) {
           backgroundColor: '#0b1f3a',
           callbacks: {
             label: ctx => {
-              const total = values.reduce((a,b) => a+b, 0);
               const pct = total ? (ctx.parsed / total * 100).toFixed(1) : '—';
               return `${ctx.label}: ${formatValue(ctx.parsed, unit)} (${pct}%)`;
             }
           }
         }
       }
-    }
+    },
+    plugins: [pieLabelsPlugin]
   });
   document.getElementById("chart-card").style.height = "440px";
 
@@ -2279,22 +2856,6 @@ function downloadCSV() {
   saveBlob(csv, derivedFilename(ind, op, indB, "csv"), "text/csv;charset=utf-8");
 }
 
-function downloadJSON() {
-  const ind = state.selectedIndicator;
-  const op = activeOp();
-  const indB = indicatorBObj();
-  const payload = {
-    indicator: ind,
-    operation: isDerived()
-      ? { key: op.key, label: op.label, indicator_b: indB || null }
-      : null,
-    records: getActiveRecords(),
-    built_at: new Date().toISOString(),
-    note: "GeoSource standard schema (bgnl.kr)"
-  };
-  saveBlob(JSON.stringify(payload, null, 2), derivedFilename(ind, op, indB, "json"), "application/json");
-}
-
 function derivedFilename(ind, op, indB, ext) {
   if (!isDerived()) return `${ind.dataset_id}.${ext}`;
   if (op.binary && indB) return `${ind.dataset_id}__${op.key}__${indB.dataset_id}.${ext}`;
@@ -2344,7 +2905,7 @@ async function loadBuildInfo() {
     if (!list || !info.per_source) return;
 
     // 우상단에 표시할 출처 순서 (등록 순서 유지)
-    const order = ["World Bank", "IMF", "FAO", "KOSIS", "OWID", "Pew Research Center"];
+    const order = ["World Bank", "IMF", "FAO", "WHO", "KOSIS", "OWID", "Pew Research Center"];
     const html = order
       .filter(s => info.per_source[s])
       .map(s => {
@@ -2357,6 +2918,22 @@ async function loadBuildInfo() {
   } catch (e) { /* build-info.json 없으면 조용히 무시 */ }
 }
 
+function setupBuildStatusDropdown() {
+  const wrap = document.getElementById("build-status");
+  const btn = document.getElementById("build-status-toggle");
+  if (!wrap || !btn) return;
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    wrap.classList.toggle("open");
+  });
+  document.addEventListener("click", (e) => {
+    if (!wrap.contains(e.target)) wrap.classList.remove("open");
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") wrap.classList.remove("open");
+  });
+}
+
 function init() {
   renderScopeTabs();
   renderSourcesBar();
@@ -2364,9 +2941,11 @@ function init() {
   renderIndicatorList();
   document.getElementById("search").oninput = (e) => {
     state.search = e.target.value;
+    state.indPage = 1;
     renderIndicatorList();
   };
   loadBuildInfo();
+  setupBuildStatusDropdown();
   fetchAllCountries();   // 비동기 — 검색창에서 결과로 사용
 }
 document.addEventListener("DOMContentLoaded", init);

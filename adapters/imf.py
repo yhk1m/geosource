@@ -107,6 +107,84 @@ INDICATORS: list[IndicatorMeta] = [
         update_frequency="annual",
         coverage_years=(1980, 2030),
     ),
+
+    # ─── 추가: 1인당 GDP / 구매력 평가 ───
+    IndicatorMeta(
+        dataset_id="imf_NGDPDPC",
+        source="IMF", indicator_code="NGDPDPC",
+        name_ko="1인당 GDP (명목, USD)", name_en="GDP per capita, current prices (USD)",
+        category="economy", subcategory="national_accounts", unit="USD",
+        description_ko="명목 1인당 GDP (IMF WEO).",
+        license="IMF Open Data", update_frequency="annual",
+        coverage_years=(1980, 2030),
+    ),
+    IndicatorMeta(
+        dataset_id="imf_PPPPC",
+        source="IMF", indicator_code="PPPPC",
+        name_ko="1인당 GDP (PPP)", name_en="GDP per capita, PPP (international $)",
+        category="economy", subcategory="national_accounts", unit="국제달러",
+        description_ko="구매력 평가 기준 1인당 GDP. 국가 간 생활수준 비교에 적합.",
+        license="IMF Open Data", update_frequency="annual",
+        coverage_years=(1980, 2030),
+    ),
+    IndicatorMeta(
+        dataset_id="imf_PPPGDP",
+        source="IMF", indicator_code="PPPGDP",
+        name_ko="GDP (PPP)", name_en="GDP, PPP (billions of international $)",
+        category="economy", subcategory="national_accounts", unit="십억 국제달러",
+        description_ko="구매력 평가 기준 GDP 총액.",
+        license="IMF Open Data", update_frequency="annual",
+        coverage_years=(1980, 2030),
+    ),
+    IndicatorMeta(
+        dataset_id="imf_PPPSH",
+        source="IMF", indicator_code="PPPSH",
+        name_ko="세계 GDP 점유율 (PPP)", name_en="Share of world GDP, PPP (%)",
+        category="economy", subcategory="national_accounts", unit="%",
+        description_ko="구매력 평가 기준 세계 GDP에서 차지하는 비중.",
+        license="IMF Open Data", update_frequency="annual",
+        coverage_years=(1980, 2030),
+    ),
+
+    # ─── 추가: 저축·투자 ───
+    IndicatorMeta(
+        dataset_id="imf_NGSD_NGDP",
+        source="IMF", indicator_code="NGSD_NGDP",
+        name_ko="국민총저축률 (GDP 비)", name_en="Gross national savings (% of GDP)",
+        category="economy", subcategory="savings", unit="%",
+        description_ko="국민총저축 / GDP.",
+        license="IMF Open Data", update_frequency="annual",
+        coverage_years=(1980, 2030),
+    ),
+    IndicatorMeta(
+        dataset_id="imf_NID_NGDP",
+        source="IMF", indicator_code="NID_NGDP",
+        name_ko="총투자율 (GDP 비)", name_en="Total investment (% of GDP)",
+        category="economy", subcategory="investment", unit="%",
+        description_ko="총고정자본형성+재고변동 / GDP.",
+        license="IMF Open Data", update_frequency="annual",
+        coverage_years=(1980, 2030),
+    ),
+
+    # ─── 추가: 정부 재정 ───
+    IndicatorMeta(
+        dataset_id="imf_GGR_NGDP",
+        source="IMF", indicator_code="GGR_NGDP",
+        name_ko="정부 수입 (GDP 비)", name_en="General government revenue (% of GDP)",
+        category="economy", subcategory="fiscal", unit="%",
+        description_ko="조세+사회보험료 등 정부 총수입 / GDP.",
+        license="IMF Open Data", update_frequency="annual",
+        coverage_years=(1980, 2030),
+    ),
+    IndicatorMeta(
+        dataset_id="imf_GGX_NGDP",
+        source="IMF", indicator_code="GGX_NGDP",
+        name_ko="정부 지출 (GDP 비)", name_en="General government expenditure (% of GDP)",
+        category="economy", subcategory="fiscal", unit="%",
+        description_ko="정부 총지출 / GDP.",
+        license="IMF Open Data", update_frequency="annual",
+        coverage_years=(1980, 2030),
+    ),
 ]
 
 

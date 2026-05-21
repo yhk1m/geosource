@@ -70,6 +70,53 @@ INDICATORS: list[IndicatorMeta] = [
         update_frequency="annual",
         coverage_years=(1981, 2022),
     ),
+
+    # ─── 추가: 개발·인권·문화 종합 지수 ───
+    IndicatorMeta(
+        dataset_id="owid_human_development_index",
+        source="OWID", indicator_code="human-development-index",
+        name_ko="인간개발지수 (HDI)", name_en="Human Development Index",
+        category="development", subcategory="composite_index", unit="지수",
+        description_ko="UNDP 인간개발지수. 기대수명·교육·소득의 종합지표 (0~1).",
+        license="CC BY 4.0", update_frequency="annual",
+        coverage_years=(1990, 2022),
+    ),
+    IndicatorMeta(
+        dataset_id="owid_gender_inequality_index",
+        source="OWID", indicator_code="gender-inequality-index-from-the-human-development-report",
+        name_ko="성 불평등 지수 (GII)", name_en="Gender Inequality Index",
+        category="development", subcategory="gender", unit="지수",
+        description_ko="UNDP 성 불평등 지수. 모성보건·여성정치참여·노동시장 (0=평등, 1=불평등).",
+        license="CC BY 4.0", update_frequency="annual",
+        coverage_years=(1995, 2022),
+    ),
+    IndicatorMeta(
+        dataset_id="owid_democracy_index_eiu",
+        source="OWID", indicator_code="democracy-index-eiu",
+        name_ko="민주주의 지수 (EIU)", name_en="Democracy Index (EIU)",
+        category="development", subcategory="governance", unit="지수",
+        description_ko="Economist Intelligence Unit 민주주의 지수 (0~10). 8↑ 완전민주, 6↑ 결함민주.",
+        license="CC BY 4.0", update_frequency="annual",
+        coverage_years=(2006, 2023),
+    ),
+    IndicatorMeta(
+        dataset_id="owid_press_freedom_rsf",
+        source="OWID", indicator_code="press-freedom-rsf",
+        name_ko="언론자유 점수 (RSF)", name_en="Press Freedom Score (RSF)",
+        category="development", subcategory="rights", unit="점",
+        description_ko="국경 없는 기자회(RSF) 언론자유 점수. 낮을수록 자유로움.",
+        license="CC BY 4.0", update_frequency="annual",
+        coverage_years=(2013, 2023),
+    ),
+    IndicatorMeta(
+        dataset_id="owid_corruption_perception_index",
+        source="OWID", indicator_code="corruption-perception-index",
+        name_ko="부패인식지수 (CPI)", name_en="Corruption Perceptions Index",
+        category="development", subcategory="governance", unit="점",
+        description_ko="국제투명성기구 CPI (0=매우 부패, 100=청렴).",
+        license="CC BY 4.0", update_frequency="annual",
+        coverage_years=(2012, 2023),
+    ),
 ]
 
 

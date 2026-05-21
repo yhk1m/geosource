@@ -84,14 +84,14 @@ python build.py --source worldbank    # 특정 어댑터만 (worldbank | fao | k
 
 ## 데이터 갱신 (관리자)
 
-`/admin.html` 에서 GitHub PAT으로 인증 → 출처 선택 → 갱신 버튼 한 번이면 끝.
+`/admin` 에서 GitHub PAT으로 인증 → 출처 선택 → 갱신 버튼 한 번이면 끝.
 
 내부 동작:
 1. 관리자가 갱신 버튼 클릭
 2. `POST /repos/{owner}/{repo}/dispatches` API 호출 (`event_type: build-data`)
 3. `.github/workflows/build-data.yml` 워크플로우가 트리거되어 `python build.py` 실행
 4. `data/*.json` 변경분 자동 커밋 → GitHub Pages 재배포
-5. admin.html이 워크플로우 진행 상태를 5초마다 폴링해 표시
+5. admin 페이지가 워크플로우 진행 상태를 5초마다 폴링해 표시
 
 자동 백업: 매월 1일 03:00 KST 에 전체 빌드가 자동 실행됩니다.
 

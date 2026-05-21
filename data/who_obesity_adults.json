@@ -1,0 +1,21 @@
+{
+  "indicator": {
+    "dataset_id": "who_obesity_adults",
+    "source": "WHO",
+    "indicator_code": "NCD_BMI_30A",
+    "name_ko": "성인 비만율",
+    "name_en": "Obesity prevalence (BMI≥30, age-std, 18+)",
+    "category": "development",
+    "subcategory": "health",
+    "unit": "%",
+    "description_ko": "18세 이상 성인 중 BMI 30 이상 비율(연령표준화).",
+    "license": "CC BY-NC-SA 3.0 IGO",
+    "update_frequency": "annual",
+    "coverage_years": [
+      2000,
+      2022
+    ]
+  },
+  "records": [],
+  "built_at": "2026-05-20T11:10:50.734905Z"
+}

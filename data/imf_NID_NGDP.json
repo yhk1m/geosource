@@ -1,0 +1,21 @@
+{
+  "indicator": {
+    "dataset_id": "imf_NID_NGDP",
+    "source": "IMF",
+    "indicator_code": "NID_NGDP",
+    "name_ko": "총투자율 (GDP 비)",
+    "name_en": "Total investment (% of GDP)",
+    "category": "economy",
+    "subcategory": "investment",
+    "unit": "%",
+    "description_ko": "총고정자본형성+재고변동 / GDP.",
+    "license": "IMF Open Data",
+    "update_frequency": "annual",
+    "coverage_years": [
+      1980,
+      2030
+    ]
+  },
+  "records": [],
+  "built_at": "2026-05-20T11:10:30.884620Z"
+}

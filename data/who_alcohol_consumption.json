@@ -1,0 +1,21 @@
+{
+  "indicator": {
+    "dataset_id": "who_alcohol_consumption",
+    "source": "WHO",
+    "indicator_code": "SA_0000001688",
+    "name_ko": "1인당 알코올 소비량",
+    "name_en": "Alcohol consumption per capita (15+, liters)",
+    "category": "development",
+    "subcategory": "health",
+    "unit": "L/년",
+    "description_ko": "15세 이상 1인당 연간 순수 알코올 소비량(리터).",
+    "license": "CC BY-NC-SA 3.0 IGO",
+    "update_frequency": "annual",
+    "coverage_years": [
+      2000,
+      2019
+    ]
+  },
+  "records": [],
+  "built_at": "2026-05-20T11:10:41.885632Z"
+}

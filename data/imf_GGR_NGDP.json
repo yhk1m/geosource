@@ -1,0 +1,21 @@
+{
+  "indicator": {
+    "dataset_id": "imf_GGR_NGDP",
+    "source": "IMF",
+    "indicator_code": "GGR_NGDP",
+    "name_ko": "정부 수입 (GDP 비)",
+    "name_en": "General government revenue (% of GDP)",
+    "category": "economy",
+    "subcategory": "fiscal",
+    "unit": "%",
+    "description_ko": "조세+사회보험료 등 정부 총수입 / GDP.",
+    "license": "IMF Open Data",
+    "update_frequency": "annual",
+    "coverage_years": [
+      1980,
+      2030
+    ]
+  },
+  "records": [],
+  "built_at": "2026-05-20T11:10:31.163169Z"
+}

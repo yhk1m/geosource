@@ -16,9 +16,16 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import sys
 from datetime import datetime
 from pathlib import Path
-from adapters import WorldBankAdapter, KosisAdapter, FaoAdapter, ImfAdapter, OwidAdapter, PewAdapter
+
+# Windows 콘솔(cp949) 환경에서도 ✓·→ 등 유니코드를 깨지 않고 출력
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
+from adapters import WorldBankAdapter, KosisAdapter, FaoAdapter, ImfAdapter, OwidAdapter, PewAdapter, WhoAdapter
 
 DATA_DIR = Path(__file__).parent / "data"
 DATA_DIR.mkdir(exist_ok=True)
@@ -104,7 +111,7 @@ def build_fao() -> dict:
                 year_range=DEFAULT_YEAR_RANGE,
             )
             if not bundle.records:
-                print("    (스킵: 데이터 없음 - FAO_USERNAME/FAO_PASSWORD 미설정 가능성)")
+                print("    (스킵: 데이터 없음 — bulk CSV에 해당 area/item/element 조합이 없음)")
                 continue
             out_path = DATA_DIR / f"{ind.dataset_id}.json"
             out_path.write_text(bundle.to_json(), encoding="utf-8")
@@ -183,6 +190,36 @@ def build_pew() -> dict:
         except Exception as e:
             print(f"    ! 실패: {e}")
     return {"source": "Pew Research Center", "indicators": catalog}
+
+
+def build_who() -> dict:
+    adapter = WhoAdapter()
+    catalog = []
+    for ind in adapter.list_indicators():
+        print(f"  → {ind.dataset_id} ({ind.name_ko})")
+        try:
+            bundle = adapter.build_bundle(
+                indicator_code=ind.indicator_code,
+                countries=DEFAULT_COUNTRIES,
+                year_range=DEFAULT_YEAR_RANGE,
+            )
+            out_path = DATA_DIR / f"{ind.dataset_id}.json"
+            out_path.write_text(bundle.to_json(), encoding="utf-8")
+            catalog.append({
+                "dataset_id": ind.dataset_id,
+                "source": ind.source,
+                "name_ko": ind.name_ko,
+                "name_en": ind.name_en,
+                "category": ind.category,
+                "subcategory": ind.subcategory,
+                "unit": ind.unit,
+                "license": ind.license,
+                "file": f"data/{ind.dataset_id}.json",
+                "record_count": len(bundle.records),
+            })
+        except Exception as e:
+            print(f"    ! 실패: {e}")
+    return {"source": "WHO", "indicators": catalog}
 
 
 def build_kosis() -> dict:
@@ -265,27 +302,30 @@ def write_build_info(sources: list[dict], requested_source: str) -> dict:
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--source",
-        choices=["worldbank", "imf", "fao", "owid", "pew", "kosis", "all"], default="all")
+        choices=["worldbank", "imf", "fao", "owid", "pew", "who", "kosis", "all"], default="all")
     args = parser.parse_args()
 
     sources = []
     if args.source in ("worldbank", "all"):
-        print("[1/6] World Bank 빌드 중…")
+        print("[1/7] World Bank 빌드 중…")
         sources.append(build_worldbank())
     if args.source in ("imf", "all"):
-        print("[2/6] IMF 빌드 중…")
+        print("[2/7] IMF 빌드 중…")
         sources.append(build_imf())
     if args.source in ("fao", "all"):
-        print("[3/6] FAO 빌드 중…")
+        print("[3/7] FAO 빌드 중…")
         sources.append(build_fao())
     if args.source in ("owid", "all"):
-        print("[4/6] OWID 빌드 중…")
+        print("[4/7] OWID 빌드 중…")
         sources.append(build_owid())
     if args.source in ("pew", "all"):
-        print("[5/6] Pew Research 빌드 중…")
+        print("[5/7] Pew Research 빌드 중…")
         sources.append(build_pew())
+    if args.source in ("who", "all"):
+        print("[6/7] WHO 빌드 중…")
+        sources.append(build_who())
     if args.source in ("kosis", "all"):
-        print("[6/6] KOSIS 빌드 중…")
+        print("[7/7] KOSIS 빌드 중…")
         sources.append(build_kosis())
 
     # 마스터 카탈로그 작성 (프론트엔드 진입점)

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>GeoSource Favicon — Globe + Data Nodes (Transparent)</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #f4f6fa; display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+    #__bundler_loading { position: fixed; bottom: 20px; right: 20px; font: 13px/1.4 -apple-system, BlinkMacSystemFont, sans-serif; color: #666; background: #fff; padding: 8px 14px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.12); z-index: 10000; }
+    #__bundler_thumbnail { position: fixed; inset: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #f4f6fa; z-index: 9999; }
+    #__bundler_thumbnail svg { width: 100%; height: 100%; object-fit: contain; }
+    #__bundler_placeholder { color: #999; font-size: 14px; }
+  </style>
+  <noscript>
+    <style>#__bundler_loading { display: none; }</style>
+    <div style="position:fixed;bottom:12px;left:12px;font:13px/1.4 -apple-system,BlinkMacSystemFont,sans-serif;color:#999;background:rgba(255,255,255,0.9);padding:6px 12px;border-radius:6px;box-shadow:0 1px 4px rgba(0,0,0,0.08);z-index:10000;">
+      This page requires JavaScript to display.
+    </div>
+  </noscript>
+</head>
+<body>
+  <div id="__bundler_thumbnail">
+  <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="16" cy="16" r="9" fill="none" stroke="#0B2447" stroke-width="1.5"></circle>
+    <ellipse cx="16" cy="16" rx="9" ry="3" fill="none" stroke="#19376D" stroke-width="1" opacity="0.8"></ellipse>
+    <ellipse cx="16" cy="16" rx="3" ry="9" fill="none" stroke="#19376D" stroke-width="1" opacity="0.8"></ellipse>
+    <circle cx="11" cy="11" r="1.6" fill="#5BA4E6"></circle>
+    <circle cx="21" cy="13" r="1.6" fill="#5BA4E6"></circle>
+    <circle cx="14" cy="22" r="1.6" fill="#5BA4E6"></circle>
+  </svg>
+</div>
+  <div id="__bundler_loading">Unpacking...</div>
+
+  <script>
+    
+document.addEventListener('DOMContentLoaded', async function() {
+  const loading = document.getElementById('__bundler_loading');
+  function setStatus(msg) { if (loading) loading.textContent = msg; }
+
+  // Error sink persists across replaceWith since it's on window, not the DOM.
+  window.addEventListener('error', function(e) {
+    var p = document.body || document.documentElement;
+    var d = document.getElementById('__bundler_err') || p.appendChild(document.createElement('div'));
+    d.id = '__bundler_err';
+    d.style.cssText = 'position:fixed;bottom:12px;left:12px;right:12px;font:12px/1.4 ui-monospace,monospace;background:#2a1215;color:#ff8a80;padding:10px 14px;border-radius:8px;border:1px solid #5c2b2e;z-index:99999;white-space:pre-wrap;max-height:40vh;overflow:auto';
+    d.textContent = (d.textContent ? d.textContent + String.fromCharCode(10) : '') +
+      '[bundle] ' + (e.message || e.type) +
+      (e.filename ? ' (' + e.filename.slice(0, 60) + ':' + e.lineno + ')' : '');
+  }, true);
+
+  try {
+    const manifestEl = document.querySelector('script[type="__bundler/manifest"]');
+    const templateEl = document.querySelector('script[type="__bundler/template"]');
+    if (!manifestEl || !templateEl) {
+      setStatus('Error: missing bundle data');
+      console.error('[bundler] Missing script tags — manifestEl:', !!manifestEl, 'templateEl:', !!templateEl);
+      return;
+    }
+
+    const manifest = JSON.parse(manifestEl.textContent);
+    let template = JSON.parse(templateEl.textContent);
+
+    const uuids = Object.keys(manifest);
+    setStatus('Unpacking ' + uuids.length + ' assets...');
+
+    const blobUrls = {};
+    await Promise.all(uuids.map(async (uuid) => {
+      const entry = manifest[uuid];
+      try {
+        const binaryStr = atob(entry.data);
+        const bytes = new Uint8Array(binaryStr.length);
+        for (let i = 0; i < binaryStr.length; i++) bytes[i] = binaryStr.charCodeAt(i);
+
+        let finalBytes = bytes;
+        if (entry.compressed) {
+          if (typeof DecompressionStream !== 'undefined') {
+            const ds = new DecompressionStream('gzip');
+            const writer = ds.writable.getWriter();
+            const reader = ds.readable.getReader();
+            writer.write(bytes);
+            writer.close();
+            const chunks = [];
+            let totalLen = 0;
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              chunks.push(value);
+              totalLen += value.length;
+            }
+            finalBytes = new Uint8Array(totalLen);
+            let offset = 0;
+            for (const chunk of chunks) { finalBytes.set(chunk, offset); offset += chunk.length; }
+          } else {
+            console.warn('DecompressionStream not available, asset ' + uuid + ' may not render');
+          }
+        }
+
+        blobUrls[uuid] = URL.createObjectURL(new Blob([finalBytes], { type: entry.mime }));
+      } catch (err) {
+        console.error('Failed to decode asset ' + uuid + ':', err);
+        blobUrls[uuid] = URL.createObjectURL(new Blob([], { type: entry.mime }));
+      }
+    }));
+
+    const extResEl = document.querySelector('script[type="__bundler/ext_resources"]');
+    const extResources = extResEl ? JSON.parse(extResEl.textContent) : [];
+    const resourceMap = {};
+    for (const entry of extResources) {
+      if (blobUrls[entry.uuid]) resourceMap[entry.id] = blobUrls[entry.uuid];
+    }
+
+    setStatus('Rendering...');
+    for (const uuid of uuids) template = template.split(uuid).join(blobUrls[uuid]);
+
+    // Strip integrity + crossorigin — blob URLs from a file:// document inherit
+    // a null origin, so crossorigin forces a CORS fetch that SRI then rejects.
+    // The manifest bytes are ours; SRI protects against CDN compromise, not this.
+    template = template.replace(/\s+integrity="[^"]*"/gi, '').replace(/\s+crossorigin="[^"]*"/gi, '');
+
+    const resourceScript = '<script>window.__resources = ' +
+      JSON.stringify(resourceMap).split('</' + 'script>').join('<\\/' + 'script>') +
+      ';</' + 'script>';
+    // Inject after <head> so the DOCTYPE stays first; prepending the script
+    // would push the parser into quirks mode. DOMParser always emits a <head>
+    // (synthesizing one if the source HTML omitted it) but may carry
+    // attributes through, so match the full opening tag. slice() rather than
+    // replace() keeps us clear of $-pattern substitution in resourceScript.
+    const headOpen = template.match(/<head[^>]*>/i);
+    if (headOpen) {
+      const i = headOpen.index + headOpen[0].length;
+      template = template.slice(0, i) + resourceScript + template.slice(i);
+    }
+
+    // Parse the template and swap the root element. Scripts inserted via
+    // DOMParser/replaceWith are inert per spec — re-create each with
+    // createElement so they execute, awaiting onload for src scripts to
+    // preserve ordering (React before ReactDOM before Babel before text/babel).
+    const doc = new DOMParser().parseFromString(template, 'text/html');
+    document.documentElement.replaceWith(doc.documentElement);
+    const dead = Array.from(document.scripts);
+    for (const old of dead) {
+      const s = document.createElement('script');
+      for (const a of old.attributes) s.setAttribute(a.name, a.value);
+      s.textContent = old.textContent;
+      // text/babel scripts with a src: fetch and inline. transformScriptTags
+      // does XHR against the src, but blob:null/ from a file:// origin is
+      // silently dropped. Inlining makes it a plain inline babel script,
+      // which transformScriptTags handles unconditionally.
+      if ((s.type === 'text/babel' || s.type === 'text/jsx') && s.src) {
+        const r = await fetch(s.src);
+        s.textContent = await r.text();
+        s.removeAttribute('src');
+      }
+      const p = s.src ? new Promise(function(r) { s.onload = s.onerror = r; }) : null;
+      old.replaceWith(s);
+      if (p) await p;
+    }
+    // Babel standalone auto-transforms type=text/babel on DOMContentLoaded,
+    // which fired before we swapped the document. Trigger manually if present.
+    if (window.Babel && typeof window.Babel.transformScriptTags === 'function') {
+      window.Babel.transformScriptTags();
+    }
+  } catch (err) {
+    setStatus('Error unpacking: ' + err.message);
+    console.error('Bundle unpack error:', err);
+  }
+});
+
+  </script>
+
+  <script type="__bundler/manifest">
+{"0149c79a-47ba-47c6-af53-e5f0efca8f17":{"mime":"image/svg+xml","compressed":true,"data":"H4sIAAAAAAAACp2S2WrDMBBF3/MVw+S51uY4C5Yhpv2Qoqq2qGoZS1j23xdvENqGLk8aBPcc5jK57ysY3m3jJdYhtBdCYoxJFInrKsIppcT3FUJvdCzdIJECBcFBcIRoXkItcRprbao6zHOxA9gB5Mp0ympQg0SWIahxeTuJZ4RXY63ExjUawYfOvWmJe1ryND1uHw8rniUHLHKy4CZ4rq01rf8GPczsbpQo7ijYWRyzxy8KBNc+KxNGiTQ5TbrV8aNPLL57K/3Ld9scW3Vsbo4l2SbaH8pr+pR9quYmyreo+HOUpUuU819E8+lAig+XZbTiSAIAAA=="}}
+  </script>
+
+  <script type="__bundler/ext_resources">
+[]
+  </script>
+
+  <script type="__bundler/template">
+"<!DOCTYPE html>\n<html lang=\"ko\"><head>\n<meta charset=\"utf-8\">\n<title>GeoSource Favicon — Globe + Data Nodes (Transparent)<\u002Ftitle>\n<link rel=\"icon\" type=\"image/svg+xml\" href=\"0149c79a-47ba-47c6-af53-e5f0efca8f17\">\n\n<style>\n  :root{\n    --navy:#0B2447;\n    --deep:#19376D;\n    --sky:#5BA4E6;\n    --paper:#f4f6fa;\n    --ink:#0c1626;\n    --line:#dde3ec;\n    --muted:#6b7689;\n  }\n  *{box-sizing:border-box;}\n  html,body{margin:0;background:var(--paper);color:var(--ink);\n    font-family:-apple-system,\"Helvetica Neue\",Helvetica,\"Apple SD Gothic Neo\",\"Noto Sans KR\",Arial,sans-serif;\n    -webkit-font-smoothing:antialiased;min-height:100vh;}\n  main{max-width:760px;margin:0 auto;padding:64px 32px 80px;}\n  h1{font-size:24px;letter-spacing:-0.02em;margin:0 0 6px;}\n  .sub{color:var(--muted);font-size:13px;margin:0 0 32px;}\n\n  .hero{\n    border:1px solid var(--line);border-radius:18px;\n    padding:48px;display:flex;align-items:center;justify-content:center;\n    box-shadow:0 24px 60px -40px rgba(11,36,71,0.35);\n    background:\n      linear-gradient(45deg,#e6ebf3 25%,transparent 25%) 0 0/16px 16px,\n      linear-gradient(-45deg,#e6ebf3 25%,transparent 25%) 0 0/16px 16px,\n      linear-gradient(45deg,transparent 75%,#e6ebf3 75%) 0 0/16px 16px,\n      linear-gradient(-45deg,transparent 75%,#e6ebf3 75%) 0 0/16px 16px,\n      white;\n  }\n  .hero svg{width:240px;height:240px;display:block;}\n\n  .sizes{display:flex;align-items:flex-end;gap:28px;margin-top:14px;\n    border:1px solid var(--line);border-radius:14px;padding:22px 28px;\n    background:\n      linear-gradient(45deg,#e6ebf3 25%,transparent 25%) 0 0/12px 12px,\n      linear-gradient(-45deg,#e6ebf3 25%,transparent 25%) 0 0/12px 12px,\n      linear-gradient(45deg,transparent 75%,#e6ebf3 75%) 0 0/12px 12px,\n      linear-gradient(-45deg,transparent 75%,#e6ebf3 75%) 0 0/12px 12px,\n      white;\n  }\n  .size{display:flex;flex-direction:column;align-items:center;gap:8px;}\n  .size span{font-size:11px;color:var(--muted);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}\n  .size .s16{width:16px;height:16px;}\n  .size .s24{width:24px;height:24px;}\n  .size .s32{width:32px;height:32px;}\n  .size .s48{width:48px;height:48px;}\n  .size .s64{width:64px;height:64px;}\n\n  .surface-tests{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px;}\n  .surface{display:flex;align-items:center;gap:14px;padding:18px 20px;border-radius:12px;border:1px solid var(--line);}\n  .surface.light{background:#ffffff;}\n  .surface.dark{background:#0c1626;border-color:#0c1626;color:#aab4c5;}\n  .surface img{width:32px;height:32px;display:block;}\n  .surface small{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;color:var(--muted);}\n  .surface.dark small{color:#6f7d96;}\n\n  pre{\n    margin-top:14px;background:#0c1626;color:#e6edf7;\n    border-radius:12px;padding:18px 20px;font-size:12px;line-height:1.55;\n    font-family:ui-monospace,SFMono-Regular,Menlo,monospace;\n    overflow:auto;\n  }\n  .label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin:26px 0 8px;}\n<\u002Fstyle>\n<\u002Fhead>\n<body>\n<main>\n  <h1>GeoSource Favicon<\u002Fh1>\n  <p class=\"sub\">Globe + Data Nodes · 배경 없는 (Transparent) 버전 · #0B2447 / #19376D / #5BA4E6<\u002Fp>\n\n  <div class=\"hero\">\n    <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 32 32\" aria-label=\"GeoSource\">\n      <circle cx=\"16\" cy=\"16\" r=\"9\" fill=\"none\" stroke=\"#0B2447\" stroke-width=\"1.5\"><\u002Fcircle>\n      <ellipse cx=\"16\" cy=\"16\" rx=\"9\" ry=\"3\" fill=\"none\" stroke=\"#19376D\" stroke-width=\"1\" opacity=\"0.8\"><\u002Fellipse>\n      <ellipse cx=\"16\" cy=\"16\" rx=\"3\" ry=\"9\" fill=\"none\" stroke=\"#19376D\" stroke-width=\"1\" opacity=\"0.8\"><\u002Fellipse>\n      <circle cx=\"11\" cy=\"11\" r=\"1.6\" fill=\"#5BA4E6\"><\u002Fcircle>\n      <circle cx=\"21\" cy=\"13\" r=\"1.6\" fill=\"#5BA4E6\"><\u002Fcircle>\n      <circle cx=\"14\" cy=\"22\" r=\"1.6\" fill=\"#5BA4E6\"><\u002Fcircle>\n    <\u002Fsvg>\n  <\u002Fdiv>\n\n  <div class=\"label\">실제 표시 크기<\u002Fdiv>\n  <div class=\"sizes\">\n    <div class=\"size\"><img class=\"s16\" src=\"0149c79a-47ba-47c6-af53-e5f0efca8f17\" alt=\"\"><span>16px<\u002Fspan><\u002Fdiv>\n    <div class=\"size\"><img class=\"s24\" src=\"0149c79a-47ba-47c6-af53-e5f0efca8f17\" alt=\"\"><span>24px<\u002Fspan><\u002Fdiv>\n    <div class=\"size\"><img class=\"s32\" src=\"0149c79a-47ba-47c6-af53-e5f0efca8f17\" alt=\"\"><span>32px<\u002Fspan><\u002Fdiv>\n    <div class=\"size\"><img class=\"s48\" src=\"0149c79a-47ba-47c6-af53-e5f0efca8f17\" alt=\"\"><span>48px<\u002Fspan><\u002Fdiv>\n    <div class=\"size\"><img class=\"s64\" src=\"0149c79a-47ba-47c6-af53-e5f0efca8f17\" alt=\"\"><span>64px<\u002Fspan><\u002Fdiv>\n  <\u002Fdiv>\n\n  <div class=\"label\">밝은 / 어두운 표면 테스트<\u002Fdiv>\n  <div class=\"surface-tests\">\n    <div class=\"surface light\"><img src=\"0149c79a-47ba-47c6-af53-e5f0efca8f17\" alt=\"\"><small>light bg ✓<\u002Fsmall><\u002Fdiv>\n    <div class=\"surface dark\"><img src=\"0149c79a-47ba-47c6-af53-e5f0efca8f17\" alt=\"\"><small>dark bg ⚠ 저대비<\u002Fsmall><\u002Fdiv>\n  <\u002Fdiv>\n\n  <div class=\"label\">사용법<\u002Fdiv>\n<pre>&lt;link rel=\"icon\" type=\"image/svg+xml\" href=\"favicons/favicon-globe-nodes-transparent.svg\"&gt;<\u002Fpre>\n\n  <div class=\"label\">SVG 소스<\u002Fdiv>\n<pre>&lt;svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 32 32\"&gt;\n  &lt;circle cx=\"16\" cy=\"16\" r=\"9\" fill=\"none\" stroke=\"#0B2447\" stroke-width=\"1.5\"/&gt;\n  &lt;ellipse cx=\"16\" cy=\"16\" rx=\"9\" ry=\"3\" fill=\"none\" stroke=\"#19376D\" stroke-width=\"1\" opacity=\"0.8\"/&gt;\n  &lt;ellipse cx=\"16\" cy=\"16\" rx=\"3\" ry=\"9\" fill=\"none\" stroke=\"#19376D\" stroke-width=\"1\" opacity=\"0.8\"/&gt;\n  &lt;circle cx=\"11\" cy=\"11\" r=\"1.6\" fill=\"#5BA4E6\"/&gt;\n  &lt;circle cx=\"21\" cy=\"13\" r=\"1.6\" fill=\"#5BA4E6\"/&gt;\n  &lt;circle cx=\"14\" cy=\"22\" r=\"1.6\" fill=\"#5BA4E6\"/&gt;\n&lt;/svg&gt;<\u002Fpre>\n<\u002Fmain>\n\n\n<\u002Fbody><\u002Fhtml>"
+  </script>
+</body>
+</html>

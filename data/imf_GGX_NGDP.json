@@ -1,0 +1,21 @@
+{
+  "indicator": {
+    "dataset_id": "imf_GGX_NGDP",
+    "source": "IMF",
+    "indicator_code": "GGX_NGDP",
+    "name_ko": "정부 지출 (GDP 비)",
+    "name_en": "General government expenditure (% of GDP)",
+    "category": "economy",
+    "subcategory": "fiscal",
+    "unit": "%",
+    "description_ko": "정부 총지출 / GDP.",
+    "license": "IMF Open Data",
+    "update_frequency": "annual",
+    "coverage_years": [
+      1980,
+      2030
+    ]
+  },
+  "records": [],
+  "built_at": "2026-05-20T11:10:31.480088Z"
+}
