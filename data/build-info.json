@@ -1,12 +1,12 @@
 {
-  "last_built_at": "2026-05-21T05:10:31.275881Z",
+  "last_built_at": "2026-05-22T01:07:45.899701Z",
   "triggered_by": "local",
-  "requested_source": "kosis",
+  "requested_source": "who",
   "sources_built": [
-    "KOSIS"
+    "WHO"
   ],
-  "indicator_count": 106,
-  "record_count_total": 171643,
+  "indicator_count": 5,
+  "record_count_total": 4480,
   "per_source": {
     "World Bank": {
       "last_built_at": "2026-05-20T11:10:51.086137Z",
@@ -39,9 +39,9 @@
       "record_count": 9000
     },
     "WHO": {
-      "last_built_at": "2026-05-20T11:10:51.086137Z",
-      "indicator_count": 6,
-      "record_count": 1823
+      "last_built_at": "2026-05-22T01:07:45.899701Z",
+      "indicator_count": 5,
+      "record_count": 4480
     }
   }
 }

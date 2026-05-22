@@ -1046,83 +1046,6 @@
       ]
     },
     {
-      "source": "WHO",
-      "indicators": [
-        {
-          "dataset_id": "who_alcohol_consumption",
-          "source": "WHO",
-          "name_ko": "1인당 알코올 소비량",
-          "name_en": "Alcohol consumption per capita (15+, liters)",
-          "category": "development",
-          "subcategory": "health",
-          "unit": "L/년",
-          "license": "CC BY-NC-SA 3.0 IGO",
-          "file": "data/who_alcohol_consumption.json",
-          "record_count": 0
-        },
-        {
-          "dataset_id": "who_hospital_beds",
-          "source": "WHO",
-          "name_ko": "병상 수 (인구 1만 명당)",
-          "name_en": "Hospital beds (per 10,000)",
-          "category": "development",
-          "subcategory": "health",
-          "unit": "개/만명",
-          "license": "CC BY-NC-SA 3.0 IGO",
-          "file": "data/who_hospital_beds.json",
-          "record_count": 797
-        },
-        {
-          "dataset_id": "who_obesity_adults",
-          "source": "WHO",
-          "name_ko": "성인 비만율",
-          "name_en": "Obesity prevalence (BMI≥30, age-std, 18+)",
-          "category": "development",
-          "subcategory": "health",
-          "unit": "%",
-          "license": "CC BY-NC-SA 3.0 IGO",
-          "file": "data/who_obesity_adults.json",
-          "record_count": 0
-        },
-        {
-          "dataset_id": "who_physicians_density",
-          "source": "WHO",
-          "name_ko": "의사 밀도 (인구 1만 명당)",
-          "name_en": "Medical doctors (per 10,000)",
-          "category": "development",
-          "subcategory": "health",
-          "unit": "명/만명",
-          "license": "CC BY-NC-SA 3.0 IGO",
-          "file": "data/who_physicians_density.json",
-          "record_count": 1026
-        },
-        {
-          "dataset_id": "who_suicide_rate",
-          "source": "WHO",
-          "name_ko": "자살률 (10만 명당)",
-          "name_en": "Suicide mortality rate (per 100,000)",
-          "category": "development",
-          "subcategory": "health",
-          "unit": "명/10만명",
-          "license": "CC BY-NC-SA 3.0 IGO",
-          "file": "data/who_suicide_rate.json",
-          "record_count": 0
-        },
-        {
-          "dataset_id": "who_tobacco_use",
-          "source": "WHO",
-          "name_ko": "흡연율 (성인, 연령표준화)",
-          "name_en": "Current tobacco use (15+, age-std)",
-          "category": "development",
-          "subcategory": "health",
-          "unit": "%",
-          "license": "CC BY-NC-SA 3.0 IGO",
-          "file": "data/who_tobacco_use.json",
-          "record_count": 0
-        }
-      ]
-    },
-    {
       "source": "KOSIS",
       "indicators": [
         {
@@ -1304,6 +1227,71 @@
           "license": "KOGL Type 1",
           "file": "data/kosis_101_DT_1PA2002_T10.json",
           "record_count": 324
+        }
+      ]
+    },
+    {
+      "source": "WHO",
+      "indicators": [
+        {
+          "dataset_id": "who_physicians_density",
+          "source": "WHO",
+          "name_ko": "의사 밀도 (인구 1만 명당)",
+          "name_en": "Medical doctors (per 10,000)",
+          "category": "development",
+          "subcategory": "health",
+          "unit": "명/만명",
+          "license": "CC BY-NC-SA 3.0 IGO",
+          "file": "data/who_physicians_density.json",
+          "record_count": 1026
+        },
+        {
+          "dataset_id": "who_hospital_beds",
+          "source": "WHO",
+          "name_ko": "병상 수 (인구 1만 명당)",
+          "name_en": "Hospital beds (per 10,000)",
+          "category": "development",
+          "subcategory": "health",
+          "unit": "개/만명",
+          "license": "CC BY-NC-SA 3.0 IGO",
+          "file": "data/who_hospital_beds.json",
+          "record_count": 797
+        },
+        {
+          "dataset_id": "who_alcohol_consumption",
+          "source": "WHO",
+          "name_ko": "1인당 알코올 소비량",
+          "name_en": "Alcohol consumption per capita (15+, liters)",
+          "category": "development",
+          "subcategory": "health",
+          "unit": "L/년",
+          "license": "CC BY-NC-SA 3.0 IGO",
+          "file": "data/who_alcohol_consumption.json",
+          "record_count": 897
+        },
+        {
+          "dataset_id": "who_obesity_adults",
+          "source": "WHO",
+          "name_ko": "성인 비만율",
+          "name_en": "Obesity prevalence (BMI≥30, age-std, 18+)",
+          "category": "development",
+          "subcategory": "health",
+          "unit": "%",
+          "license": "CC BY-NC-SA 3.0 IGO",
+          "file": "data/who_obesity_adults.json",
+          "record_count": 1320
+        },
+        {
+          "dataset_id": "who_tobacco_use",
+          "source": "WHO",
+          "name_ko": "흡연율 (성인, 연령표준화)",
+          "name_en": "Current tobacco use (15+, age-std)",
+          "category": "development",
+          "subcategory": "health",
+          "unit": "%",
+          "license": "CC BY-NC-SA 3.0 IGO",
+          "file": "data/who_tobacco_use.json",
+          "record_count": 440
         }
       ]
     }

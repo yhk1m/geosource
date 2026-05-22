@@ -60,16 +60,6 @@ INDICATORS: list[IndicatorMeta] = [
         coverage_years=(2000, 2019),
     ),
     IndicatorMeta(
-        dataset_id="who_suicide_rate",
-        source="WHO", indicator_code="MH_12",
-        name_ko="자살률 (10만 명당)", name_en="Suicide mortality rate (per 100,000)",
-        category="development", subcategory="health",
-        unit="명/10만명",
-        description_ko="연간 자살 사망률, 인구 10만 명당, 연령표준화.",
-        license="CC BY-NC-SA 3.0 IGO", update_frequency="annual",
-        coverage_years=(2000, 2019),
-    ),
-    IndicatorMeta(
         dataset_id="who_obesity_adults",
         source="WHO", indicator_code="NCD_BMI_30A",
         name_ko="성인 비만율", name_en="Obesity prevalence (BMI≥30, age-std, 18+)",
@@ -121,9 +111,10 @@ class WhoAdapter(SourceAdapter):
             if not iso3 or len(iso3) != 3 or iso3 not in COUNTRY_NAMES:
                 continue
 
-            # 성별 차원(Dim1)이 있으면 BTSX(양성 합계)만 사용
+            # 성별 차원(Dim1)이 있으면 양성 합계만 사용
+            # WHO GHO는 'SEX_BTSX'(접두 포함) 또는 'BTSX' 둘 다 반환할 수 있음.
             sex = row.get("Dim1")
-            if sex and sex not in ("BTSX",):
+            if sex and sex not in ("BTSX", "SEX_BTSX"):
                 continue
 
             try:
