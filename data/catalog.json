@@ -1294,6 +1294,131 @@
           "record_count": 440
         }
       ]
+    },
+    {
+      "source": "UN WPP",
+      "indicators": [
+        {
+          "dataset_id": "wpp_total_population",
+          "source": "UN WPP",
+          "name_ko": "총인구 (UN 추계·전망)",
+          "name_en": "Total population (mid-year, est+projection)",
+          "category": "population",
+          "subcategory": "size",
+          "unit": "명",
+          "license": "CC BY 3.0 IGO",
+          "file": "data/wpp_total_population.json",
+          "record_count": 4040
+        },
+        {
+          "dataset_id": "wpp_population_density",
+          "source": "UN WPP",
+          "name_ko": "인구밀도 (UN 추계·전망)",
+          "name_en": "Population density (est+projection)",
+          "category": "population",
+          "subcategory": "density",
+          "unit": "명/km²",
+          "license": "CC BY 3.0 IGO",
+          "file": "data/wpp_population_density.json",
+          "record_count": 4040
+        },
+        {
+          "dataset_id": "wpp_population_growth_rate",
+          "source": "UN WPP",
+          "name_ko": "인구성장률 (UN 전망)",
+          "name_en": "Population growth rate (est+projection)",
+          "category": "population",
+          "subcategory": "change",
+          "unit": "%",
+          "license": "CC BY 3.0 IGO",
+          "file": "data/wpp_population_growth_rate.json",
+          "record_count": 4040
+        },
+        {
+          "dataset_id": "wpp_median_age",
+          "source": "UN WPP",
+          "name_ko": "중위연령",
+          "name_en": "Median age of population",
+          "category": "population",
+          "subcategory": "structure",
+          "unit": "세",
+          "license": "CC BY 3.0 IGO",
+          "file": "data/wpp_median_age.json",
+          "record_count": 4040
+        },
+        {
+          "dataset_id": "wpp_sex_ratio",
+          "source": "UN WPP",
+          "name_ko": "성비 (여 100명당 남)",
+          "name_en": "Sex ratio (males per 100 females)",
+          "category": "population",
+          "subcategory": "structure",
+          "unit": "남/여100",
+          "license": "CC BY 3.0 IGO",
+          "file": "data/wpp_sex_ratio.json",
+          "record_count": 4040
+        },
+        {
+          "dataset_id": "wpp_life_expectancy_birth",
+          "source": "UN WPP",
+          "name_ko": "출생시 기대수명 (UN 전망)",
+          "name_en": "Life expectancy at birth (est+projection)",
+          "category": "population",
+          "subcategory": "mortality",
+          "unit": "세",
+          "license": "CC BY 3.0 IGO",
+          "file": "data/wpp_life_expectancy_birth.json",
+          "record_count": 4040
+        },
+        {
+          "dataset_id": "wpp_life_expectancy_65",
+          "source": "UN WPP",
+          "name_ko": "65세 기대여명",
+          "name_en": "Life expectancy at age 65",
+          "category": "population",
+          "subcategory": "mortality",
+          "unit": "세",
+          "license": "CC BY 3.0 IGO",
+          "file": "data/wpp_life_expectancy_65.json",
+          "record_count": 4040
+        },
+        {
+          "dataset_id": "wpp_total_fertility_rate",
+          "source": "UN WPP",
+          "name_ko": "합계출산율 (UN 전망)",
+          "name_en": "Total fertility rate (est+projection)",
+          "category": "population",
+          "subcategory": "fertility",
+          "unit": "명/여",
+          "license": "CC BY 3.0 IGO",
+          "file": "data/wpp_total_fertility_rate.json",
+          "record_count": 4040
+        },
+        {
+          "dataset_id": "wpp_crude_birth_rate",
+          "source": "UN WPP",
+          "name_ko": "조출생률 (UN 전망)",
+          "name_en": "Crude birth rate (est+projection)",
+          "category": "population",
+          "subcategory": "fertility",
+          "unit": "명/1000",
+          "license": "CC BY 3.0 IGO",
+          "file": "data/wpp_crude_birth_rate.json",
+          "record_count": 4040
+        },
+        {
+          "dataset_id": "wpp_crude_death_rate",
+          "source": "UN WPP",
+          "name_ko": "조사망률 (UN 전망)",
+          "name_en": "Crude death rate (est+projection)",
+          "category": "population",
+          "subcategory": "mortality",
+          "unit": "명/1000",
+          "license": "CC BY 3.0 IGO",
+          "file": "data/wpp_crude_death_rate.json",
+          "record_count": 4040
+        }
+      ]
     }
   ]
 }

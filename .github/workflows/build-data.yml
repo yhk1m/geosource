@@ -18,6 +18,8 @@ on:
           - fao
           - owid
           - pew
+          - who
+          - un_wpp
           - kosis
         default: all
 

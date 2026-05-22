@@ -1,12 +1,12 @@
 {
-  "last_built_at": "2026-05-22T01:07:45.899701Z",
+  "last_built_at": "2026-05-22T11:06:24.627525Z",
   "triggered_by": "local",
-  "requested_source": "who",
+  "requested_source": "un_wpp",
   "sources_built": [
-    "WHO"
+    "UN WPP"
   ],
-  "indicator_count": 5,
-  "record_count_total": 4480,
+  "indicator_count": 10,
+  "record_count_total": 40400,
   "per_source": {
     "World Bank": {
       "last_built_at": "2026-05-20T11:10:51.086137Z",
@@ -42,6 +42,11 @@
       "last_built_at": "2026-05-22T01:07:45.899701Z",
       "indicator_count": 5,
       "record_count": 4480
+    },
+    "UN WPP": {
+      "last_built_at": "2026-05-22T11:06:24.627525Z",
+      "indicator_count": 10,
+      "record_count": 40400
     }
   }
 }

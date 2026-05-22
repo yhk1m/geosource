@@ -25,7 +25,7 @@ if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
-from adapters import WorldBankAdapter, KosisAdapter, FaoAdapter, ImfAdapter, OwidAdapter, PewAdapter, WhoAdapter
+from adapters import WorldBankAdapter, KosisAdapter, FaoAdapter, ImfAdapter, OwidAdapter, PewAdapter, WhoAdapter, UnWppAdapter
 
 DATA_DIR = Path(__file__).parent / "data"
 DATA_DIR.mkdir(exist_ok=True)
@@ -222,6 +222,36 @@ def build_who() -> dict:
     return {"source": "WHO", "indicators": catalog}
 
 
+def build_un_wpp() -> dict:
+    adapter = UnWppAdapter()
+    catalog = []
+    for ind in adapter.list_indicators():
+        print(f"  → {ind.dataset_id} ({ind.name_ko})")
+        try:
+            bundle = adapter.build_bundle(
+                indicator_code=ind.indicator_code,
+                countries=DEFAULT_COUNTRIES,
+                year_range=DEFAULT_YEAR_RANGE,
+            )
+            out_path = DATA_DIR / f"{ind.dataset_id}.json"
+            out_path.write_text(bundle.to_json(), encoding="utf-8")
+            catalog.append({
+                "dataset_id": ind.dataset_id,
+                "source": ind.source,
+                "name_ko": ind.name_ko,
+                "name_en": ind.name_en,
+                "category": ind.category,
+                "subcategory": ind.subcategory,
+                "unit": ind.unit,
+                "license": ind.license,
+                "file": f"data/{ind.dataset_id}.json",
+                "record_count": len(bundle.records),
+            })
+        except Exception as e:
+            print(f"    ! 실패: {e}")
+    return {"source": "UN WPP", "indicators": catalog}
+
+
 def build_kosis() -> dict:
     adapter = KosisAdapter()
     catalog = []
@@ -302,7 +332,7 @@ def write_build_info(sources: list[dict], requested_source: str) -> dict:
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--source",
-        choices=["worldbank", "imf", "fao", "owid", "pew", "who", "kosis", "all"], default="all")
+        choices=["worldbank", "imf", "fao", "owid", "pew", "who", "un_wpp", "kosis", "all"], default="all")
     args = parser.parse_args()
 
     sources = []
@@ -322,10 +352,13 @@ def main():
         print("[5/7] Pew Research 빌드 중…")
         sources.append(build_pew())
     if args.source in ("who", "all"):
-        print("[6/7] WHO 빌드 중…")
+        print("[6/8] WHO 빌드 중…")
         sources.append(build_who())
+    if args.source in ("un_wpp", "all"):
+        print("[7/8] UN WPP 빌드 중…")
+        sources.append(build_un_wpp())
     if args.source in ("kosis", "all"):
-        print("[7/7] KOSIS 빌드 중…")
+        print("[8/8] KOSIS 빌드 중…")
         sources.append(build_kosis())
 
     # 마스터 카탈로그 작성 (프론트엔드 진입점)
