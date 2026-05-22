@@ -20,6 +20,8 @@ on:
           - pew
           - who
           - un_wpp
+          - unhcr
+          - un_sdg
           - kosis
         default: all
 

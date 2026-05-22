@@ -7,5 +7,7 @@ from adapters.owid import OwidAdapter
 from adapters.pew import PewAdapter
 from adapters.who import WhoAdapter
 from adapters.un_wpp import UnWppAdapter
+from adapters.unhcr import UnhcrAdapter
+from adapters.un_sdg import UnSdgAdapter
 
-__all__ = ["SourceAdapter", "WorldBankAdapter", "KosisAdapter", "FaoAdapter", "ImfAdapter", "OwidAdapter", "PewAdapter", "WhoAdapter", "UnWppAdapter"]
+__all__ = ["SourceAdapter", "WorldBankAdapter", "KosisAdapter", "FaoAdapter", "ImfAdapter", "OwidAdapter", "PewAdapter", "WhoAdapter", "UnWppAdapter", "UnhcrAdapter", "UnSdgAdapter"]

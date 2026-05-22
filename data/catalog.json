@@ -1419,6 +1419,136 @@
           "record_count": 4040
         }
       ]
+    },
+    {
+      "source": "UNHCR",
+      "indicators": [
+        {
+          "dataset_id": "unhcr_refugees_hosted",
+          "source": "UNHCR",
+          "name_ko": "수용 난민 수",
+          "name_en": "Refugees hosted",
+          "category": "population",
+          "subcategory": "displacement",
+          "unit": "명",
+          "license": "CC BY 4.0",
+          "file": "data/unhcr_refugees_hosted.json",
+          "record_count": 964
+        },
+        {
+          "dataset_id": "unhcr_asylum_seekers",
+          "source": "UNHCR",
+          "name_ko": "망명 신청자 수",
+          "name_en": "Asylum-seekers",
+          "category": "population",
+          "subcategory": "displacement",
+          "unit": "명",
+          "license": "CC BY 4.0",
+          "file": "data/unhcr_asylum_seekers.json",
+          "record_count": 964
+        },
+        {
+          "dataset_id": "unhcr_idps",
+          "source": "UNHCR",
+          "name_ko": "국내 실향민 (IDP)",
+          "name_en": "Internally displaced persons",
+          "category": "population",
+          "subcategory": "displacement",
+          "unit": "명",
+          "license": "CC BY 4.0",
+          "file": "data/unhcr_idps.json",
+          "record_count": 964
+        },
+        {
+          "dataset_id": "unhcr_stateless",
+          "source": "UNHCR",
+          "name_ko": "무국적자 수",
+          "name_en": "Stateless persons",
+          "category": "population",
+          "subcategory": "displacement",
+          "unit": "명",
+          "license": "CC BY 4.0",
+          "file": "data/unhcr_stateless.json",
+          "record_count": 964
+        },
+        {
+          "dataset_id": "unhcr_returned_refugees",
+          "source": "UNHCR",
+          "name_ko": "본국 귀환 난민",
+          "name_en": "Returned refugees",
+          "category": "population",
+          "subcategory": "displacement",
+          "unit": "명",
+          "license": "CC BY 4.0",
+          "file": "data/unhcr_returned_refugees.json",
+          "record_count": 964
+        }
+      ]
+    },
+    {
+      "source": "UN SDG",
+      "indicators": [
+        {
+          "dataset_id": "sdg_women_in_parliament",
+          "source": "UN SDG",
+          "name_ko": "여성 국회의원 비율 (SDG 5.5.1)",
+          "name_en": "Women in national parliaments (% seats)",
+          "category": "development",
+          "subcategory": "gender",
+          "unit": "%",
+          "license": "UN public data (출처 표기 시 자유 이용)",
+          "file": "data/sdg_women_in_parliament.json",
+          "record_count": 844
+        },
+        {
+          "dataset_id": "sdg_homicide_rate",
+          "source": "UN SDG",
+          "name_ko": "의도적 살인율 (SDG 16.1.1)",
+          "name_en": "Intentional homicide victims (per 100,000)",
+          "category": "development",
+          "subcategory": "violence",
+          "unit": "명/10만명",
+          "license": "UN public data (출처 표기 시 자유 이용)",
+          "file": "data/sdg_homicide_rate.json",
+          "record_count": 594
+        },
+        {
+          "dataset_id": "sdg_rd_expenditure",
+          "source": "UN SDG",
+          "name_ko": "R&D 지출 (% GDP, SDG 9.5.1)",
+          "name_en": "Research and development expenditure (% of GDP)",
+          "category": "development",
+          "subcategory": "innovation",
+          "unit": "%",
+          "license": "UN public data (출처 표기 시 자유 이용)",
+          "file": "data/sdg_rd_expenditure.json",
+          "record_count": 996
+        },
+        {
+          "dataset_id": "sdg_pm25_pollution",
+          "source": "UN SDG",
+          "name_ko": "PM2.5 대기오염 (SDG 11.6.2)",
+          "name_en": "Annual mean PM2.5 concentration",
+          "category": "development",
+          "subcategory": "environment",
+          "unit": "μg/m³",
+          "license": "UN public data (출처 표기 시 자유 이용)",
+          "file": "data/sdg_pm25_pollution.json",
+          "record_count": 280
+        },
+        {
+          "dataset_id": "sdg_mobile_ownership",
+          "source": "UN SDG",
+          "name_ko": "휴대전화 보급률 (SDG 5.b.1)",
+          "name_en": "Proportion of individuals who own a mobile telephone",
+          "category": "development",
+          "subcategory": "ict",
+          "unit": "%",
+          "license": "UN public data (출처 표기 시 자유 이용)",
+          "file": "data/sdg_mobile_ownership.json",
+          "record_count": 438
+        }
+      ]
     }
   ]
 }
