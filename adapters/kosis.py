@@ -268,6 +268,66 @@ INDICATORS: list[IndicatorMeta] = [
         update_frequency="annual",  # 표시는 연간이지만 실제 5년 단위
         coverage_years=(2010, 2020),
     ),
+
+    # ─── 산업·사업체 (전국사업체조사) ───
+    # 통계청 전국사업체조사: 표 ID는 가장 자주 인용되는 후보를 사용.
+    # 빌드 시 err=20/30 등이 나면 KOSIS 통계표 URL의 tblId 확인 후 정정.
+    IndicatorMeta(
+        dataset_id="kosis_101_DT_1KB4001_T1",
+        source="KOSIS",
+        indicator_code="101/DT_1KB4001/T1",
+        name_ko="시도별 사업체 수",
+        name_en="Number of Establishments by Province",
+        category="economy",
+        subcategory="establishments",
+        unit="개",
+        description_ko="시도별 사업체 수(전산업). 통계청 전국사업체조사.",
+        license="KOGL Type 1",
+        update_frequency="annual",
+        coverage_years=(2006, 2023),
+    ),
+    IndicatorMeta(
+        dataset_id="kosis_101_DT_1KB1001_T1",
+        source="KOSIS",
+        indicator_code="101/DT_1KB1001/T1",
+        name_ko="시도별 종사자 수",
+        name_en="Number of Workers by Province",
+        category="economy",
+        subcategory="employment",
+        unit="명",
+        description_ko="시도별 종사자 수(전산업). 통계청 전국사업체조사.",
+        license="KOGL Type 1",
+        update_frequency="annual",
+        coverage_years=(2006, 2023),
+    ),
+    IndicatorMeta(
+        dataset_id="kosis_101_DT_1K52B01_T1",
+        source="KOSIS",
+        indicator_code="101/DT_1K52B01/T1",
+        name_ko="시도별 제조업 사업체 수",
+        name_en="Number of Manufacturing Establishments by Province",
+        category="economy",
+        subcategory="establishments",
+        unit="개",
+        description_ko="시도별 제조업(KSIC 대분류 C) 사업체 수. 통계청 광업·제조업조사.",
+        license="KOGL Type 1",
+        update_frequency="annual",
+        coverage_years=(2006, 2023),
+    ),
+    IndicatorMeta(
+        dataset_id="kosis_101_DT_1K52B02_T1",
+        source="KOSIS",
+        indicator_code="101/DT_1K52B02/T1",
+        name_ko="시도별 제조업 종사자 수",
+        name_en="Number of Manufacturing Workers by Province",
+        category="economy",
+        subcategory="employment",
+        unit="명",
+        description_ko="시도별 제조업 종사자 수. 통계청 광업·제조업조사.",
+        license="KOGL Type 1",
+        update_frequency="annual",
+        coverage_years=(2006, 2023),
+    ),
     # 필요한 통계표를 여기에 계속 추가
 ]
 
