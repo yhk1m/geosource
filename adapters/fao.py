@@ -33,7 +33,16 @@ from schema import StandardRecord, IndicatorMeta
 from adapters.base import SourceAdapter
 
 
-BULK_URL_TMPL = "https://bulks-faostat.fao.org/production/{domain}.zip"
+# FAO bulk 다운로드 URL.
+# 2026년 중반에 bulks-faostat.fao.org/production/{domain}.zip 경로가 403으로
+# 바뀌어 fenixservices.fao.org/faostat/static/bulkdownloads/ 의 정식 파일명을
+# 직접 지정해야 한다.
+BULK_BASE = "https://fenixservices.fao.org/faostat/static/bulkdownloads"
+DOMAIN_FILES: dict[str, str] = {
+    "QCL": "Production_Crops_Livestock_E_All_Data_(Normalized).zip",
+    "RL":  "Inputs_LandUse_E_All_Data_(Normalized).zip",
+    "FBS": "FoodBalanceSheets_E_All_Data_(Normalized).zip",
+}
 
 # 다운로드한 zip을 캐시하는 디렉토리 (.cache/fao/QCL.zip 등)
 CACHE_DIR = Path(__file__).resolve().parent.parent / ".cache" / "fao"
@@ -190,11 +199,11 @@ INDICATORS: list[IndicatorMeta] = [
         coverage_years=(2000, 2023),
     ),
     IndicatorMeta(
-        dataset_id="fao_QCL_1057_5111",
-        source="FAO", indicator_code="QCL/1057/5111",
+        dataset_id="fao_QCL_1057_5112",
+        source="FAO", indicator_code="QCL/1057/5112",
         name_ko="닭 사육수", name_en="Chicken stocks",
-        category="agriculture", subcategory="livestock", unit="마리",
-        description_ko="연말 시점 닭 사육 마릿수.",
+        category="agriculture", subcategory="livestock", unit="천 마리",
+        description_ko="연말 시점 닭 사육수(1,000마리 단위). FAOSTAT는 닭만 5112 코드를 사용.",
         license="CC BY-NC-SA 3.0 IGO", update_frequency="annual",
         coverage_years=(2000, 2023),
     ),
@@ -307,10 +316,14 @@ def _ensure_zip(domain: str) -> Path:
         if age < CACHE_TTL_SECONDS:
             return local
 
-    url = BULK_URL_TMPL.format(domain=domain)
+    fname = DOMAIN_FILES.get(domain)
+    if not fname:
+        raise RuntimeError(f"FAO 도메인 {domain} 에 대한 bulk 파일명 매핑이 없습니다 (adapters/fao.py:DOMAIN_FILES)")
+    url = f"{BULK_BASE}/{fname}"
     req = urllib.request.Request(url, headers={
-        "User-Agent": "Mozilla/5.0 (compatible; GeoSource/1.0)",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
         "Accept": "*/*",
+        "Referer": "https://www.fao.org/faostat/en/",
     })
     try:
         with urllib.request.urlopen(req, timeout=300) as resp:
@@ -447,7 +460,7 @@ class FaoAdapter(SourceAdapter):
             records.append(StandardRecord(
                 dataset_id=indicator.dataset_id,
                 source=self.source_name,
-                source_url=BULK_URL_TMPL.format(domain=indicator.indicator_code.split("/")[0]),
+                source_url=f"{BULK_BASE}/{DOMAIN_FILES.get(indicator.indicator_code.split('/')[0], '')}",
                 indicator_code=indicator.indicator_code,
                 indicator_name_ko=indicator.name_ko,
                 indicator_name_en=indicator.name_en,

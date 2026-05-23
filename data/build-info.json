@@ -1,12 +1,12 @@
 {
-  "last_built_at": "2026-05-22T11:42:22.673573Z",
+  "last_built_at": "2026-05-23T05:06:05.725770Z",
   "triggered_by": "local",
-  "requested_source": "un_sdg",
+  "requested_source": "fao",
   "sources_built": [
-    "UN SDG"
+    "FAO"
   ],
-  "indicator_count": 5,
-  "record_count_total": 3152,
+  "indicator_count": 21,
+  "record_count_total": 7447,
   "per_source": {
     "World Bank": {
       "last_built_at": "2026-05-20T11:10:51.086137Z",
@@ -19,9 +19,9 @@
       "record_count": 98059
     },
     "FAO": {
-      "last_built_at": "2026-05-20T11:51:15.946185Z",
-      "indicator_count": 8,
-      "record_count": 3440
+      "last_built_at": "2026-05-23T05:06:05.725770Z",
+      "indicator_count": 21,
+      "record_count": 7447
     },
     "KOSIS": {
       "last_built_at": "2026-05-21T05:10:31.275881Z",
