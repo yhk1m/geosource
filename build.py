@@ -26,6 +26,7 @@ if hasattr(sys.stdout, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 from adapters import WorldBankAdapter, KosisAdapter, FaoAdapter, ImfAdapter, OwidAdapter, OwidEnergyAdapter, PewAdapter, WhoAdapter, UnWppAdapter, UnhcrAdapter, UnSdgAdapter
+from adapters import wmo as wmo_adapter
 
 DATA_DIR = Path(__file__).parent / "data"
 DATA_DIR.mkdir(exist_ok=True)
@@ -346,6 +347,36 @@ def build_un_wpp() -> dict:
     return {"source": "UN WPP", "indicators": catalog}
 
 
+def build_wmo() -> dict:
+    """WMO WWIS: 약 3000개 도시 × 월별 기후 평년값. 단일 JSON 출력.
+
+    다른 출처와 달리 dataset_id 1개에 모든 도시·월 데이터를 통합 저장.
+    프론트엔드는 custom_view='climate_city' 분기로 전용 뷰 사용.
+    """
+    bundle = wmo_adapter.build_all(max_workers=10)
+    ind = bundle["indicator"]
+    out_path = DATA_DIR / f"{wmo_adapter.DATASET_ID}.json"
+    out_path.write_text(
+        json.dumps(bundle, ensure_ascii=False, indent=None, separators=(",", ":")),
+        encoding="utf-8",
+    )
+    catalog = [{
+        "dataset_id": ind["dataset_id"],
+        "source": ind["source"],
+        "name_ko": ind["name_ko"],
+        "name_en": ind["name_en"],
+        "category": ind["category"],
+        "subcategory": ind["subcategory"],
+        "unit": ind["unit"],
+        "license": ind["license"],
+        "file": f"data/{wmo_adapter.DATASET_ID}.json",
+        "custom_view": ind["custom_view"],
+        "city_count": ind["city_count"],
+        "record_count": ind["city_count"] * 12,
+    }]
+    return {"source": "WMO", "indicators": catalog}
+
+
 def build_kosis() -> dict:
     adapter = KosisAdapter()
     catalog = []
@@ -426,7 +457,7 @@ def write_build_info(sources: list[dict], requested_source: str) -> dict:
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--source",
-        choices=["worldbank", "imf", "fao", "owid", "ei_energy", "pew", "who", "un_wpp", "unhcr", "un_sdg", "kosis", "all"], default="all")
+        choices=["worldbank", "imf", "fao", "owid", "ei_energy", "pew", "who", "un_wpp", "unhcr", "un_sdg", "wmo", "kosis", "all"], default="all")
     args = parser.parse_args()
 
     sources = []
@@ -460,6 +491,9 @@ def main():
     if args.source in ("un_sdg", "all"):
         print("[9/10] UN SDG 빌드 중…")
         sources.append(build_un_sdg())
+    if args.source in ("wmo", "all"):
+        print("[9.5/10] WMO (도시별 기후 평년값) 빌드 중…")
+        sources.append(build_wmo())
     if args.source in ("kosis", "all"):
         print("[10/10] KOSIS 빌드 중…")
         sources.append(build_kosis())

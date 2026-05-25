@@ -1,12 +1,12 @@
 {
-  "last_built_at": "2026-05-25T00:51:13.563969Z",
+  "last_built_at": "2026-05-25T01:38:03.402458Z",
   "triggered_by": "local",
-  "requested_source": "ei_energy",
+  "requested_source": "wmo",
   "sources_built": [
-    "Energy Institute"
+    "WMO"
   ],
-  "indicator_count": 35,
-  "record_count_total": 604275,
+  "indicator_count": 1,
+  "record_count_total": 26988,
   "per_source": {
     "World Bank": {
       "last_built_at": "2026-05-20T11:10:51.086137Z",
@@ -62,6 +62,11 @@
       "last_built_at": "2026-05-25T00:51:13.563969Z",
       "indicator_count": 35,
       "record_count": 604275
+    },
+    "WMO": {
+      "last_built_at": "2026-05-25T01:38:03.402458Z",
+      "indicator_count": 1,
+      "record_count": 26988
     }
   }
 }

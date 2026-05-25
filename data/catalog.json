@@ -2106,6 +2106,25 @@
           "record_count": 17265
         }
       ]
+    },
+    {
+      "source": "WMO",
+      "indicators": [
+        {
+          "dataset_id": "wmo_climate_normal",
+          "source": "WMO",
+          "name_ko": "월별 기후 평년값 (WMO)",
+          "name_en": "Monthly climate normals (WMO/WWIS)",
+          "category": "climate",
+          "subcategory": "normals",
+          "unit": "°C / mm",
+          "license": "WMO/회원국 기상청 (출처 표기 공익)",
+          "file": "data/wmo_climate_normal.json",
+          "custom_view": "climate_city",
+          "city_count": 2249,
+          "record_count": 26988
+        }
+      ]
     }
   ]
 }

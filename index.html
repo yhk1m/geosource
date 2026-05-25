@@ -872,6 +872,122 @@ footer.colophon a:hover { text-decoration: underline; }
 ::-webkit-scrollbar-track { background: var(--paper); }
 ::-webkit-scrollbar-thumb { background: var(--line); }
 ::-webkit-scrollbar-thumb:hover { background: var(--ink-faint); }
+
+/* ─────────────────────────────────────────────────────────
+ * WMO 도시별 월별 기후 평년값 전용 (.climate-* 네임스페이스)
+ * 다른 기능과 충돌 없도록 모든 클래스에 climate- 프리픽스.
+ * ───────────────────────────────────────────────────────── */
+.climate-search-wrap { position: relative; margin-top: 6px; max-width: 480px; }
+.climate-search {
+  width: 100%; padding: 8px 12px 8px 30px;
+  border: 1px solid var(--line); background: var(--paper);
+  font-family: var(--font-body); font-size: 12.5px; color: var(--ink);
+  outline: none; transition: border-color 0.15s;
+}
+.climate-search:focus { border-color: var(--ocean); }
+.climate-search-wrap::before {
+  content: '+'; position: absolute; left: 10px; top: 50%;
+  transform: translateY(-50%); color: var(--ink-faint);
+  font-size: 16px; pointer-events: none;
+}
+.climate-results {
+  display: none; position: absolute; top: 100%; left: 0; right: 0;
+  background: var(--paper); border: 1px solid var(--line);
+  border-top: none; max-height: 280px; overflow-y: auto; z-index: 50;
+}
+.climate-results.open { display: block; }
+.climate-result-item {
+  padding: 8px 12px; border-bottom: 1px solid var(--line);
+  cursor: pointer; font-size: 12.5px; display: flex;
+  justify-content: space-between; align-items: center;
+}
+.climate-result-item:last-child { border-bottom: none; }
+.climate-result-item:hover { background: var(--paper-dim); }
+.climate-result-item .ko { color: var(--ink); }
+.climate-result-item .ctry { color: var(--ink-faint); font-size: 11.5px; margin-left: 8px; }
+.climate-result-item .iso { color: var(--ocean); font-weight: 500; font-size: 11px; }
+.climate-result-empty, .climate-result-loading {
+  padding: 10px 12px; color: var(--ink-faint); font-size: 12px;
+}
+.climate-chips {
+  display: flex; flex-wrap: wrap; gap: 5px;
+  max-height: 110px; overflow-y: auto; padding: 2px;
+  margin-bottom: 8px;
+}
+.climate-chip {
+  font-size: 12px; padding: 5px 10px;
+  border: 1px solid var(--line); background: var(--paper);
+  color: var(--ink-soft); cursor: pointer;
+  font-family: var(--font-body); transition: all 0.12s;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.climate-chip.active { color: #fff; border-color: var(--ink); font-weight: 500; }
+.climate-chip .close {
+  font-size: 11px; opacity: 0.8; margin-left: 2px;
+}
+.climate-charts {
+  display: grid; grid-template-columns: 1fr; gap: 14px;
+  margin-top: 14px;
+}
+.climate-chart-card {
+  background: var(--paper); border: 1px solid var(--line);
+  padding: 12px;
+  height: 380px;                  /* 명시 height 필수 (Chart.js 무한 리사이즈 방지) */
+  display: flex; flex-direction: column;
+}
+.climate-chart-card-wide { height: 460px; }
+.climate-chart-card h3 {
+  font-family: var(--font-mono); font-size: 11px; font-weight: 500;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--ink-faint); margin: 0 0 8px 0;
+  flex: 0 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 10px; flex-wrap: wrap;
+}
+.climate-chart-card > canvas {
+  flex: 1 1 auto;
+  min-height: 0;                  /* flex 자식이 부모 크기 따르도록 */
+  max-width: 100%;
+}
+.climate-toggle { display: inline-flex; gap: 4px; }
+.climate-toggle button {
+  font-family: var(--font-mono); font-size: 10.5px;
+  letter-spacing: 0.5px;
+  padding: 3px 9px; border: 1px solid var(--line);
+  background: transparent; color: var(--ink-faint); cursor: pointer;
+  text-transform: none;
+}
+.climate-toggle button:hover { border-color: var(--ink); color: var(--ink); }
+.climate-toggle button.active {
+  background: var(--ink); color: #fff; border-color: var(--ink);
+}
+.climate-empty {
+  padding: 60px 20px; text-align: center;
+  color: var(--ink-faint); font-size: 13px;
+}
+.climate-meta-row {
+  display: flex; flex-wrap: wrap; gap: 16px;
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--ink-faint); margin-top: 6px;
+}
+.climate-meta-row strong { color: var(--ink); font-weight: 500; }
+table.climate-table {
+  width: 100%; border-collapse: collapse;
+  font-family: var(--font-mono); font-size: 11.5px;
+  margin-top: 14px;
+}
+table.climate-table th, table.climate-table td {
+  padding: 5px 8px; border-bottom: 1px solid var(--line);
+  text-align: right;
+}
+table.climate-table th:first-child, table.climate-table td:first-child {
+  text-align: left; font-family: var(--font-body); font-size: 12.5px;
+}
+table.climate-table thead th {
+  background: var(--paper-dim); color: var(--ink-faint);
+  font-weight: 500; letter-spacing: 0.5px;
+}
+table.climate-table tbody tr:hover { background: var(--paper-dim); }
 </style>
 </head>
 
@@ -1887,6 +2003,18 @@ const INDICATORS = [
     category: "economy", unit: "명",
     description_ko: "시도별 제조업 종사자 수. 광업·제조업조사.",
     license: "KOGL Type 1" },
+
+  // ── WMO 도시별 월별 기후 평년값 (단일 지표, 별도 뷰) ─────────────
+  // 데이터 구조가 country×year×value 가 아닌 city×month×{기온,강수} 라서
+  // selectIndicator 가 custom_view 마커로 renderClimateViewer() 로 분기.
+  // 기존 차트/테이블/연산/국가선택 함수는 일절 건드리지 않음.
+  { dataset_id: "wmo_climate_normal", source: "WMO", code: "climate_normal",
+    name_ko: "월별 기후 평년값 (도시별)", name_en: "Monthly climate normals (city)",
+    category: "climate", unit: "°C / mm",
+    description_ko: "WMO 회원국 기상청이 제공하는 도시별 월별 기후 평년값(기온·강수). 1991~2020 표준 기간이 다수, 도시별로 보고 기간 상이. WWIS 종합.",
+    license: "WMO/회원국 기상청",
+    custom_view: "climate_city",
+    data_file: "data/wmo_climate_normal.json" },
 ];
 
 const CATEGORIES = [
@@ -2480,6 +2608,8 @@ async function selectIndicator(datasetId) {
   state.selectedIndicator = ind;
   if (state.indicatorB === datasetId) state.indicatorB = null;  // A=B 방지
   renderIndicatorList();
+  // ── WMO 기후 평년값: 데이터 구조가 다르므로 전용 뷰로 분기 (기존 흐름 우회) ──
+  if (ind.custom_view === "climate_city") { await renderClimateViewer(ind); return; }
   renderViewer();          // 뼈대 먼저
   await fetchData();       // 그다음 데이터
   renderChart();
@@ -3285,6 +3415,395 @@ function init() {
   fetchAllCountries();   // 비동기 — 검색창에서 결과로 사용
 }
 document.addEventListener("DOMContentLoaded", init);
+
+/* ─────────────────────────────────────────────────────────
+ * WMO 도시별 월별 기후 평년값 — 전용 뷰 (완전 격리)
+ *
+ * 기존 viewer/chart/table/fetch/state 흐름과 완전 분리.
+ * selectIndicator()에서 ind.custom_view === "climate_city" 분기로만 진입.
+ * 자체 state(climateState), 자체 fetch, 자체 차트 인스턴스 보관.
+ * ───────────────────────────────────────────────────────── */
+const climateState = {
+  data: null,                 // wmo_climate_normal.json 캐시
+  selected: [],               // 선택된 city id 배열 (최대 6)
+  mode: 'absolute',           // 'absolute' | 'deviation' (월별 연평균 대비 편차)
+  charts: { combo: null },
+  MAX_CITIES: 6,
+};
+
+/* 도시별 색상 오버라이드 (city_id → hex). 기존 CUSTOM_COLORS(ISO3 키)와 분리. */
+const CLIMATE_COLORS = JSON.parse(localStorage.getItem('geosource_climate_colors') || '{}');
+function climateColorFor(cityId, idx) {
+  return CLIMATE_COLORS[cityId] || SERIES_COLORS[idx % SERIES_COLORS.length];
+}
+function setClimateColor(cityId, hex) {
+  CLIMATE_COLORS[cityId] = hex;
+  localStorage.setItem('geosource_climate_colors', JSON.stringify(CLIMATE_COLORS));
+}
+
+async function loadClimateData() {
+  if (climateState.data) return climateState.data;
+  const resp = await fetch("data/wmo_climate_normal.json");
+  if (!resp.ok) throw new Error("WMO 데이터 로드 실패");
+  climateState.data = await resp.json();
+  return climateState.data;
+}
+
+function findClimateCity(id) {
+  if (!climateState.data) return null;
+  return climateState.data.cities.find(c => c.id === id) || null;
+}
+
+async function renderClimateViewer(ind) {
+  const viewer = document.getElementById("viewer");
+  viewer.innerHTML = `<div class="climate-empty">기후 데이터 불러오는 중…</div>`;
+  let data;
+  try {
+    data = await loadClimateData();
+  } catch (e) {
+    viewer.innerHTML = `<div class="climate-empty">데이터 로드 실패: ${e.message}</div>`;
+    return;
+  }
+  if (climateState.selected.length === 0) {
+    const seoul = data.cities.find(c => c.name_en === "Seoul")
+              || data.cities.find(c => c.country_iso3 === "KOR")
+              || data.cities[0];
+    if (seoul) climateState.selected = [seoul.id];
+  }
+  drawClimateView(ind, data);
+}
+
+function drawClimateView(ind, data) {
+  const selected = climateState.selected
+    .map(id => findClimateCity(id))
+    .filter(Boolean);
+
+  const chipsHtml = selected.length
+    ? selected.map((c, idx) => {
+        const color = climateColorFor(c.id, idx);
+        return `<button class="climate-chip active" data-id="${c.id}"
+                  style="background:${color};border-color:${color};color:#fff;"
+                  title="클릭하여 제거">
+                  <span class="chip-swatch" data-id="${c.id}" title="색상 변경" style="background:${color}">
+                    <input type="color" class="chip-color-input" data-id="${c.id}" value="${color}">
+                  </span>
+                  ${c.name_ko}
+                  <span class="close">×</span>
+                </button>`;
+      }).join("")
+    : `<span class="climate-result-empty">아래에서 도시를 검색해 추가하세요</span>`;
+
+  const viewer = document.getElementById("viewer");
+  viewer.innerHTML = `
+    <div class="indicator-header">
+      <div class="breadcrumb">WMO<span class="sep">/</span>기후 평년값<span class="sep">/</span>도시별 월별</div>
+      <h2>${ind.name_ko}</h2>
+      <div class="name-en">${ind.name_en}</div>
+      <p class="description">${ind.description_ko}</p>
+      <div class="meta-row">
+        <span>수록 도시: <strong>${data.cities.length.toLocaleString()}</strong>개</span>
+        <span>기준 기간: <strong>${data.indicator.period_label}</strong></span>
+        <span>라이선스: <strong>${ind.license}</strong></span>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="controls-row">
+        <div class="control-group" style="flex:1;">
+          <label>도시 선택 (최대 ${climateState.MAX_CITIES}개)</label>
+          <div class="climate-chips" id="climate-chips">${chipsHtml}</div>
+          <div class="climate-search-wrap">
+            <input id="climate-search" class="climate-search" type="text"
+                   placeholder="도시 검색… (예: Seoul, Tokyo, 부산, France)" autocomplete="off">
+            <div class="climate-results" id="climate-results"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="climate-charts">
+      <div class="climate-chart-card climate-chart-card-wide">
+        <h3>
+          <span>월평균 기온 (꺾은선, 좌측) · 월 강수량 (막대, 우측)</span>
+          <span class="climate-toggle">
+            <button data-mode="absolute" class="${climateState.mode==='absolute'?'active':''}">절댓값</button>
+            <button data-mode="deviation" class="${climateState.mode==='deviation'?'active':''}">월별 편차</button>
+          </span>
+        </h3>
+        <canvas id="climate-chart-combo"></canvas>
+      </div>
+    </div>
+
+    <div id="climate-table-wrap"></div>
+
+    <div class="action-row">
+      <span class="meta">${selected.length}개 도시 · ${data.indicator.period_label}</span>
+      <button class="btn primary" id="climate-btn-csv" ${selected.length ? '' : 'disabled'}>CSV 다운로드</button>
+    </div>
+  `;
+
+  bindClimateEvents(ind);
+  if (selected.length) {
+    drawClimateCharts(selected);
+    drawClimateTable(selected);
+  }
+}
+
+function bindClimateEvents(ind) {
+  document.querySelectorAll("#climate-chips .climate-chip").forEach(btn => {
+    btn.onclick = (e) => {
+      // 색상 스워치/픽커 클릭 시 칩 제거 차단 (기존 country-chip 패턴 동일)
+      if (e.target.closest('.chip-swatch') || e.target.closest('.chip-color-input')) return;
+      climateState.selected = climateState.selected.filter(id => id !== btn.dataset.id);
+      drawClimateView(ind, climateState.data);
+    };
+  });
+
+  // 색상 스워치 → color picker
+  document.querySelectorAll("#climate-chips .chip-swatch").forEach(sw => {
+    sw.onclick = (e) => {
+      e.stopPropagation();
+      sw.querySelector('.chip-color-input')?.click();
+    };
+  });
+  document.querySelectorAll("#climate-chips .chip-color-input").forEach(inp => {
+    inp.oninput = (e) => {
+      e.stopPropagation();
+      const id = inp.dataset.id;
+      const hex = e.target.value;
+      setClimateColor(id, hex);
+      // 칩+스워치 즉시 갱신(리렌더 없이 시각 피드백)
+      const chip = inp.closest('.climate-chip');
+      if (chip) { chip.style.background = hex; chip.style.borderColor = hex; }
+      const sw = inp.closest('.chip-swatch');
+      if (sw) sw.style.background = hex;
+    };
+    inp.onchange = () => {
+      // 색 선택 다이얼 종료 시 차트 재렌더(색 반영)
+      const cities = climateState.selected.map(id => findClimateCity(id)).filter(Boolean);
+      if (cities.length) drawClimateCharts(cities);
+    };
+    inp.onclick = (e) => e.stopPropagation();
+  });
+
+  // CSV 다운로드
+  const csvBtn = document.getElementById("climate-btn-csv");
+  if (csvBtn) csvBtn.onclick = downloadClimateCSV;
+
+  // 절댓값 / 편차 토글
+  document.querySelectorAll(".climate-toggle button").forEach(btn => {
+    btn.onclick = () => {
+      climateState.mode = btn.dataset.mode;
+      drawClimateView(ind, climateState.data);
+    };
+  });
+
+  const input = document.getElementById("climate-search");
+  const results = document.getElementById("climate-results");
+  if (!input || !results) return;
+
+  input.oninput = () => {
+    const q = input.value.trim().toLowerCase();
+    if (!q) { results.classList.remove("open"); results.innerHTML = ""; return; }
+    const matches = climateState.data.cities.filter(c =>
+      !climateState.selected.includes(c.id) &&
+      ((c.name_en || "").toLowerCase().includes(q) ||
+       (c.name_ko || "").toLowerCase().includes(q) ||
+       (c.country_en || "").toLowerCase().includes(q) ||
+       (c.country_ko || "").toLowerCase().includes(q))
+    ).slice(0, 20);
+
+    if (matches.length === 0) {
+      results.innerHTML = `<div class="climate-result-empty">검색 결과 없음</div>`;
+    } else {
+      results.innerHTML = matches.map(c => `
+        <div class="climate-result-item" data-id="${c.id}">
+          <span><span class="ko">${c.name_ko}</span><span class="ctry">${c.country_ko || c.country_en}</span></span>
+          <span class="iso">${c.country_iso3 || ''}</span>
+        </div>`).join("");
+      results.querySelectorAll(".climate-result-item").forEach(item => {
+        item.onclick = () => {
+          if (climateState.selected.length >= climateState.MAX_CITIES) {
+            climateState.selected.shift();
+          }
+          climateState.selected.push(item.dataset.id);
+          input.value = "";
+          results.classList.remove("open");
+          drawClimateView(ind, climateState.data);
+        };
+      });
+    }
+    results.classList.add("open");
+  };
+  // Enter → 첫 번째 검색 결과 선택
+  input.onkeydown = (e) => {
+    if (e.key !== "Enter") return;
+    e.preventDefault();
+    const first = results.querySelector(".climate-result-item");
+    if (first) first.click();
+  };
+  input.onblur = () => setTimeout(() => results.classList.remove("open"), 180);
+}
+
+const MONTH_LABELS = ["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"];
+
+/* 도시 값 배열을 mode에 맞춰 변환.
+   - absolute: 원본
+   - deviation: 12개월 평균(null 제외)을 빼서 편차로 환산 */
+function toMode(vals) {
+  if (climateState.mode === 'absolute') return vals.slice();
+  const nums = vals.filter(v => v != null);
+  if (!nums.length) return vals.slice();
+  const avg = nums.reduce((a, b) => a + b, 0) / nums.length;
+  return vals.map(v => v == null ? null : +(v - avg).toFixed(1));
+}
+
+function drawClimateCharts(selected) {
+  const canvas = document.getElementById("climate-chart-combo");
+  if (!canvas) return;
+  if (climateState.charts.combo) climateState.charts.combo.destroy();
+
+  const isDev = climateState.mode === 'deviation';
+  const tempLabel = isDev ? '°C 편차 (연평균 대비)' : '°C';
+  const rainLabel = isDev ? 'mm 편차 (월평균 대비)' : 'mm';
+
+  const datasets = [];
+  selected.forEach((c, idx) => {
+    const color = climateColorFor(c.id, idx);
+    // 강수 막대 (뒤로)
+    datasets.push({
+      type: 'bar',
+      label: `${c.name_ko} 강수`,
+      data: toMode(c.months.map(m => m.rain)),
+      backgroundColor: color + '70',
+      borderColor: color,
+      borderWidth: 1,
+      yAxisID: 'yRain',
+      order: 2,
+    });
+    // 기온 꺾은선 (위에 오버레이)
+    datasets.push({
+      type: 'line',
+      label: `${c.name_ko} 기온`,
+      data: toMode(c.months.map(m => m.tmean)),
+      borderColor: color,
+      backgroundColor: color,
+      tension: 0.3, fill: false, pointRadius: 3, borderWidth: 2.5,
+      yAxisID: 'yTemp',
+      order: 1,
+    });
+  });
+
+  climateState.charts.combo = new Chart(canvas.getContext("2d"), {
+    type: 'bar',
+    data: { labels: MONTH_LABELS, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 14, font: { size: 11 } } },
+        tooltip: { callbacks: {
+          label: ctx => {
+            const isTemp = ctx.dataset.yAxisID === 'yTemp';
+            const v = ctx.parsed.y;
+            const num = (v == null) ? '—' : v.toFixed(1);
+            const unit = isTemp ? '°C' : 'mm';
+            const prefix = (isDev && v != null && v > 0) ? '+' : '';
+            return `${ctx.dataset.label}: ${prefix}${num}${unit}`;
+          },
+        } },
+      },
+      scales: {
+        yTemp: {
+          type: 'linear', position: 'left',
+          title: { display: true, text: tempLabel, font: { size: 11 } },
+          ticks: { callback: v => (v > 0 && isDev ? '+' : '') + v + '°' },
+          grid: { color: 'rgba(0,0,0,0.06)' },
+        },
+        yRain: {
+          type: 'linear', position: 'right',
+          title: { display: true, text: rainLabel, font: { size: 11 } },
+          ticks: { callback: v => (v > 0 && isDev ? '+' : '') + v + 'mm' },
+          grid: { drawOnChartArea: false },
+          beginAtZero: !isDev,
+        },
+      },
+    },
+  });
+}
+
+function downloadClimateCSV() {
+  const cities = climateState.selected.map(id => findClimateCity(id)).filter(Boolean);
+  if (!cities.length) return;
+  const headers = [
+    "city_id","city_name_ko","city_name_en",
+    "country_iso3","country_name_ko","country_name_en",
+    "lat","lon","period_begin","period_end",
+    "month","tmean_c","tmax_c","tmin_c","rainfall_mm","raindays",
+  ];
+  const esc = v => {
+    if (v === null || v === undefined) return "";
+    const s = String(v);
+    return (s.includes(",") || s.includes('"') || s.includes("\n"))
+      ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  const rows = [];
+  cities.forEach(c => {
+    c.months.forEach(m => {
+      rows.push([
+        c.id, c.name_ko, c.name_en,
+        c.country_iso3, c.country_ko, c.country_en,
+        c.lat ?? "", c.lon ?? "",
+        c.period_begin ? (c.period_begin | 0) : "",
+        c.period_end ? (c.period_end | 0) : "",
+        m.m, m.tmean ?? "", m.tmax ?? "", m.tmin ?? "",
+        m.rain ?? "", m.raindays ?? "",
+      ].map(esc).join(","));
+    });
+  });
+  const csv = "﻿" + headers.join(",") + "\n" + rows.join("\n");
+  const ts = new Date().toISOString().slice(0, 10);
+  const slug = cities.length === 1
+    ? cities[0].name_en.toLowerCase().replace(/\s+/g, "_")
+    : `${cities.length}cities`;
+  saveBlob(csv, `wmo_climate_normal_${slug}_${ts}.csv`, "text/csv;charset=utf-8");
+}
+
+function drawClimateTable(selected) {
+  const wrap = document.getElementById("climate-table-wrap");
+  if (!selected.length) { wrap.innerHTML = ""; return; }
+  const fmt = v => v == null ? '—' : (Number.isInteger(v) ? v : v.toFixed(1));
+
+  const rows = selected.map(c => {
+    const tempCells = c.months.map(m => `<td>${fmt(m.tmean)}</td>`).join("");
+    const rainCells = c.months.map(m => `<td>${fmt(m.rain)}</td>`).join("");
+    const periodStr = (c.period_begin && c.period_end)
+      ? `${c.period_begin|0}–${c.period_end|0}` : '—';
+    return `
+      <tr><td rowspan="2"><strong>${c.name_ko}</strong><br>
+        <span style="color:var(--ink-faint);font-size:10.5px;">${c.country_ko || c.country_en}</span><br>
+        <span style="color:var(--ink-faint);font-size:10px;">${periodStr}</span></td>
+        ${tempCells}</tr>
+      <tr>${rainCells}</tr>
+    `;
+  }).join("");
+  wrap.innerHTML = `
+    <table class="climate-table">
+      <thead>
+        <tr><th rowspan="2">도시</th>
+          ${MONTH_LABELS.map(m => `<th>${m}</th>`).join("")}</tr>
+      </thead>
+      <tbody>
+        <tr style="background:var(--paper-dim);">
+          <td colspan="13" style="text-align:left;color:var(--ink-faint);font-size:10.5px;padding:6px 8px;">
+            상단: 평균기온(°C) · 하단: 강수량(mm)
+          </td>
+        </tr>
+        ${rows}
+      </tbody>
+    </table>
+  `;
+}
 </script>
 
 </body>

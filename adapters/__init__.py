@@ -5,6 +5,7 @@ from adapters.fao import FaoAdapter
 from adapters.imf import ImfAdapter
 from adapters.owid import OwidAdapter
 from adapters.owid_energy import OwidEnergyAdapter
+from adapters import wmo  # WMO는 단일 함수 인터페이스 (build_all) — 모듈 그대로 export
 from adapters.pew import PewAdapter
 from adapters.who import WhoAdapter
 from adapters.un_wpp import UnWppAdapter
