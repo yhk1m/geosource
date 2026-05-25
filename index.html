@@ -596,6 +596,23 @@ section.viewer {
   letter-spacing: 1.2px; text-transform: uppercase;
   color: var(--ink-faint); margin-bottom: 10px;
 }
+.label-row {
+  display: flex; align-items: baseline; justify-content: space-between;
+  margin-bottom: 10px; gap: 12px;
+}
+.label-row label { margin-bottom: 0; }
+.label-actions { display: inline-flex; gap: 4px; }
+.label-actions button {
+  font-family: var(--font-mono); font-size: 10.5px;
+  letter-spacing: 0.8px;
+  padding: 3px 8px;
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--ink-faint);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.label-actions button:hover { color: var(--ink); border-color: var(--ink); }
 .country-chips {
   display: flex; flex-wrap: wrap; gap: 5px;
   max-height: 110px; overflow-y: auto;
@@ -1241,29 +1258,204 @@ const INDICATORS = [
     description_ko: "구매력 평가 기준 세계 GDP에서 차지하는 비중.",
     license: "IMF Open Data" },
 
-  // ── IMF: 저축·투자 ──────────────────────────────────────
-  { dataset_id: "imf_NGSD_NGDP", source: "IMF", code: "NGSD_NGDP",
-    name_ko: "국민총저축률 (GDP 비)", name_en: "Gross national savings (% of GDP)",
+  // ── IMF: 정부 재정 (Fiscal Monitor 코드) ────────────────
+  { dataset_id: "imf_rev", source: "IMF", code: "rev",
+    name_ko: "정부 수입 (GDP 비)", name_en: "Government revenue (% of GDP)",
     category: "economy", unit: "%",
-    description_ko: "국민총저축 / GDP.",
+    description_ko: "조세+사회보험료 등 정부 총수입 / GDP (IMF Fiscal Monitor).",
     license: "IMF Open Data" },
-  { dataset_id: "imf_NID_NGDP", source: "IMF", code: "NID_NGDP",
-    name_ko: "총투자율 (GDP 비)", name_en: "Total investment (% of GDP)",
+  { dataset_id: "imf_exp", source: "IMF", code: "exp",
+    name_ko: "정부 지출 (GDP 비)", name_en: "Government expenditure (% of GDP)",
     category: "economy", unit: "%",
-    description_ko: "총고정자본형성+재고변동 / GDP.",
+    description_ko: "정부 총지출 / GDP (IMF Fiscal Monitor).",
     license: "IMF Open Data" },
 
-  // ── IMF: 정부 재정 ──────────────────────────────────────
-  { dataset_id: "imf_GGR_NGDP", source: "IMF", code: "GGR_NGDP",
-    name_ko: "정부 수입 (GDP 비)", name_en: "General government revenue (% of GDP)",
-    category: "economy", unit: "%",
-    description_ko: "조세+사회보험료 등 정부 총수입 / GDP.",
-    license: "IMF Open Data" },
-  { dataset_id: "imf_GGX_NGDP", source: "IMF", code: "GGX_NGDP",
-    name_ko: "정부 지출 (GDP 비)", name_en: "General government expenditure (% of GDP)",
-    category: "economy", unit: "%",
-    description_ko: "정부 총지출 / GDP.",
-    license: "IMF Open Data" },
+  // ── Energy Institute (전 BP) Statistical Review — OWID 종합본 ──
+  // 8 에너지원 × 4 측면(소비 TWh, 소비 %, 발전 TWh, 발전 %) + 화석 3개 생산량 = 35
+  // 석탄
+  { dataset_id: "ei_coal_consumption_twh", source: "Energy Institute", code: "coal_consumption",
+    name_ko: "석탄 1차에너지 소비", name_en: "Coal primary energy consumption",
+    category: "energy", unit: "TWh",
+    description_ko: "석탄 연간 1차에너지 소비량(TWh). 원자료: Energy Institute Statistical Review of World Energy (OWID 종합).",
+    license: "CC BY 4.0" },
+  { dataset_id: "ei_coal_share_energy_pct", source: "Energy Institute", code: "coal_share_energy",
+    name_ko: "석탄 1차에너지 비중", name_en: "Coal share of primary energy",
+    category: "energy", unit: "%",
+    description_ko: "석탄이 전체 1차에너지 소비에서 차지하는 비율(%). 원자료: Energy Institute (OWID 종합).",
+    license: "CC BY 4.0" },
+  { dataset_id: "ei_coal_electricity_twh", source: "Energy Institute", code: "coal_electricity",
+    name_ko: "석탄 발전량", name_en: "Coal electricity generation",
+    category: "energy", unit: "TWh",
+    description_ko: "석탄 연간 발전량(TWh). 원자료: Ember + Energy Institute (OWID 종합).",
+    license: "CC BY 4.0" },
+  { dataset_id: "ei_coal_share_elec_pct", source: "Energy Institute", code: "coal_share_elec",
+    name_ko: "석탄 발전 비중", name_en: "Coal share of electricity",
+    category: "energy", unit: "%",
+    description_ko: "석탄이 전체 전력 생산에서 차지하는 비율(%). 원자료: Ember + Energy Institute (OWID 종합).",
+    license: "CC BY 4.0" },
+  // 석유
+  { dataset_id: "ei_oil_consumption_twh", source: "Energy Institute", code: "oil_consumption",
+    name_ko: "석유 1차에너지 소비", name_en: "Oil primary energy consumption",
+    category: "energy", unit: "TWh",
+    description_ko: "석유 연간 1차에너지 소비량(TWh). 원자료: Energy Institute (OWID 종합).",
+    license: "CC BY 4.0" },
+  { dataset_id: "ei_oil_share_energy_pct", source: "Energy Institute", code: "oil_share_energy",
+    name_ko: "석유 1차에너지 비중", name_en: "Oil share of primary energy",
+    category: "energy", unit: "%",
+    description_ko: "석유가 전체 1차에너지 소비에서 차지하는 비율(%). 원자료: Energy Institute (OWID 종합).",
+    license: "CC BY 4.0" },
+  { dataset_id: "ei_oil_electricity_twh", source: "Energy Institute", code: "oil_electricity",
+    name_ko: "석유 발전량", name_en: "Oil electricity generation",
+    category: "energy", unit: "TWh",
+    description_ko: "석유 연간 발전량(TWh). 원자료: Ember + Energy Institute (OWID 종합).",
+    license: "CC BY 4.0" },
+  { dataset_id: "ei_oil_share_elec_pct", source: "Energy Institute", code: "oil_share_elec",
+    name_ko: "석유 발전 비중", name_en: "Oil share of electricity",
+    category: "energy", unit: "%",
+    description_ko: "석유가 전체 전력 생산에서 차지하는 비율(%). 원자료: Ember + Energy Institute (OWID 종합).",
+    license: "CC BY 4.0" },
+  // 가스
+  { dataset_id: "ei_gas_consumption_twh", source: "Energy Institute", code: "gas_consumption",
+    name_ko: "가스 1차에너지 소비", name_en: "Gas primary energy consumption",
+    category: "energy", unit: "TWh",
+    description_ko: "가스 연간 1차에너지 소비량(TWh). 원자료: Energy Institute (OWID 종합).",
+    license: "CC BY 4.0" },
+  { dataset_id: "ei_gas_share_energy_pct", source: "Energy Institute", code: "gas_share_energy",
+    name_ko: "가스 1차에너지 비중", name_en: "Gas share of primary energy",
+    category: "energy", unit: "%",
+    description_ko: "가스가 전체 1차에너지 소비에서 차지하는 비율(%). 원자료: Energy Institute (OWID 종합).",
+    license: "CC BY 4.0" },
+  { dataset_id: "ei_gas_electricity_twh", source: "Energy Institute", code: "gas_electricity",
+    name_ko: "가스 발전량", name_en: "Gas electricity generation",
+    category: "energy", unit: "TWh",
+    description_ko: "가스 연간 발전량(TWh). 원자료: Ember + Energy Institute (OWID 종합).",
+    license: "CC BY 4.0" },
+  { dataset_id: "ei_gas_share_elec_pct", source: "Energy Institute", code: "gas_share_elec",
+    name_ko: "가스 발전 비중", name_en: "Gas share of electricity",
+    category: "energy", unit: "%",
+    description_ko: "가스가 전체 전력 생산에서 차지하는 비율(%). 원자료: Ember + Energy Institute (OWID 종합).",
+    license: "CC BY 4.0" },
+  // 원자력
+  { dataset_id: "ei_nuclear_consumption_twh", source: "Energy Institute", code: "nuclear_consumption",
+    name_ko: "원자력 1차에너지 소비", name_en: "Nuclear primary energy consumption",
+    category: "energy", unit: "TWh",
+    description_ko: "원자력 연간 1차에너지 소비량(TWh). 원자료: Energy Institute (OWID 종합).",
+    license: "CC BY 4.0" },
+  { dataset_id: "ei_nuclear_share_energy_pct", source: "Energy Institute", code: "nuclear_share_energy",
+    name_ko: "원자력 1차에너지 비중", name_en: "Nuclear share of primary energy",
+    category: "energy", unit: "%",
+    description_ko: "원자력이 전체 1차에너지 소비에서 차지하는 비율(%). 원자료: Energy Institute (OWID 종합).",
+    license: "CC BY 4.0" },
+  { dataset_id: "ei_nuclear_electricity_twh", source: "Energy Institute", code: "nuclear_electricity",
+    name_ko: "원자력 발전량", name_en: "Nuclear electricity generation",
+    category: "energy", unit: "TWh",
+    description_ko: "원자력 연간 발전량(TWh). 원자료: Ember + Energy Institute (OWID 종합).",
+    license: "CC BY 4.0" },
+  { dataset_id: "ei_nuclear_share_elec_pct", source: "Energy Institute", code: "nuclear_share_elec",
+    name_ko: "원자력 발전 비중", name_en: "Nuclear share of electricity",
+    category: "energy", unit: "%",
+    description_ko: "원자력이 전체 전력 생산에서 차지하는 비율(%). 원자료: Ember + Energy Institute (OWID 종합).",
+    license: "CC BY 4.0" },
+  // 수력
+  { dataset_id: "ei_hydro_consumption_twh", source: "Energy Institute", code: "hydro_consumption",
+    name_ko: "수력 1차에너지 소비", name_en: "Hydro primary energy consumption",
+    category: "energy", unit: "TWh",
+    description_ko: "수력 연간 1차에너지 소비량(TWh). 원자료: Energy Institute (OWID 종합).",
+    license: "CC BY 4.0" },
+  { dataset_id: "ei_hydro_share_energy_pct", source: "Energy Institute", code: "hydro_share_energy",
+    name_ko: "수력 1차에너지 비중", name_en: "Hydro share of primary energy",
+    category: "energy", unit: "%",
+    description_ko: "수력이 전체 1차에너지 소비에서 차지하는 비율(%). 원자료: Energy Institute (OWID 종합).",
+    license: "CC BY 4.0" },
+  { dataset_id: "ei_hydro_electricity_twh", source: "Energy Institute", code: "hydro_electricity",
+    name_ko: "수력 발전량", name_en: "Hydro electricity generation",
+    category: "energy", unit: "TWh",
+    description_ko: "수력 연간 발전량(TWh). 원자료: Ember + Energy Institute (OWID 종합).",
+    license: "CC BY 4.0" },
+  { dataset_id: "ei_hydro_share_elec_pct", source: "Energy Institute", code: "hydro_share_elec",
+    name_ko: "수력 발전 비중", name_en: "Hydro share of electricity",
+    category: "energy", unit: "%",
+    description_ko: "수력이 전체 전력 생산에서 차지하는 비율(%). 원자료: Ember + Energy Institute (OWID 종합).",
+    license: "CC BY 4.0" },
+  // 풍력
+  { dataset_id: "ei_wind_consumption_twh", source: "Energy Institute", code: "wind_consumption",
+    name_ko: "풍력 1차에너지 소비", name_en: "Wind primary energy consumption",
+    category: "energy", unit: "TWh",
+    description_ko: "풍력 연간 1차에너지 소비량(TWh). 원자료: Energy Institute (OWID 종합).",
+    license: "CC BY 4.0" },
+  { dataset_id: "ei_wind_share_energy_pct", source: "Energy Institute", code: "wind_share_energy",
+    name_ko: "풍력 1차에너지 비중", name_en: "Wind share of primary energy",
+    category: "energy", unit: "%",
+    description_ko: "풍력이 전체 1차에너지 소비에서 차지하는 비율(%). 원자료: Energy Institute (OWID 종합).",
+    license: "CC BY 4.0" },
+  { dataset_id: "ei_wind_electricity_twh", source: "Energy Institute", code: "wind_electricity",
+    name_ko: "풍력 발전량", name_en: "Wind electricity generation",
+    category: "energy", unit: "TWh",
+    description_ko: "풍력 연간 발전량(TWh). 원자료: Ember + Energy Institute (OWID 종합).",
+    license: "CC BY 4.0" },
+  { dataset_id: "ei_wind_share_elec_pct", source: "Energy Institute", code: "wind_share_elec",
+    name_ko: "풍력 발전 비중", name_en: "Wind share of electricity",
+    category: "energy", unit: "%",
+    description_ko: "풍력이 전체 전력 생산에서 차지하는 비율(%). 원자료: Ember + Energy Institute (OWID 종합).",
+    license: "CC BY 4.0" },
+  // 태양광
+  { dataset_id: "ei_solar_consumption_twh", source: "Energy Institute", code: "solar_consumption",
+    name_ko: "태양광 1차에너지 소비", name_en: "Solar primary energy consumption",
+    category: "energy", unit: "TWh",
+    description_ko: "태양광 연간 1차에너지 소비량(TWh). 원자료: Energy Institute (OWID 종합).",
+    license: "CC BY 4.0" },
+  { dataset_id: "ei_solar_share_energy_pct", source: "Energy Institute", code: "solar_share_energy",
+    name_ko: "태양광 1차에너지 비중", name_en: "Solar share of primary energy",
+    category: "energy", unit: "%",
+    description_ko: "태양광이 전체 1차에너지 소비에서 차지하는 비율(%). 원자료: Energy Institute (OWID 종합).",
+    license: "CC BY 4.0" },
+  { dataset_id: "ei_solar_electricity_twh", source: "Energy Institute", code: "solar_electricity",
+    name_ko: "태양광 발전량", name_en: "Solar electricity generation",
+    category: "energy", unit: "TWh",
+    description_ko: "태양광 연간 발전량(TWh). 원자료: Ember + Energy Institute (OWID 종합).",
+    license: "CC BY 4.0" },
+  { dataset_id: "ei_solar_share_elec_pct", source: "Energy Institute", code: "solar_share_elec",
+    name_ko: "태양광 발전 비중", name_en: "Solar share of electricity",
+    category: "energy", unit: "%",
+    description_ko: "태양광이 전체 전력 생산에서 차지하는 비율(%). 원자료: Ember + Energy Institute (OWID 종합).",
+    license: "CC BY 4.0" },
+  // 바이오
+  { dataset_id: "ei_biofuel_consumption_twh", source: "Energy Institute", code: "biofuel_consumption",
+    name_ko: "바이오 1차에너지 소비", name_en: "Biofuel primary energy consumption",
+    category: "energy", unit: "TWh",
+    description_ko: "바이오연료 연간 1차에너지 소비량(TWh). 원자료: Energy Institute (OWID 종합).",
+    license: "CC BY 4.0" },
+  { dataset_id: "ei_biofuel_share_energy_pct", source: "Energy Institute", code: "biofuel_share_energy",
+    name_ko: "바이오 1차에너지 비중", name_en: "Biofuel share of primary energy",
+    category: "energy", unit: "%",
+    description_ko: "바이오연료가 전체 1차에너지 소비에서 차지하는 비율(%). 원자료: Energy Institute (OWID 종합).",
+    license: "CC BY 4.0" },
+  { dataset_id: "ei_biofuel_electricity_twh", source: "Energy Institute", code: "biofuel_electricity",
+    name_ko: "바이오 발전량", name_en: "Biofuel electricity generation",
+    category: "energy", unit: "TWh",
+    description_ko: "바이오 연간 발전량(TWh). 원자료: Ember + Energy Institute (OWID 종합).",
+    license: "CC BY 4.0" },
+  { dataset_id: "ei_biofuel_share_elec_pct", source: "Energy Institute", code: "biofuel_share_elec",
+    name_ko: "바이오 발전 비중", name_en: "Biofuel share of electricity",
+    category: "energy", unit: "%",
+    description_ko: "바이오가 전체 전력 생산에서 차지하는 비율(%). 원자료: Ember + Energy Institute (OWID 종합).",
+    license: "CC BY 4.0" },
+  // 화석연료 생산량 (산유국·산탄국 분석용)
+  { dataset_id: "ei_coal_production_twh", source: "Energy Institute", code: "coal_production",
+    name_ko: "석탄 생산량", name_en: "Coal production",
+    category: "energy", unit: "TWh",
+    description_ko: "석탄 연간 1차에너지 생산량(TWh). 원자료: Energy Institute Statistical Review (OWID 종합).",
+    license: "CC BY 4.0" },
+  { dataset_id: "ei_oil_production_twh", source: "Energy Institute", code: "oil_production",
+    name_ko: "석유 생산량", name_en: "Oil production",
+    category: "energy", unit: "TWh",
+    description_ko: "석유 연간 1차에너지 생산량(TWh). 원자료: Energy Institute Statistical Review (OWID 종합).",
+    license: "CC BY 4.0" },
+  { dataset_id: "ei_gas_production_twh", source: "Energy Institute", code: "gas_production",
+    name_ko: "가스 생산량", name_en: "Gas production",
+    category: "energy", unit: "TWh",
+    description_ko: "가스 연간 1차에너지 생산량(TWh). 원자료: Energy Institute Statistical Review (OWID 종합).",
+    license: "CC BY 4.0" },
 
   // ── FAO STAT (정적 JSON) ─────────────────────────────────
   { dataset_id: "fao_QCL_15_5510", source: "FAO", code: "QCL/15/5510",
@@ -1876,13 +2068,14 @@ function resetColor(iso) {
  * 스코프(세계/대한민국) ↔ 출처 매핑
  * ───────────────────────────────────────────────────────── */
 const SCOPE_SOURCES = {
-  world: ["World Bank", "IMF", "FAO", "WHO", "Pew Research Center", "OWID", "WMO", "IEA"],
+  world: ["World Bank", "IMF", "FAO", "WHO", "Pew Research Center", "OWID", "Energy Institute", "WMO", "IEA"],
   korea: ["KOSIS"],
 };
 
 /* 출처 표시 라벨 — Pew/OWID만 풀네임, 나머지는 약어 그대로 */
 const SOURCE_DISPLAY = {
   "OWID": "Our World in Data",
+  "Energy Institute": "Energy Institute (전 BP)",
 };
 
 /* 한국 시도 (KOSIS C1 코드 기반, KR-{2자리}). KOSIS records의 country_iso3와 일치. */
@@ -2462,7 +2655,13 @@ function renderViewer() {
     <div class="controls">
       <div class="controls-row">
         <div class="control-group">
-          <label>${state.scope === "korea" ? "행정구역 선택" : "국가 선택"} (복수 선택)</label>
+          <div class="label-row">
+            <label>${state.scope === "korea" ? "행정구역 선택" : "국가 선택"} (복수 선택)</label>
+            <span class="label-actions">
+              <button id="btn-select-all" type="button">전체 선택</button>
+              <button id="btn-deselect-all" type="button">전체 해제</button>
+            </span>
+          </div>
           <div class="country-chips" id="country-chips">${countryHtml}</div>
           <div class="country-search-wrap">
             <input id="country-search" class="country-search" type="text"
@@ -2541,6 +2740,20 @@ function renderViewer() {
       await fetchData(); renderChart(); renderTable();
     }
   );
+
+  // 전체 선택 / 해제
+  document.getElementById("btn-select-all").onclick = async () => {
+    const allIso = getDisplayCountries().map(c => c.iso);
+    const existing = new Set(state.selectedCountries);
+    allIso.forEach(iso => { if (!existing.has(iso)) state.selectedCountries.push(iso); });
+    renderViewer();
+    await fetchData(); renderChart(); renderTable();
+  };
+  document.getElementById("btn-deselect-all").onclick = async () => {
+    state.selectedCountries = [];
+    renderViewer();
+    await fetchData(); renderChart(); renderTable();
+  };
 
   // 컴툕 외뛰 (추가) 동작 없이 색 선택 다이얼만 엽니다
   document.querySelectorAll("#country-chips .chip-swatch").forEach(sw => {

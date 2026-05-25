@@ -146,44 +146,26 @@ INDICATORS: list[IndicatorMeta] = [
         coverage_years=(1980, 2030),
     ),
 
-    # ─── 추가: 저축·투자 ───
-    IndicatorMeta(
-        dataset_id="imf_NGSD_NGDP",
-        source="IMF", indicator_code="NGSD_NGDP",
-        name_ko="국민총저축률 (GDP 비)", name_en="Gross national savings (% of GDP)",
-        category="economy", subcategory="savings", unit="%",
-        description_ko="국민총저축 / GDP.",
-        license="IMF Open Data", update_frequency="annual",
-        coverage_years=(1980, 2030),
-    ),
-    IndicatorMeta(
-        dataset_id="imf_NID_NGDP",
-        source="IMF", indicator_code="NID_NGDP",
-        name_ko="총투자율 (GDP 비)", name_en="Total investment (% of GDP)",
-        category="economy", subcategory="investment", unit="%",
-        description_ko="총고정자본형성+재고변동 / GDP.",
-        license="IMF Open Data", update_frequency="annual",
-        coverage_years=(1980, 2030),
-    ),
-
     # ─── 추가: 정부 재정 ───
+    # NOTE: 2026-05 IMF DataMapper에서 WEO 코드 GGR_NGDP/GGX_NGDP가 삭제됨.
+    #       Fiscal Monitor 계열 'rev'/'exp'로 대체 (151개국, 1953~2024 커버).
     IndicatorMeta(
-        dataset_id="imf_GGR_NGDP",
-        source="IMF", indicator_code="GGR_NGDP",
-        name_ko="정부 수입 (GDP 비)", name_en="General government revenue (% of GDP)",
+        dataset_id="imf_rev",
+        source="IMF", indicator_code="rev",
+        name_ko="정부 수입 (GDP 비)", name_en="Government revenue (% of GDP)",
         category="economy", subcategory="fiscal", unit="%",
-        description_ko="조세+사회보험료 등 정부 총수입 / GDP.",
+        description_ko="조세+사회보험료 등 정부 총수입 / GDP (IMF Fiscal Monitor).",
         license="IMF Open Data", update_frequency="annual",
-        coverage_years=(1980, 2030),
+        coverage_years=(1953, 2030),
     ),
     IndicatorMeta(
-        dataset_id="imf_GGX_NGDP",
-        source="IMF", indicator_code="GGX_NGDP",
-        name_ko="정부 지출 (GDP 비)", name_en="General government expenditure (% of GDP)",
+        dataset_id="imf_exp",
+        source="IMF", indicator_code="exp",
+        name_ko="정부 지출 (GDP 비)", name_en="Government expenditure (% of GDP)",
         category="economy", subcategory="fiscal", unit="%",
-        description_ko="정부 총지출 / GDP.",
+        description_ko="정부 총지출 / GDP (IMF Fiscal Monitor).",
         license="IMF Open Data", update_frequency="annual",
-        coverage_years=(1980, 2030),
+        coverage_years=(1953, 2030),
     ),
 ]
 

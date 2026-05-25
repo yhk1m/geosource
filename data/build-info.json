@@ -1,12 +1,12 @@
 {
-  "last_built_at": "2026-05-23T05:06:05.725770Z",
+  "last_built_at": "2026-05-25T00:51:13.563969Z",
   "triggered_by": "local",
-  "requested_source": "fao",
+  "requested_source": "ei_energy",
   "sources_built": [
-    "FAO"
+    "Energy Institute"
   ],
-  "indicator_count": 21,
-  "record_count_total": 7447,
+  "indicator_count": 35,
+  "record_count_total": 604275,
   "per_source": {
     "World Bank": {
       "last_built_at": "2026-05-20T11:10:51.086137Z",
@@ -14,9 +14,9 @@
       "record_count": 22560
     },
     "IMF": {
-      "last_built_at": "2026-05-20T11:10:51.086137Z",
-      "indicator_count": 14,
-      "record_count": 98059
+      "last_built_at": "2026-05-25T00:09:38.705941Z",
+      "indicator_count": 12,
+      "record_count": 116568
     },
     "FAO": {
       "last_built_at": "2026-05-23T05:06:05.725770Z",
@@ -57,6 +57,11 @@
       "last_built_at": "2026-05-22T11:42:22.673573Z",
       "indicator_count": 5,
       "record_count": 3152
+    },
+    "Energy Institute": {
+      "last_built_at": "2026-05-25T00:51:13.563969Z",
+      "indicator_count": 35,
+      "record_count": 604275
     }
   }
 }

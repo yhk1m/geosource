@@ -25,7 +25,7 @@ if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
-from adapters import WorldBankAdapter, KosisAdapter, FaoAdapter, ImfAdapter, OwidAdapter, PewAdapter, WhoAdapter, UnWppAdapter, UnhcrAdapter, UnSdgAdapter
+from adapters import WorldBankAdapter, KosisAdapter, FaoAdapter, ImfAdapter, OwidAdapter, OwidEnergyAdapter, PewAdapter, WhoAdapter, UnWppAdapter, UnhcrAdapter, UnSdgAdapter
 
 DATA_DIR = Path(__file__).parent / "data"
 DATA_DIR.mkdir(exist_ok=True)
@@ -160,6 +160,40 @@ def build_owid() -> dict:
         except Exception as e:
             print(f"    ! 실패: {e}")
     return {"source": "OWID", "indicators": catalog}
+
+
+def build_ei_energy() -> dict:
+    """Energy Institute (전 BP) Statistical Review — OWID 종합 CSV 1회 fetch.
+
+    어댑터 내부에 CSV 캐시가 있어 35개 지표 빌드 시 다운로드는 1회만 발생.
+    """
+    adapter = OwidEnergyAdapter()
+    catalog = []
+    for ind in adapter.list_indicators():
+        print(f"  → {ind.dataset_id} ({ind.name_ko})")
+        try:
+            bundle = adapter.build_bundle(
+                indicator_code=ind.indicator_code,
+                countries=DEFAULT_COUNTRIES,
+                year_range=DEFAULT_YEAR_RANGE,
+            )
+            out_path = DATA_DIR / f"{ind.dataset_id}.json"
+            out_path.write_text(bundle.to_json(), encoding="utf-8")
+            catalog.append({
+                "dataset_id": ind.dataset_id,
+                "source": ind.source,
+                "name_ko": ind.name_ko,
+                "name_en": ind.name_en,
+                "category": ind.category,
+                "subcategory": ind.subcategory,
+                "unit": ind.unit,
+                "license": ind.license,
+                "file": f"data/{ind.dataset_id}.json",
+                "record_count": len(bundle.records),
+            })
+        except Exception as e:
+            print(f"    ! 실패: {e}")
+    return {"source": "Energy Institute", "indicators": catalog}
 
 
 def build_pew() -> dict:
@@ -392,7 +426,7 @@ def write_build_info(sources: list[dict], requested_source: str) -> dict:
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--source",
-        choices=["worldbank", "imf", "fao", "owid", "pew", "who", "un_wpp", "unhcr", "un_sdg", "kosis", "all"], default="all")
+        choices=["worldbank", "imf", "fao", "owid", "ei_energy", "pew", "who", "un_wpp", "unhcr", "un_sdg", "kosis", "all"], default="all")
     args = parser.parse_args()
 
     sources = []
@@ -408,6 +442,9 @@ def main():
     if args.source in ("owid", "all"):
         print("[4/7] OWID 빌드 중…")
         sources.append(build_owid())
+    if args.source in ("ei_energy", "all"):
+        print("[4.5/7] Energy Institute (에너지원별) 빌드 중…")
+        sources.append(build_ei_energy())
     if args.source in ("pew", "all"):
         print("[5/7] Pew Research 빌드 중…")
         sources.append(build_pew())

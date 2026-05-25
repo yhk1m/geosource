@@ -133,6 +133,7 @@ python build.py --source worldbank    # 특정 어댑터만 (worldbank | fao | k
 | IMF | 항목별 상이 | 대부분 가능 |
 | KOSIS | KOGL Type 1~4 | 항목별 확인 |
 | 기상청 | 공공데이터포털 약관 | 가능 |
+| Energy Institute (전 BP, OWID 종합) | CC BY 4.0 | 가능 (출처 표기) |
 | **IEA** | **대부분 유료** | **재배포 불가** |
 
 ## 다음 단계
