@@ -192,7 +192,27 @@ header.masthead {
 }
 .masthead-copyright a { color: var(--ocean); text-decoration: none; }
 .masthead-copyright a:hover { text-decoration: underline; }
-.masthead-copyright .muted { margin-top: 4px; color: var(--ink-faint); }
+.masthead-copyright .muted {
+  margin-top: 4px;
+  color: var(--ink-faint);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.viewership {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 10px;
+  padding-left: 10px;
+  border-left: 1px solid var(--line);
+  color: var(--ink-faint);
+}
+.viewership .vw-icon { opacity: 0.7; }
+.viewership .vw-label { color: var(--ink-faint); }
+.viewership .vw-num { color: var(--ocean); font-weight: 600; }
+.viewership .vw-sep { color: var(--ink-faint); opacity: 0.5; margin: 0 4px; }
 
 /* 스코프 탭 */
 .scope-tabs {
@@ -1014,14 +1034,16 @@ table.climate-table tbody tr:hover { background: var(--paper-dim); }
     </div>
     <div class="masthead-meta">
       <div class="masthead-copyright">
-        <div>Copyright 2026. 양정고등학교 김용현 | <a href="https://bgnl.kr" target="_blank" rel="noopener">https://bgnl.kr</a></div>
-        <div class="muted">데이터는 각 출처의 라이선스를 따릅니다.</div>
-      </div>
-      <div class="build-status" id="build-status">
-        <button type="button" class="build-status-toggle" id="build-status-toggle">
-          마지막 갱신 <span class="caret">▾</span>
-        </button>
-        <div class="build-status-list" id="build-status-list"></div>
+        <div>Copyright 2026. 양정고등학교 김용현 | <a href="https://bgnl.kr" target="_blank" rel="noopener">https://bgnl.kr</a><span class="viewership" id="viewership"><span class="vw-icon">👁</span><span class="vw-label">Today</span> <span class="vw-num" id="vw-today">–</span><span class="vw-sep">·</span><span class="vw-label">Total</span> <span class="vw-num" id="vw-total">–</span></span></div>
+        <div class="muted">
+          <span>데이터는 각 출처의 라이선스를 따릅니다.</span>
+          <div class="build-status" id="build-status">
+            <button type="button" class="build-status-toggle" id="build-status-toggle">
+              마지막 갱신 <span class="caret">▾</span>
+            </button>
+            <div class="build-status-list" id="build-status-list"></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -3400,6 +3422,35 @@ function setupBuildStatusDropdown() {
   });
 }
 
+/* ───── 뷰어십 카운터 (Apps Script Web App + 디바이스당 일 1회) ───── */
+const VIEWERSHIP_URL = "https://script.google.com/macros/s/AKfycbwow2ugfDocN1_RZAG0jdcpJyVsPaPUboHSQ7rq0XQPaBSd1tQVm-bmwg9UnG6O_4HI/exec";
+const VIEWERSHIP_LS_KEY = "geosource_last_visit";
+
+function kstDateString() {
+  // KST(UTC+9) 기준 YYYY-MM-DD
+  const now = new Date(Date.now() + 9 * 60 * 60 * 1000);
+  return now.toISOString().slice(0, 10);
+}
+
+async function loadViewership() {
+  if (!VIEWERSHIP_URL) return; // URL 미설정 시 조용히 스킵
+  try {
+    const today = kstDateString();
+    const last = localStorage.getItem(VIEWERSHIP_LS_KEY);
+    const action = (last === today) ? "read" : "count";
+    const res = await fetch(`${VIEWERSHIP_URL}?action=${action}`, { method: "GET" });
+    if (!res.ok) return;
+    const data = await res.json();
+    const todayEl = document.getElementById("vw-today");
+    const totalEl = document.getElementById("vw-total");
+    if (todayEl) todayEl.textContent = Number(data.today || 0).toLocaleString();
+    if (totalEl) totalEl.textContent = Number(data.total || 0).toLocaleString();
+    if (action === "count") localStorage.setItem(VIEWERSHIP_LS_KEY, today);
+  } catch (e) {
+    // 네트워크 오류 시 표시는 '–' 유지
+  }
+}
+
 function init() {
   renderScopeTabs();
   renderSourcesBar();
@@ -3413,6 +3464,7 @@ function init() {
   loadBuildInfo();
   setupBuildStatusDropdown();
   fetchAllCountries();   // 비동기 — 검색창에서 결과로 사용
+  loadViewership();      // 뷰어십 카운트
 }
 document.addEventListener("DOMContentLoaded", init);
 
