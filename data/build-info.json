@@ -1,70 +1,81 @@
 {
-  "last_built_at": "2026-05-25T01:38:03.402458Z",
-  "triggered_by": "local",
-  "requested_source": "wmo",
+  "last_built_at": "2026-06-01T21:36:58.189627Z",
+  "triggered_by": "scheduled",
+  "requested_source": "all",
   "sources_built": [
-    "WMO"
+    "World Bank",
+    "IMF",
+    "FAO",
+    "OWID",
+    "Energy Institute",
+    "Pew Research Center",
+    "WHO",
+    "UN WPP",
+    "UNHCR",
+    "UN SDG",
+    "WMO",
+    "KOSIS"
   ],
-  "indicator_count": 1,
-  "record_count_total": 26988,
+  "indicator_count": 170,
+  "record_count_total": 873612,
   "per_source": {
     "World Bank": {
-      "last_built_at": "2026-05-20T11:10:51.086137Z",
-      "indicator_count": 47,
-      "record_count": 22560
+      "last_built_at": "2026-06-01T21:36:58.189627Z",
+      "indicator_count": 46,
+      "record_count": 22080
     },
     "IMF": {
-      "last_built_at": "2026-05-25T00:09:38.705941Z",
+      "last_built_at": "2026-06-01T21:36:58.189627Z",
       "indicator_count": 12,
       "record_count": 116568
     },
     "FAO": {
-      "last_built_at": "2026-05-23T05:06:05.725770Z",
+      "last_built_at": "2026-06-01T21:36:58.189627Z",
       "indicator_count": 21,
       "record_count": 7447
     },
     "KOSIS": {
-      "last_built_at": "2026-05-21T05:10:31.275881Z",
+      "last_built_at": "2026-06-01T21:36:58.189627Z",
       "indicator_count": 15,
       "record_count": 18486
     },
     "OWID": {
-      "last_built_at": "2026-05-20T11:10:51.086137Z",
-      "indicator_count": 8,
-      "record_count": 18275
+      "last_built_at": "2026-06-01T21:36:58.189627Z",
+      "indicator_count": 7,
+      "record_count": 15436
     },
     "Pew Research Center": {
-      "last_built_at": "2026-05-20T11:10:51.086137Z",
+      "last_built_at": "2026-06-01T21:36:58.189627Z",
       "indicator_count": 8,
       "record_count": 9000
     },
     "WHO": {
-      "last_built_at": "2026-05-22T01:07:45.899701Z",
+      "last_built_at": "2026-06-01T21:36:58.189627Z",
       "indicator_count": 5,
-      "record_count": 4480
+      "record_count": 4960
     },
     "UN WPP": {
-      "last_built_at": "2026-05-22T11:06:24.627525Z",
+      "last_built_at": "2026-06-01T21:36:58.189627Z",
       "indicator_count": 10,
       "record_count": 40400
     },
     "UNHCR": {
-      "last_built_at": "2026-05-22T11:22:30.786706Z",
+      "last_built_at": "2026-06-01T21:36:58.189627Z",
       "indicator_count": 5,
       "record_count": 4820
     },
     "UN SDG": {
-      "last_built_at": "2026-05-22T11:42:22.673573Z",
+      "last_built_at": "2026-06-01T21:36:58.189627Z",
       "indicator_count": 5,
       "record_count": 3152
     },
     "Energy Institute": {
-      "last_built_at": "2026-05-25T00:51:13.563969Z",
+      "last_built_at": "2026-06-01T21:36:58.189627Z",
       "indicator_count": 35,
       "record_count": 604275
     },
     "WMO": {
-      "last_built_at": "2026-05-25T01:38:03.402458Z",
+      "last_built_at": "2026-06-01T21:36:58.189627Z",
       "indicator_count": 1,
       "record_count": 26988
     }
