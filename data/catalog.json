@@ -28,18 +28,6 @@
           "record_count": 480
         },
         {
-          "dataset_id": "wb_SP.POP.TOTL",
-          "source": "World Bank",
-          "name_ko": "총인구",
-          "name_en": "Population, total",
-          "category": "population",
-          "subcategory": "size",
-          "unit": "명",
-          "license": "CC BY 4.0",
-          "file": "data/wb_SP.POP.TOTL.json",
-          "record_count": 480
-        },
-        {
           "dataset_id": "wb_SP.URB.TOTL.IN.ZS",
           "source": "World Bank",
           "name_ko": "도시화율",
@@ -133,18 +121,6 @@
           "unit": "‰",
           "license": "CC BY 4.0",
           "file": "data/wb_SP.DYN.CBRT.IN.json",
-          "record_count": 480
-        },
-        {
-          "dataset_id": "wb_SP.DYN.CDRT.IN",
-          "source": "World Bank",
-          "name_ko": "조사망률",
-          "name_en": "Crude death rate (per 1,000)",
-          "category": "population",
-          "subcategory": "mortality",
-          "unit": "‰",
-          "license": "CC BY 4.0",
-          "file": "data/wb_SP.DYN.CDRT.IN.json",
           "record_count": 480
         },
         {
@@ -292,18 +268,6 @@
           "record_count": 480
         },
         {
-          "dataset_id": "wb_SI.POV.GINI",
-          "source": "World Bank",
-          "name_ko": "지니계수",
-          "name_en": "Gini index",
-          "category": "economy",
-          "subcategory": "inequality",
-          "unit": "지수",
-          "license": "CC BY 4.0",
-          "file": "data/wb_SI.POV.GINI.json",
-          "record_count": 480
-        },
-        {
           "dataset_id": "wb_SI.POV.DDAY",
           "source": "World Bank",
           "name_ko": "극빈율 ($2.15/일)",
@@ -313,18 +277,6 @@
           "unit": "%",
           "license": "CC BY 4.0",
           "file": "data/wb_SI.POV.DDAY.json",
-          "record_count": 480
-        },
-        {
-          "dataset_id": "wb_SL.UEM.TOTL.ZS",
-          "source": "World Bank",
-          "name_ko": "실업률",
-          "name_en": "Unemployment rate (% of labor force)",
-          "category": "economy",
-          "subcategory": "employment",
-          "unit": "%",
-          "license": "CC BY 4.0",
-          "file": "data/wb_SL.UEM.TOTL.ZS.json",
           "record_count": 480
         },
         {
@@ -361,18 +313,6 @@
           "unit": "%",
           "license": "CC BY 4.0",
           "file": "data/wb_BX.KLT.DINV.WD.GD.ZS.json",
-          "record_count": 480
-        },
-        {
-          "dataset_id": "wb_NE.TRD.GNFS.ZS",
-          "source": "World Bank",
-          "name_ko": "무역의존도",
-          "name_en": "Trade (% of GDP)",
-          "category": "trade",
-          "subcategory": "openness",
-          "unit": "%",
-          "license": "CC BY 4.0",
-          "file": "data/wb_NE.TRD.GNFS.ZS.json",
           "record_count": 480
         },
         {
@@ -517,6 +457,18 @@
           "unit": "명/10만명",
           "license": "CC BY 4.0",
           "file": "data/wb_SH.STA.MMRT.json",
+          "record_count": 480
+        },
+        {
+          "dataset_id": "wb_SH.STA.BASS.ZS",
+          "source": "World Bank",
+          "name_ko": "기본 위생시설 접근율",
+          "name_en": "Access to basic sanitation (% of pop)",
+          "category": "development",
+          "subcategory": "sanitation",
+          "unit": "%",
+          "license": "CC BY 4.0",
+          "file": "data/wb_SH.STA.BASS.ZS.json",
           "record_count": 480
         },
         {
@@ -1615,7 +1567,7 @@
           "unit": "L/년",
           "license": "CC BY-NC-SA 3.0 IGO",
           "file": "data/who_alcohol_consumption.json",
-          "record_count": 897
+          "record_count": 975
         },
         {
           "dataset_id": "who_obesity_adults",
@@ -1919,188 +1871,7 @@
     },
     {
       "source": "KOSIS",
-      "indicators": [
-        {
-          "dataset_id": "kosis_101_DT_1B040A3_T20",
-          "source": "KOSIS",
-          "name_ko": "시도별 인구",
-          "name_en": "Population by Province (Korea)",
-          "category": "population",
-          "subcategory": "size",
-          "unit": "명",
-          "license": "KOGL Type 1",
-          "file": "data/kosis_101_DT_1B040A3_T20.json",
-          "record_count": 6688
-        },
-        {
-          "dataset_id": "kosis_101_DT_1B81A21_T1",
-          "source": "KOSIS",
-          "name_ko": "시도별 합계출산율",
-          "name_en": "Total Fertility Rate by Province",
-          "category": "population",
-          "subcategory": "fertility",
-          "unit": "명",
-          "license": "KOGL Type 1",
-          "file": "data/kosis_101_DT_1B81A21_T1.json",
-          "record_count": 420
-        },
-        {
-          "dataset_id": "kosis_101_DT_1B040B3_T1",
-          "source": "KOSIS",
-          "name_ko": "시도별 세대수",
-          "name_en": "Number of Households by Province",
-          "category": "population",
-          "subcategory": "household",
-          "unit": "세대",
-          "license": "KOGL Type 1",
-          "file": "data/kosis_101_DT_1B040B3_T1.json",
-          "record_count": 6688
-        },
-        {
-          "dataset_id": "kosis_101_DT_1DA7104S_T80",
-          "source": "KOSIS",
-          "name_ko": "시도별 실업률",
-          "name_en": "Unemployment Rate by Province",
-          "category": "economy",
-          "subcategory": "unemployment",
-          "unit": "%",
-          "license": "KOGL Type 1",
-          "file": "data/kosis_101_DT_1DA7104S_T80.json",
-          "record_count": 415
-        },
-        {
-          "dataset_id": "kosis_101_DT_1C86_T1",
-          "source": "KOSIS",
-          "name_ko": "시도별 1인당 GRDP",
-          "name_en": "GRDP per capita by Province",
-          "category": "economy",
-          "subcategory": "grdp",
-          "unit": "천원",
-          "license": "KOGL Type 1",
-          "file": "data/kosis_101_DT_1C86_T1.json",
-          "record_count": 401
-        },
-        {
-          "dataset_id": "kosis_101_DT_1B81A19_T1",
-          "source": "KOSIS",
-          "name_ko": "시도별 출생성비",
-          "name_en": "Sex Ratio at Birth by Province",
-          "category": "population",
-          "subcategory": "births",
-          "unit": "명",
-          "license": "KOGL Type 1",
-          "file": "data/kosis_101_DT_1B81A19_T1.json",
-          "record_count": 420
-        },
-        {
-          "dataset_id": "kosis_101_DT_1B83A03_T10",
-          "source": "KOSIS",
-          "name_ko": "시도별 혼인건수",
-          "name_en": "Number of Marriages by Province",
-          "category": "population",
-          "subcategory": "marriage",
-          "unit": "건",
-          "license": "KOGL Type 1",
-          "file": "data/kosis_101_DT_1B83A03_T10.json",
-          "record_count": 444
-        },
-        {
-          "dataset_id": "kosis_101_DT_1B85003_T10",
-          "source": "KOSIS",
-          "name_ko": "시도별 이혼건수",
-          "name_en": "Number of Divorces by Province",
-          "category": "population",
-          "subcategory": "divorce",
-          "unit": "건",
-          "license": "KOGL Type 1",
-          "file": "data/kosis_101_DT_1B85003_T10.json",
-          "record_count": 444
-        },
-        {
-          "dataset_id": "kosis_101_DT_1DA7004S_T10",
-          "source": "KOSIS",
-          "name_ko": "시도별 15세이상인구",
-          "name_en": "Population aged 15+ by Province",
-          "category": "economy",
-          "subcategory": "labor_force",
-          "unit": "천명",
-          "license": "KOGL Type 1",
-          "file": "data/kosis_101_DT_1DA7004S_T10.json",
-          "record_count": 415
-        },
-        {
-          "dataset_id": "kosis_101_DT_1DA7030S_T30",
-          "source": "KOSIS",
-          "name_ko": "시도별 취업자",
-          "name_en": "Employed Persons by Province",
-          "category": "economy",
-          "subcategory": "employment",
-          "unit": "천명",
-          "license": "KOGL Type 1",
-          "file": "data/kosis_101_DT_1DA7030S_T30.json",
-          "record_count": 415
-        },
-        {
-          "dataset_id": "kosis_101_DT_1DA7088S_T40",
-          "source": "KOSIS",
-          "name_ko": "시도별 실업자",
-          "name_en": "Unemployed Persons by Province",
-          "category": "economy",
-          "subcategory": "unemployment",
-          "unit": "천명",
-          "license": "KOGL Type 1",
-          "file": "data/kosis_101_DT_1DA7088S_T40.json",
-          "record_count": 415
-        },
-        {
-          "dataset_id": "kosis_101_DT_1DA7146S_T50",
-          "source": "KOSIS",
-          "name_ko": "시도별 비경제활동인구",
-          "name_en": "Economically Inactive Population by Province",
-          "category": "economy",
-          "subcategory": "labor_inactive",
-          "unit": "천명",
-          "license": "KOGL Type 1",
-          "file": "data/kosis_101_DT_1DA7146S_T50.json",
-          "record_count": 415
-        },
-        {
-          "dataset_id": "kosis_101_DT_1F02001_T10",
-          "source": "KOSIS",
-          "name_ko": "시도별 소비자물가지수",
-          "name_en": "Consumer Price Index by Province",
-          "category": "economy",
-          "subcategory": "cpi",
-          "unit": "2020=100",
-          "license": "KOGL Type 1",
-          "file": "data/kosis_101_DT_1F02001_T10.json",
-          "record_count": 422
-        },
-        {
-          "dataset_id": "kosis_101_DT_1ES4F09S_T00",
-          "source": "KOSIS",
-          "name_ko": "시도별 농어가 가구수",
-          "name_en": "Farm and Fishery Households by Province",
-          "category": "agriculture",
-          "subcategory": "farm_household",
-          "unit": "천가구",
-          "license": "KOGL Type 1",
-          "file": "data/kosis_101_DT_1ES4F09S_T00.json",
-          "record_count": 160
-        },
-        {
-          "dataset_id": "kosis_101_DT_1PA2002_T10",
-          "source": "KOSIS",
-          "name_ko": "시도별 거주지 이전 인구",
-          "name_en": "Population by Migration Type",
-          "category": "population",
-          "subcategory": "migration",
-          "unit": "명",
-          "license": "KOGL Type 1",
-          "file": "data/kosis_101_DT_1PA2002_T10.json",
-          "record_count": 324
-        }
-      ]
+      "indicators": []
     }
   ]
 }
