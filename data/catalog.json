@@ -16,15 +16,15 @@
           "record_count": 480
         },
         {
-          "dataset_id": "wb_SP.POP.TOTL",
+          "dataset_id": "wb_NY.GDP.PCAP.CD",
           "source": "World Bank",
-          "name_ko": "총인구",
-          "name_en": "Population, total",
-          "category": "population",
-          "subcategory": "size",
-          "unit": "명",
+          "name_ko": "1인당 GDP(명목)",
+          "name_en": "GDP per capita (current US$)",
+          "category": "economy",
+          "subcategory": "national_accounts",
+          "unit": "USD",
           "license": "CC BY 4.0",
-          "file": "data/wb_SP.POP.TOTL.json",
+          "file": "data/wb_NY.GDP.PCAP.CD.json",
           "record_count": 480
         },
         {
@@ -124,18 +124,6 @@
           "record_count": 480
         },
         {
-          "dataset_id": "wb_SP.DYN.CDRT.IN",
-          "source": "World Bank",
-          "name_ko": "조사망률",
-          "name_en": "Crude death rate (per 1,000)",
-          "category": "population",
-          "subcategory": "mortality",
-          "unit": "‰",
-          "license": "CC BY 4.0",
-          "file": "data/wb_SP.DYN.CDRT.IN.json",
-          "record_count": 480
-        },
-        {
           "dataset_id": "wb_SP.DYN.IMRT.IN",
           "source": "World Bank",
           "name_ko": "영아 사망률",
@@ -181,6 +169,18 @@
           "unit": "%",
           "license": "CC BY 4.0",
           "file": "data/wb_SP.POP.DPND.OL.json",
+          "record_count": 480
+        },
+        {
+          "dataset_id": "wb_SP.POP.DPND.YG",
+          "source": "World Bank",
+          "name_ko": "유년 부양비",
+          "name_en": "Age dependency ratio, young (% of working-age)",
+          "category": "population",
+          "subcategory": "age_structure",
+          "unit": "%",
+          "license": "CC BY 4.0",
+          "file": "data/wb_SP.POP.DPND.YG.json",
           "record_count": 480
         },
         {
@@ -256,6 +256,18 @@
           "record_count": 480
         },
         {
+          "dataset_id": "wb_NV.SRV.TOTL.ZS",
+          "source": "World Bank",
+          "name_ko": "서비스업 부가가치 (GDP 비)",
+          "name_en": "Services value added (% of GDP)",
+          "category": "economy",
+          "subcategory": "structure",
+          "unit": "%",
+          "license": "CC BY 4.0",
+          "file": "data/wb_NV.SRV.TOTL.ZS.json",
+          "record_count": 480
+        },
+        {
           "dataset_id": "wb_SI.POV.GINI",
           "source": "World Bank",
           "name_ko": "지니계수",
@@ -301,6 +313,18 @@
           "unit": "%",
           "license": "CC BY 4.0",
           "file": "data/wb_NE.EXP.GNFS.ZS.json",
+          "record_count": 480
+        },
+        {
+          "dataset_id": "wb_NE.IMP.GNFS.ZS",
+          "source": "World Bank",
+          "name_ko": "수입 (GDP 비)",
+          "name_en": "Imports of goods and services (% of GDP)",
+          "category": "trade",
+          "subcategory": "imports",
+          "unit": "%",
+          "license": "CC BY 4.0",
+          "file": "data/wb_NE.IMP.GNFS.ZS.json",
           "record_count": 480
         },
         {
@@ -457,6 +481,30 @@
           "unit": "%",
           "license": "CC BY 4.0",
           "file": "data/wb_SE.ADT.LITR.ZS.json",
+          "record_count": 480
+        },
+        {
+          "dataset_id": "wb_SH.STA.MMRT",
+          "source": "World Bank",
+          "name_ko": "모성 사망률",
+          "name_en": "Maternal mortality (per 100,000 live births)",
+          "category": "development",
+          "subcategory": "health",
+          "unit": "명/10만명",
+          "license": "CC BY 4.0",
+          "file": "data/wb_SH.STA.MMRT.json",
+          "record_count": 480
+        },
+        {
+          "dataset_id": "wb_SH.STA.BASS.ZS",
+          "source": "World Bank",
+          "name_ko": "기본 위생시설 접근율",
+          "name_en": "Access to basic sanitation (% of pop)",
+          "category": "development",
+          "subcategory": "sanitation",
+          "unit": "%",
+          "license": "CC BY 4.0",
+          "file": "data/wb_SH.STA.BASS.ZS.json",
           "record_count": 480
         },
         {
@@ -1787,18 +1835,6 @@
           "license": "UN public data (출처 표기 시 자유 이용)",
           "file": "data/sdg_women_in_parliament.json",
           "record_count": 844
-        },
-        {
-          "dataset_id": "sdg_homicide_rate",
-          "source": "UN SDG",
-          "name_ko": "의도적 살인율 (SDG 16.1.1)",
-          "name_en": "Intentional homicide victims (per 100,000)",
-          "category": "development",
-          "subcategory": "violence",
-          "unit": "명/10만명",
-          "license": "UN public data (출처 표기 시 자유 이용)",
-          "file": "data/sdg_homicide_rate.json",
-          "record_count": 594
         },
         {
           "dataset_id": "sdg_rd_expenditure",
