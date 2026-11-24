@@ -875,7 +875,11 @@ footer.colophon {
 }
 footer.colophon a { color: var(--ocean); text-decoration: none; }
 footer.colophon a:hover { text-decoration: underline; }
-footer.colophon .colophon-family { margin-bottom: 12px; color: var(--ink-soft); letter-spacing: normal; }
+footer.colophon .colophon-row { display: flex; align-items: center; justify-content: flex-end; gap: 12px; flex-wrap: nowrap; }
+footer.colophon .colophon-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+footer.colophon .colophon-family { flex: none; color: var(--ink-soft); letter-spacing: normal; }
+/* 휴대폰: 라이선스 글과 Family Sites 버튼이 한 줄에 다 보이게 옆 여백을 줄인다. */
+@media (max-width: 700px) { footer.colophon { padding-left: 16px; padding-right: 16px; } }
 
 /* 반응형 */
 @media (max-width: 960px) {
@@ -1082,11 +1086,11 @@ table.climate-table tbody tr:hover { background: var(--paper-dim); }
 </main>
 
 <footer class="colophon">
-  <!-- bgnl.kr 패밀리 사이트 드롭다운(https://bgnl.kr/family.js 가 그린다) -->
-  <div class="colophon-family" data-bgnl-family></div>
-  <div>
-    World Bank Open Data <a href="https://datacatalog.worldbank.org/public-licenses#cc-by" target="_blank">CC BY 4.0</a>
-    · KOSIS <a href="https://www.kogl.or.kr/info/license.do" target="_blank">KOGL</a>
+  <div class="colophon-row">
+    <span class="colophon-text">World Bank Open Data <a href="https://datacatalog.worldbank.org/public-licenses#cc-by" target="_blank">CC BY 4.0</a>
+    · KOSIS <a href="https://www.kogl.or.kr/info/license.do" target="_blank">KOGL</a></span>
+    <!-- bgnl.kr 패밀리 사이트 드롭다운(https://bgnl.kr/family.js 가 그린다). 라이선스 줄과 한 줄에 둔다. -->
+    <div class="colophon-family" data-bgnl-family></div>
   </div>
 </footer>
 
