@@ -875,6 +875,7 @@ footer.colophon {
 }
 footer.colophon a { color: var(--ocean); text-decoration: none; }
 footer.colophon a:hover { text-decoration: underline; }
+footer.colophon .colophon-family { margin-bottom: 12px; color: var(--ink-soft); letter-spacing: normal; }
 
 /* 반응형 */
 @media (max-width: 960px) {
@@ -1081,6 +1082,8 @@ table.climate-table tbody tr:hover { background: var(--paper-dim); }
 </main>
 
 <footer class="colophon">
+  <!-- bgnl.kr 패밀리 사이트 드롭다운(https://bgnl.kr/family.js 가 그린다) -->
+  <div class="colophon-family" data-bgnl-family></div>
   <div>
     World Bank Open Data <a href="https://datacatalog.worldbank.org/public-licenses#cc-by" target="_blank">CC BY 4.0</a>
     · KOSIS <a href="https://www.kogl.or.kr/info/license.do" target="_blank">KOGL</a>
@@ -3858,5 +3861,6 @@ function drawClimateTable(selected) {
 }
 </script>
 
+<script src="https://bgnl.kr/family.js" defer></script>
 </body>
 </html>
